@@ -54,6 +54,31 @@ class DashboardController extends Controller
         return view('dashboard.' . $this->getViewFolder() . '.data_pbpd');
     }
 
+    public function tanpaPerluasan()
+    {
+        return view('dashboard.' . $this->getViewFolder() . '.tanpa_perluasan');
+    }
+
+    public function perluasanJtm()
+    {
+        return view('dashboard.' . $this->getViewFolder() . '.perluasan_jtm');
+    }
+
+    public function perluasanJtr()
+    {
+        return view('dashboard.' . $this->getViewFolder() . '.perluasan_jtr');
+    }
+
+    public function pengoperasian()
+    {
+        return view('dashboard.' . $this->getViewFolder() . '.pengoperasian');
+    }
+
+    public function pencarian()
+    {
+        return view('dashboard.' . $this->getViewFolder() . '.pencarian');
+    }
+
     public function prosesPerluasan()
     {
         return view('dashboard.' . $this->getViewFolder() . '.proses_perluasan');

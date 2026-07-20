@@ -60,14 +60,14 @@
     </div>
 
     {{-- ===== TABLE AREA ===== --}}
-    <div id="tableArea" class="hidden mt-4 flex flex-col flex-1 min-h-0">
+    <div id="tableArea" style="display:none;" class="mt-4 flex flex-col flex-1 min-h-0">
         <div class="bg-white rounded-2xl shadow-md border border-slate-200 flex flex-col flex-1 min-h-0 overflow-hidden">
 
             {{-- Table header bar --}}
             <div class="bg-gradient-to-r from-[#1e4d8c] to-[#3b6ea5] px-5 py-2.5 flex items-center justify-between flex-shrink-0">
                 <div class="flex items-center gap-2">
-                    <span class="text-white font-bold text-sm tracking-wide">RECORD, JUMLAH TRANSAKSI PB/PD ULP LAMONGAN</span>
-                    <span class="bg-white/20 text-white text-xs px-2 py-0.5 rounded-full font-mono" id="recordCount">0 data</span>
+                    <span class="text-white font-bold text-sm tracking-wide">RECORD, JUMLAH TRANSAKSI TANPA PERLUASAN ULP LAMONGAN</span>
+                    <span class="bg-white/20 text-white text-xs px-2 py-0.5 rounded-full font-mono">0 data</span>
                 </div>
                 <button onclick="tutupTabel()" class="text-blue-200 hover:text-white text-xs transition flex items-center gap-1">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -100,8 +100,8 @@
                             <th class="border border-blue-600 px-3 py-1.5 text-center font-medium whitespace-nowrap">DAYA</th>
                         </tr>
                     </thead>
-                    <tbody id="tableBody">
-                        <tr id="emptyRow">
+                    <tbody>
+                        <tr>
                             <td colspan="12" class="text-center py-12 text-slate-400 italic text-xs">
                                 <div class="flex flex-col items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke-width="1.2" stroke="currentColor">
@@ -129,15 +129,13 @@
     function tampilkanTabel() {
         var el = document.getElementById('tableArea');
         if (el) {
-            el.classList.remove('hidden');
-            el.classList.add('flex');
+            el.style.display = 'flex';
         }
     }
     function tutupTabel() {
         var el = document.getElementById('tableArea');
         if (el) {
-            el.classList.add('hidden');
-            el.classList.remove('flex');
+            el.style.display = 'none';
         }
     }
 </script>

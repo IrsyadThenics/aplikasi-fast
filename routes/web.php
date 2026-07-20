@@ -39,6 +39,11 @@ Route::middleware(['auth'])->group(function () {
         Route::middleware(['role:' . $roleMiddleware])->prefix($prefix)->name($prefix . '.')->group(function () {
             Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
             Route::get('/data-pbpd', [DashboardController::class, 'dataPbpd'])->name('data_pbpd');
+            Route::get('/tanpa-perluasan', [DashboardController::class, 'tanpaPerluasan'])->name('tanpa_perluasan');
+            Route::get('/perluasan-jtm', [DashboardController::class, 'perluasanJtm'])->name('perluasan_jtm');
+            Route::get('/perluasan-jtr', [DashboardController::class, 'perluasanJtr'])->name('perluasan_jtr');
+            Route::get('/pengoperasian', [DashboardController::class, 'pengoperasian'])->name('pengoperasian');
+            Route::get('/pencarian', [DashboardController::class, 'pencarian'])->name('pencarian');
             Route::get('/proses-perluasan', [DashboardController::class, 'prosesPerluasan'])->name('proses_perluasan');
             Route::get('/restitusi', [DashboardController::class, 'restitusi'])->name('restitusi');
             Route::get('/laporan', [DashboardController::class, 'laporan'])->name('laporan');
