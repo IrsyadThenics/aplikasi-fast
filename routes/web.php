@@ -48,6 +48,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/restitusi', [DashboardController::class, 'restitusi'])->name('restitusi');
             Route::get('/laporan', [DashboardController::class, 'laporan'])->name('laporan');
             Route::get('/notifikasi', [DashboardController::class, 'notifikasi'])->name('notifikasi');
+            Route::get('/ba-operasi', [DashboardController::class, 'baOperasi'])->name('ba_operasi');
+            Route::get('/survey', [DashboardController::class, 'survey'])->name('survey');
         });
     }
 });

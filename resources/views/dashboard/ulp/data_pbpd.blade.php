@@ -1,4 +1,4 @@
-@extends('layoutsHome.app')
+@extends('layouts.app')
 
 @section('content')
 <div class="h-full flex flex-col bg-slate-50 p-5">

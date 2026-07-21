@@ -98,4 +98,14 @@ class DashboardController extends Controller
     {
         return view('dashboard.' . $this->getViewFolder() . '.notifikasi');
     }
+
+    public function baOperasi()
+    {
+        return view('dashboard.' . $this->getViewFolder() . '.ba_operasi');
+    }
+
+    public function survey()
+    {
+        return view('dashboard.' . $this->getViewFolder() . '.survey');
+    }
 }
