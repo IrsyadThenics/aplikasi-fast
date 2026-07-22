@@ -7,7 +7,7 @@
     <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden flex-shrink-0">
 
         {{-- Card Header --}}
-        <div class="bg-gradient-to-r from-[#1e4d8c] to-[#3b6ea5] px-6 py-3 flex items-center gap-3">
+        <div class="bg-gradient-to-r from-[#0D1B8C] to-[#0D1B8C] px-6 py-3 flex items-center gap-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white/80" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z" />
             </svg>
@@ -49,7 +49,7 @@
                 <input type="date" value="2026-08-07"
                     class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-slate-50 text-slate-700 transition" />
                 <button onclick="tampilkanTabel()"
-                    class="ml-2 bg-[#1e4d8c] hover:bg-[#163d70] text-white text-sm font-semibold px-6 py-2 rounded-lg shadow-sm transition-all active:scale-95 flex items-center gap-2">
+                    class="ml-2 bg-[#0D1B8C] hover:bg-[#0D1B8C] text-white text-sm font-semibold px-6 py-2 rounded-lg shadow-sm transition-all active:scale-95 flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803a7.5 7.5 0 0010.607 10.607z" />
                     </svg>
