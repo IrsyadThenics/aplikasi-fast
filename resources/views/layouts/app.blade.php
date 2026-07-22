@@ -74,20 +74,21 @@
 
             // Daftar menu yang tersedia untuk setiap role
             $roleMenus = [
-                'managerULP' => ['data_pbpd', 'tanpa_perluasan', 'perluasan_jtm', 'perluasan_jtr', 'proses_perluasan', 'restitusi', 'pengoperasian', 'pencarian', 'laporan', 'notifikasi'],
-                'managerUP3' => ['data_pbpd', 'tanpa_perluasan', 'perluasan_jtm', 'perluasan_jtr', 'proses_perluasan', 'restitusi', 'pengoperasian', 'pencarian', 'laporan', 'notifikasi'],
-                'administrator' => ['data_pbpd', 'proses_perluasan', 'restitusi', 'laporan', 'notifikasi'],
-                'jaringan' => ['data_pbpd', 'proses_perluasan', 'restitusi', 'laporan', 'notifikasi'],
-                'konstruksi' => ['data_pbpd', 'proses_perluasan', 'restitusi', 'laporan', 'notifikasi'],
-                'pelayanan' => ['data_pbpd', 'perluasan_jtm', 'perluasan_jtr', 'proses_perluasan', 'restitusi', 'laporan', 'notifikasi'],
-                'perencanaan' => ['data_pbpd', 'perluasan_jtm', 'perluasan_jtr', 'proses_perluasan', 'survey', 'laporan', 'notifikasi'],
-                'transaksi' => ['data_pbpd', 'perluasan_jtm', 'perluasan_jtr', 'ba_operasi', 'pencarian', 'laporan', 'notifikasi'],
+                'managerULP' => ['dashboard', 'data_pbpd', 'tanpa_perluasan', 'perluasan_jtm', 'perluasan_jtr', 'proses_perluasan', 'restitusi', 'pengoperasian', 'pencarian', 'laporan', 'notifikasi'],
+                'managerUP3' => ['dashboard','data_pbpd', 'tanpa_perluasan', 'perluasan_jtm', 'perluasan_jtr', 'proses_perluasan', 'restitusi', 'pengoperasian', 'pencarian', 'laporan', 'notifikasi'],
+                'administrator' => ['dashboard','data_pbpd', 'proses_perluasan', 'restitusi', 'laporan', 'notifikasi'],
+                'jaringan' => ['dashboard','data_pbpd', 'proses_perluasan', 'restitusi', 'laporan', 'notifikasi'],
+                'konstruksi' => ['dashboard','data_pbpd', 'proses_perluasan', 'restitusi', 'laporan', 'notifikasi'],
+                'pelayanan' => ['dashboard','data_pbpd', 'perluasan_jtm', 'perluasan_jtr', 'proses_perluasan', 'restitusi', 'laporan', 'notifikasi'],
+                'perencanaan' => ['dashboard','data_pbpd', 'perluasan_jtm', 'perluasan_jtr', 'proses_perluasan', 'survey', 'laporan', 'notifikasi'],
+                'transaksi' => ['dashboard','data_pbpd', 'perluasan_jtm', 'perluasan_jtr', 'ba_operasi', 'pencarian', 'laporan', 'notifikasi'],
             ];
             
             $activeRoleMenus = $roleMenus[$role] ?? [];
 
             // Konfigurasi label dan icon untuk setiap menu
             $menuConfig = [
+                'dashboard' => ['label' => 'DASHBOARD', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />'],
                 'data_pbpd' => ['label' => 'DATA PB/PD', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9zm3.75 11.625a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />'],
                 'tanpa_perluasan' => ['label' => 'TANPA PERLUASAN', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />'],
                 'perluasan_jtm' => ['label' => 'PERLUASAN JTM', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3l-3 3" />'],
