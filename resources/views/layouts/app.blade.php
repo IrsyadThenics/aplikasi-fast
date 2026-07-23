@@ -89,14 +89,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
-                <!--<div class="flex items-center justify-center gap-2 mb-2">
+                <div class="flex items-center justify-center gap-2 mb-2">
                     <h1 class="text-2xl font-bold text-white">FAST</h1>
-                    <h1 class="text-2xl font-bold text-white">ON</h1>
-                </div>-->
-               <div class="flex flex-col items-center justify-center mb-1">
-    <img src="{{ asset('images/faston.png') }}" 
-         alt="FASTON 360" 
-         class="h-20 w-auto object-contain mix-blend-screen mb-2 transition-transform duration-200 hover:scale-105">
+                    <h1 class="text-2xl font-bold text-yellow-400">ON</h1>
+                    <h1 class="text-2xl font-bold text-yellow-400">360</h1>
+                </div>
+                {{-- <img src="{{ asset('images/faston.png') }}" alt="FASTON360 Logo" class="mx-auto w-16 h-16 object-contain" /> --}}
     <h2 class="text-[0.65rem] font-bold text-blue-200/70 tracking-[0.2em] leading-tight text-center uppercase">
         Dashboard Fast On
     </h2>
@@ -122,7 +120,7 @@
 
             // Daftar menu yang tersedia untuk setiap role
             $roleMenus = [
-                'managerULP' => ['dashboard', 'data_pbpd', 'tanpa_perluasan', 'perluasan_jtm', 'perluasan_jtr', 'proses_perluasan', 'restitusi', 'pengoperasian', 'pencarian', 'laporan', 'notifikasi'],
+                'managerULP' => ['dashboard', 'data_pbpd', 'proses_perluasan', 'restitusi', 'pencarian', 'laporan', 'notifikasi'],
                 'managerUP3' => ['dashboard','data_pbpd', 'tanpa_perluasan', 'perluasan_jtm', 'perluasan_jtr', 'proses_perluasan', 'restitusi', 'pengoperasian', 'pencarian', 'laporan', 'notifikasi'],
                 'administrator' => ['dashboard','data_pbpd', 'proses_perluasan', 'restitusi', 'laporan', 'notifikasi'],
                 'jaringan' => ['dashboard','data_pbpd', 'proses_perluasan', 'restitusi', 'laporan', 'notifikasi'],
@@ -217,7 +215,7 @@
             
             <div class="flex items-center gap-4 pointer-events-auto">
                 {{-- Date widget as in image (top left in image, but placing top right here nicely) --}}
-                <div class="hidden sm:flex items-center bg-[#ffece8] rounded overflow-hidden shadow-sm border border-red-50 text-[0.8rem] font-medium text-red-700">
+                <!--<div class="hidden sm:flex items-center bg-[#ffece8] rounded overflow-hidden shadow-sm border border-red-50 text-[0.8rem] font-medium text-red-700">
                     <div class="px-3 py-1.5 flex items-center gap-1.5 opacity-80 bg-red-50">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z" /></svg>
                         17/09/2024
@@ -231,10 +229,10 @@
                 
                 <button class="bg-[#0D1B8C] hover:bg-blue-600 text-white rounded text-xs font-semibold px-4 py-1.5 shadow-sm shadow-blue-200 transition">
                     Filter
-                </button>
+                </button>-->
 
                 <div class="flex items-center gap-2 pl-2 border-l border-slate-300 ml-1">
-                    <div class="w-8 h-8 rounded-full bg-[#1e4d8c] flex items-center justify-center text-white text-xs font-bold shadow ring-2 ring-white cursor-pointer relative">
+                    <div class="w-8 h-8 rounded-full bg-[#0D1B8C] flex items-center justify-center text-white text-xs font-bold shadow ring-2 ring-white cursor-pointer relative">
                         {{ substr(Auth::user()->name ?? 'A', 0, 1) }}
                     </div>
                 </div>

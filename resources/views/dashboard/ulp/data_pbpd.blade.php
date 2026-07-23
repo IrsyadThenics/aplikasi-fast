@@ -23,16 +23,32 @@
                         class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 bg-slate-50 text-slate-700 transition placeholder:text-slate-400" />
                 </div>
                 {{-- Transaksi --}}
-                <div>
-                    <label class="block text-[0.7rem] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Transaksi</label>
-                    <input type="text" placeholder="Jenis transaksi..."
-                        class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 bg-slate-50 text-slate-700 transition placeholder:text-slate-400" />
+                <div class="flex items-center gap-2">
+                    <span class="text-sm font-semibold text-slate-600">Jenis Transaksi :</span>
+                    <select class="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-slate-50 text-slate-700 transition min-w-[150px]">
+                        <option>--- pilih transaksi ---</option>
+                        <option>Perluasan Pasang baru</option>
+                        <option>Perluasan Perubahan daya</option>
+                    </select>
                 </div>
                 {{-- Status Mohon --}}
-                <div>
-                    <label class="block text-[0.7rem] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Status Mohon</label>
-                    <input type="text" placeholder="Status..."
-                        class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 bg-slate-50 text-slate-700 transition placeholder:text-slate-400" />
+                <div class="flex items-center gap-2">
+                    <span class="text-sm font-semibold text-slate-600">Status Mohon :</span>
+                    <select class="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-slate-50 text-slate-700 transition min-w-[150px]">
+                        <option>--- pilih transaksi ---</option>
+                        <option>Perluasan Pasang baru</option>
+                        <option>Perluasan Perubahan daya</option>
+                    </select>
+                </div>
+
+                {{-- status --}}
+                <div class="flex items-center gap-2">
+                    <span class="text-sm font-semibold text-slate-600">status :</span>
+                    <select class="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-slate-50 text-slate-700 transition min-w-[150px]">
+                        <option>--- pilih status ---</option>
+                        <option>Perluasan JTM</option>
+                        <option>Perluasan JTR</option>
+                    </select>
                 </div>
             </div>
 
@@ -48,7 +64,7 @@
                 </div>
                 
                 <button onclick="tampilkanTabel()"
-                    class="bg-[#0D1B8C] hover:bg-blue-600 text-white text-sm font-semibold px-6 py-2 rounded-lg shadow-[0_4px_10px_rgba(59,130,246,0.3)] transition-all active:scale-95 flex items-center justify-center gap-2">
+                    class="bg-[#0D1B8C] hover:bg-[#FACC15] text-white text-sm font-semibold px-6 py-2 rounded-lg shadow-[0_4px_10px_rgba(59,130,246,0.3)] transition-all active:scale-95 flex items-center justify-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803a7.5 7.5 0 0010.607 10.607z" />
                     </svg>
