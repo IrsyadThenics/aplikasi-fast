@@ -111,16 +111,19 @@
                         <tr>
                             <th class="border-b border-slate-200 px-4 py-3 text-center whitespace-nowrap" rowspan="2">NO.</th>
                             <th class="border-b border-slate-200 px-4 py-3 text-center whitespace-nowrap" rowspan="2">DTL</th>
+                            <th class="border-b border-slate-200 px-4 py-3 text-center whitespace-nowrap" rowspan="2">FASTON<br>360&deg;</th>
+                            <th class="border-b border-slate-200 px-4 py-3 text-center whitespace-nowrap" colspan="2">SYARAT</th>
                             <th class="border-b border-slate-200 px-4 py-3 text-left whitespace-nowrap" rowspan="2">TRANSAKSI</th>
                             <th class="border-b border-slate-200 px-4 py-3 text-center whitespace-nowrap" rowspan="2">STATUS</th>
                             <th class="border-b border-slate-200 px-4 py-3 text-center whitespace-nowrap" rowspan="2">NO AGENDA</th>
                             <th class="border-b border-slate-200 px-4 py-3 text-left whitespace-nowrap" rowspan="2">NAMA PELANGGAN</th>
                             <th class="border-b border-slate-200 px-4 py-3 text-left whitespace-nowrap" rowspan="2">ALAMAT</th>
-                            <th class="border-b border-slate-200 px-4 py-2 text-center whitespace-nowrap" colspan="2">LAMA</th>
-                            <th class="border-b border-slate-200 px-4 py-2 text-center whitespace-nowrap" colspan="2">BARU</th>
-                            <th class="border-b border-slate-200 px-4 py-3 text-center whitespace-nowrap" rowspan="2">KET</th>
+                            <th class="border-b border-slate-200 px-4 py-3 text-center whitespace-nowrap" colspan="2">LAMA</th>
+                            <th class="border-b border-slate-200 px-4 py-3 text-center whitespace-nowrap" colspan="2">BARU</th>
                         </tr>
                         <tr>
+                            <th class="border-b border-slate-200 px-3 py-1.5 text-center text-[0.7rem]">KTP</th>
+                            <th class="border-b border-slate-200 px-3 py-1.5 text-center text-[0.7rem]">IJIN</th>
                             <th class="border-b border-slate-200 px-3 py-1.5 text-center text-[0.7rem]">TARIF</th>
                             <th class="border-b border-slate-200 px-3 py-1.5 text-center text-[0.7rem]">DAYA</th>
                             <th class="border-b border-slate-200 px-3 py-1.5 text-center text-[0.7rem]">TARIF</th>
@@ -128,20 +131,87 @@
                         </tr>
                     </thead>
                     <tbody id="tableBody">
-                        {{-- Alternating row colors as shown in the image (white and extremely light blue) --}}
-                        <tr class="bg-white hover:bg-slate-50 transition border-b border-slate-100">
-                            <td colspan="12" class="text-center py-16 text-slate-400 text-xs">
-                                <div class="flex flex-col items-center gap-3">
-                                    <div class="p-3 rounded-full bg-slate-50">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-slate-300" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9zm3.75 11.625a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
-                                        </svg>
-                                    </div>
-                                    <span>Tidak ada data ditemukan. Silakan sesuaikan filter Anda.</span>
-                                </div>
-                            </td>
+                        <tr class="bg-white hover:bg-slate-50 border-b border-slate-100 transition text-xs text-slate-700">
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center">1.</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center"><button class="p-1 border border-slate-300 bg-white rounded shadow-sm hover:text-blue-600 text-slate-500 transition"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3.5 h-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg></button></td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center"><input type="checkbox" class="w-3.5 h-3.5 text-blue-600 rounded border-gray-300"></td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center border-r border-slate-200"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 mx-auto text-slate-600"><path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.536 4.536 0 01-6.42-6.421l10.899-10.899m-7.828 8.16l-4.52-4.52a2.14 2.14 0 013.027-3.028l4.52 4.52m3.028 3.028l4.52 4.52a2.14 2.14 0 01-3.027 3.028l-4.52-4.52" /></svg></td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 mx-auto text-slate-600"><path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.536 4.536 0 01-6.42-6.421l10.899-10.899m-7.828 8.16l-4.52-4.52a2.14 2.14 0 013.027-3.028l4.52 4.52m3.028 3.028l4.52 4.52a2.14 2.14 0 01-3.027 3.028l-4.52-4.52" /></svg></td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-left whitespace-nowrap">PASANG BARU</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center">BAYAR</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center">518039912601284909</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-left whitespace-nowrap">SPPG TAMANPRIJEG KEC LARE</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-left min-w-[200px]">JL TAMAN PRIJEG TAMANPRIJEG, LAREN, KAB. LAMONGAN, JAWA TIMUR</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center"></td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center">0</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center font-semibold">B2T</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center font-semibold">13200</td>
                         </tr>
-                    </tbody>
+                        <tr class="bg-white hover:bg-slate-50 border-b border-slate-100 transition text-xs text-slate-700">
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center">2.</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center"><button class="p-1 border border-slate-300 bg-white rounded shadow-sm hover:text-blue-600 text-slate-500 transition"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3.5 h-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg></button></td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center"><input type="checkbox" class="w-3.5 h-3.5 text-blue-600 rounded border-gray-300"></td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center border-r border-slate-200"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 mx-auto text-slate-600"><path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.536 4.536 0 01-6.42-6.421l10.899-10.899m-7.828 8.16l-4.52-4.52a2.14 2.14 0 013.027-3.028l4.52 4.52m3.028 3.028l4.52 4.52a2.14 2.14 0 01-3.027 3.028l-4.52-4.52" /></svg></td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 mx-auto text-slate-600"><path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.536 4.536 0 01-6.42-6.421l10.899-10.899m-7.828 8.16l-4.52-4.52a2.14 2.14 0 013.027-3.028l4.52 4.52m3.028 3.028l4.52 4.52a2.14 2.14 0 01-3.027 3.028l-4.52-4.52" /></svg></td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-left whitespace-nowrap">PERUBAHAN DAYA</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center">BAYAR</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center">518030522602037603</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-left whitespace-nowrap">BENGKEL BONANZA MOTOR</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-left min-w-[200px]">JL JEND SUDIRMAN No.0 RT.0 RW.0 LAMONGANSIDOKUMPUL, LAMONGAN, KAB. LAMONGAN, JAWA TIMUR</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center">R2T</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center">5500</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center font-semibold">B2T</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center font-semibold">16500</td>
+                        </tr>
+                        <tr class="bg-white hover:bg-slate-50 border-b border-slate-100 transition text-xs text-slate-700">
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center">3.</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center"><button class="p-1 border border-slate-300 bg-white rounded shadow-sm hover:text-blue-600 text-slate-500 transition"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3.5 h-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg></button></td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center"><input type="checkbox" class="w-3.5 h-3.5 text-blue-600 rounded border-gray-300"></td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center border-r border-slate-200"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 mx-auto text-slate-600"><path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.536 4.536 0 01-6.42-6.421l10.899-10.899m-7.828 8.16l-4.52-4.52a2.14 2.14 0 013.027-3.028l4.52 4.52m3.028 3.028l4.52 4.52a2.14 2.14 0 01-3.027 3.028l-4.52-4.52" /></svg></td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 mx-auto text-slate-600"><path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.536 4.536 0 01-6.42-6.421l10.899-10.899m-7.828 8.16l-4.52-4.52a2.14 2.14 0 013.027-3.028l4.52 4.52m3.028 3.028l4.52 4.52a2.14 2.14 0 01-3.027 3.028l-4.52-4.52" /></svg></td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-left whitespace-nowrap">PASANG BARU</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center">BAYAR</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center">518039912603255573</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-left whitespace-nowrap">KDKMP TUMAPEL</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-left min-w-[200px]">DN KANDANAGAN DS TUMAPEL KEC DUDUKSAMPEYAN TUMAPEL, DUDUKSAMPEYAN, KAB. GRESIK, JAWA TIMUR</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center"></td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center">0</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center font-semibold">B2T</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center font-semibold">16500</td>
+                        </tr>
+                        <tr class="bg-white hover:bg-slate-50 border-b border-slate-100 transition text-xs text-slate-700">
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center">11.</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center"><button class="p-1 border border-slate-300 bg-white rounded shadow-sm hover:text-blue-600 text-slate-500 transition"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3.5 h-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg></button></td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center"><input type="checkbox" class="w-3.5 h-3.5 text-blue-600 rounded border-gray-300"></td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center border-r border-slate-200"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 mx-auto text-green-500"><path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z" clip-rule="evenodd" /></svg></td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 mx-auto text-green-500"><path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z" clip-rule="evenodd" /></svg></td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-left whitespace-nowrap">PASANG BARU</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center">BAYAR</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center">518039912603285613</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-left whitespace-nowrap">KDKMP TLOGOAGUNG</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-left min-w-[200px]">DS TLOGOAGUNG TLOGOAGUNG, KEMBANGBAHU, KAB. LAMONGAN, JAWA TIMUR</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center"></td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center">0</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center font-semibold">B2T</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center font-semibold">16500</td>
+                        </tr>
+                        <tr class="bg-[#ffe4e1] hover:bg-[#ffcdd2] text-xs text-slate-700">
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center">13.</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center"><button class="p-1 border border-slate-300 bg-white rounded shadow-sm hover:text-blue-600 text-slate-500 transition"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3.5 h-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg></button></td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center"><input type="checkbox" class="w-3.5 h-3.5 text-blue-600 rounded border-gray-300"></td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center border-r border-slate-200"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 mx-auto text-slate-600"><path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.536 4.536 0 01-6.42-6.421l10.899-10.899m-7.828 8.16l-4.52-4.52a2.14 2.14 0 013.027-3.028l4.52 4.52m3.028 3.028l4.52 4.52a2.14 2.14 0 01-3.027 3.028l-4.52-4.52" /></svg></td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 mx-auto text-slate-600"><path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.536 4.536 0 01-6.42-6.421l10.899-10.899m-7.828 8.16l-4.52-4.52a2.14 2.14 0 013.027-3.028l4.52 4.52m3.028 3.028l4.52 4.52a2.14 2.14 0 01-3.027 3.028l-4.52-4.52" /></svg></td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-left whitespace-nowrap">PERUBAHAN DAYA</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center">BAYAR</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center">518039922603308320</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-left whitespace-nowrap">SAMSI HIDAYATI</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-left min-w-[200px]">DS TUMENGGUNGAN NO.0 RT.0 RW.0 TUMENGGUNG TUMENGGUNGAN, LAMONGAN, KAB. LAMONGAN, JAWA TIMUR</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center">R1MT</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center">900</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center font-semibold">R1T</td>
+                            <td class="border-b border-slate-100 px-3 py-1.5 text-center font-semibold">1300</td>
+                        </tr>
+                    
                 </table>
             </div>
 

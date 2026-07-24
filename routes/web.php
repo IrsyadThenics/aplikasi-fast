@@ -50,6 +50,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/notifikasi', [DashboardController::class, 'notifikasi'])->name('notifikasi');
             Route::get('/ba-operasi', [DashboardController::class, 'baOperasi'])->name('ba_operasi');
             Route::get('/survey', [DashboardController::class, 'survey'])->name('survey');
+            Route::get('/checklist', [DashboardController::class, 'checklist'])->name('checklist');
         });
     }
 });

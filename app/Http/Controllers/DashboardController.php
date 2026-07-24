@@ -108,4 +108,9 @@ class DashboardController extends Controller
     {
         return view('dashboard.' . $this->getViewFolder() . '.survey');
     }
+
+    public function checklist()
+    {
+        return view('dashboard.' . $this->getViewFolder() . '.checklist');
+    }
 }
