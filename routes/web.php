@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController; 
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 // ==========================================
@@ -20,6 +21,10 @@ Route::middleware(['auth'])->group(function () {
 
     // Rute Default / Fallback (jika diakses tanpa prefix)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Rute Profile (Tersedia untuk semua role)
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     // ------------------------------------------
     // RUTE DINAMIS BERDASARKAN ROLE

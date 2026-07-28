@@ -28,6 +28,8 @@ class UserFactory extends Factory
             'user_id' => fake()->unique()->numerify('user-#####'),
             'password' => static::$password ??= Hash::make('password'),
             'role' => fake()->randomElement(['managerUP3', 'managerULP', 'konstruksi', 'pelayanan', 'perencanaan', 'jaringan', 'transaksi', 'administrator']),
+            'lokasi_UP3' => fake()->randomElement(['UP3 Bojonegoro']),
+            'lokasi_ULP' => fake()->randomElement(['Bojonegoro', 'Lamongan']),
             'remember_token' => Str::random(10),
         ];
     }

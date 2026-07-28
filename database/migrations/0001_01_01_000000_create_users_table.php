@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('user_id')->unique();
             $table->string('password');
             $table->string('role');
+            $table->string('lokasi_UP3')->nullable();
+            $table->string('lokasi_ULP')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

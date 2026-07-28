@@ -67,7 +67,7 @@
             <div class="bg-gradient-to-r from-[#0D1B8C] to-[#0D1B8C] px-5 py-2.5 flex items-center justify-between flex-shrink-0">
                 <div class="flex items-center gap-2">
                     <span class="text-white font-bold text-sm tracking-wide">RECORD, JUMLAH TRANSAKSI PB/PD UP3</span>
-                    <span class="bg-white/20 text-white text-xs px-2 py-0.5 rounded-full font-mono" id="recordCount">0 data</span>
+                    <span class="bg-white/20 text-white text-xs px-2 py-0.5 rounded-full font-mono" id="recordCount">{{ count($data ?? []) }} data</span>
                 </div>
                 <button onclick="tutupTabel()" class="text-blue-200 hover:text-white text-xs transition flex items-center gap-1">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -80,27 +80,51 @@
             {{-- Scrollable Table --}}
             <div class="overflow-auto flex-1">
                 <table class="w-full text-xs border-collapse">
-                    <thead class="sticky top-0 z-10">
+                    <thead class="sticky top-0 z-10 font-bold">
                         <tr class="bg-[#0D1B8C] text-white">
-                            <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">NO.</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">DTL</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">ULP</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">TRANSAKSI</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">STATUS</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">NO AGENDA</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">NAMA PELANGGAN</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">ALAMAT</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" colspan="2">LAMA</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" colspan="2">BARU</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NO.</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">DTL</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">ULP</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">TRANSAKSI</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">STATUS</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NO AGENDA</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NAMA PELANGGAN</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">ALAMAT</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" colspan="2">LAMA</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" colspan="2">BARU</th>
                         </tr>
                         <tr class="bg-[#0D1B8C] text-white">
-                            <th class="border border-blue-600 px-3 py-1.5 text-center font-medium whitespace-nowrap">TARIF</th>
-                            <th class="border border-blue-600 px-3 py-1.5 text-center font-medium whitespace-nowrap">DAYA</th>
-                            <th class="border border-blue-600 px-3 py-1.5 text-center font-medium whitespace-nowrap">TARIF</th>
-                            <th class="border border-blue-600 px-3 py-1.5 text-center font-medium whitespace-nowrap">DAYA</th>
+                            <th class="border border-blue-600 px-3 py-1.5 text-center font-medium">TARIF</th>
+                            <th class="border border-blue-600 px-3 py-1.5 text-center font-medium">DAYA</th>
+                            <th class="border border-blue-600 px-3 py-1.5 text-center font-medium">TARIF</th>
+                            <th class="border border-blue-600 px-3 py-1.5 text-center font-medium">DAYA</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
+                        @forelse($data ?? [] as $index => $item)
+                        <tr class="bg-white hover:bg-slate-50 transition border-b border-slate-100 text-slate-700">
+                            <td class="border border-slate-200 px-3 py-2 text-center">{{ $index + 1 }}.</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center">
+                                @if(strtolower($item->dtl) === 'ada')
+                                    <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-semibold">Ada</span>
+                                @else
+                                    <span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[10px]">Tidak</span>
+                                @endif
+                            </td>
+                            <td class="border border-slate-200 px-3 py-2 text-center font-semibold">{{ $item->ulp }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-left whitespace-nowrap">{{ $item->transaksi }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center whitespace-nowrap">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-100 text-blue-800">{{ $item->status }}</span>
+                            </td>
+                            <td class="border border-slate-200 px-3 py-2 text-center font-mono">{{ $item->no_agenda }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-left">Pelanggan {{ $item->no_agenda }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-left max-w-xs truncate" title="{{ $item->alamat }}">{{ $item->alamat }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->tarif_lama ?? '-' }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->daya_lama ?? 0 }} VA</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center font-semibold text-blue-900">{{ $item->tarif_baru ?? '-' }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center font-semibold text-blue-900">{{ $item->daya_baru ?? 0 }} VA</td>
+                        </tr>
+                        @empty
                         <tr id="emptyRow">
                             <td colspan="12" class="text-center py-12 text-slate-400 italic text-xs">
                                 <div class="flex flex-col items-center gap-2">
@@ -111,13 +135,14 @@
                                 </div>
                             </td>
                         </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
 
             {{-- Footer --}}
             <div class="border-t border-slate-100 px-5 py-2 bg-slate-50 flex-shrink-0">
-                <span class="text-xs text-slate-400 font-mono">Records 0 to 0 of 0</span>
+                <span class="text-xs text-slate-400 font-mono">Records {{ count($data ?? []) ? '1 to ' . count($data) : '0 to 0' }} of {{ count($data ?? []) }}</span>
             </div>
 
         </div>

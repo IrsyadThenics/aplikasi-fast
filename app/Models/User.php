@@ -21,6 +21,8 @@ class User extends Authenticatable
         'name',
         'user_id',
         'password',
+        'lokasi_UP3',
+        'lokasi_ULP',
     ];
 
     /**

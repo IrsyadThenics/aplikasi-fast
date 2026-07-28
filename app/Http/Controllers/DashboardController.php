@@ -51,7 +51,12 @@ class DashboardController extends Controller
 
     public function dataPbpd()
     {
-        return view('dashboard.' . $this->getViewFolder() . '.data_pbpd');
+        $folder = $this->getViewFolder();
+        $data = [];
+        if ($folder === 'up3') {
+            $data = \App\Models\data_pb_pd_UP3::all();
+        }
+        return view('dashboard.' . $folder . '.data_pbpd', compact('data'));
     }
 
     public function tanpaPerluasan()

@@ -19,6 +19,8 @@ class DatabaseSeeder extends Seeder
             'user_id' => '5180MAN',
             'password' => bcrypt('password'),
             'role' => 'managerUP3',
+            'lokasi_UP3' => 'UP3 Bojonegoro',
+            'lokasi_ULP' => 'Bojonegoro',
         ]);
 
         // manager ULP
@@ -26,6 +28,8 @@ class DatabaseSeeder extends Seeder
             'user_id' => '51803',
             'password' => bcrypt('password'),
             'role' => 'managerULP',
+            'lokasi_UP3' => 'UP3 Bojonegoro',
+            'lokasi_ULP' => 'Lamongan',
         ]);
 
         // KONSTRUKSI
@@ -33,6 +37,8 @@ class DatabaseSeeder extends Seeder
             'user_id' => '5180KON',
             'password' => bcrypt('password'),
             'role' => 'konstruksi',
+            'lokasi_UP3' => 'UP3 Bojonegoro',
+            'lokasi_ULP' => 'Bojonegoro',
         ]);
 
         // PELAYANAN dan ADMINISTRASI
@@ -40,6 +46,8 @@ class DatabaseSeeder extends Seeder
             'user_id' => '5180PA',
             'password' => bcrypt('password'),
             'role' => 'pelayanan',
+            'lokasi_UP3' => 'UP3 Bojonegoro',
+            'lokasi_ULP' => 'Bojonegoro',
         ]);
 
         // PERENCANAAN
@@ -47,6 +55,8 @@ class DatabaseSeeder extends Seeder
             'user_id' => '5180REN',
             'password' => bcrypt('password'),
             'role' => 'perencanaan',
+            'lokasi_UP3' => 'UP3 Bojonegoro',
+            'lokasi_ULP' => 'Bojonegoro',
         ]);
 
         // JARINGAN
@@ -54,6 +64,8 @@ class DatabaseSeeder extends Seeder
             'user_id' => '5180JAR',
             'password' => bcrypt('password'),
             'role' => 'jaringan',
+            'lokasi_UP3' => 'UP3 Bojonegoro',
+            'lokasi_ULP' => 'Bojonegoro',
         ]);
 
         // TRANSAKSI ENERGI LISTRIK
@@ -61,6 +73,8 @@ class DatabaseSeeder extends Seeder
             'user_id' => '5180TEL',
             'password' => bcrypt('password'),
             'role' => 'transaksi',
+            'lokasi_UP3' => 'UP3 Bojonegoro',
+            'lokasi_ULP' => 'Bojonegoro',
         ]);
 
         // ADMINISTRATOR
@@ -68,6 +82,12 @@ class DatabaseSeeder extends Seeder
             'user_id' => '5180',
             'password' => bcrypt('password'),
             'role' => 'administrator',
+            'lokasi_UP3' => 'UP3 Bojonegoro',
+            'lokasi_ULP' => 'Bojonegoro',
+        ]);
+
+        $this->call([
+            Data_pb_pdSeeder::class,
         ]);
     }
 }

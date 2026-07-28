@@ -233,8 +233,33 @@
                 </button>-->
 
                 <div class="flex items-center gap-2 pl-2 border-l border-slate-300 ml-1">
-                    <div class="w-8 h-8 rounded-full bg-[#0D1B8C] flex items-center justify-center text-white text-xs font-bold shadow ring-2 ring-white cursor-pointer relative">
-                        {{ substr(Auth::user()->name ?? 'A', 0, 1) }}
+                    <div x-data="{ profileOpen: false }" class="relative">
+                        <button @click="profileOpen = !profileOpen" @click.away="profileOpen = false" class="w-8 h-8 rounded-full bg-[#0D1B8C] flex items-center justify-center text-white text-xs font-bold shadow ring-2 ring-white cursor-pointer hover:bg-blue-800 transition focus:outline-none">
+                            {{ substr(Auth::user()->name ?? 'A', 0, 1) }}
+                        </button>
+                        
+                        <!-- Dropdown -->
+                        <div x-show="profileOpen" x-transition.opacity class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 border border-slate-100 z-50">
+                            <div class="px-4 py-2 border-b border-slate-100">
+                                <p class="text-sm font-semibold text-slate-800 truncate">{{ Auth::user()->name ?? 'User' }}</p>
+                                <p class="text-xs text-slate-500 capitalize">{{ str_replace('_', ' ', Auth::user()->role) }}</p>
+                            </div>
+                            <a href="{{ route('profile') }}" class="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-blue-600 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                Profil Saya
+                            </a>
+                            <form method="POST" action="{{ route('auth.logout') }}" class="m-0">
+                                @csrf
+                                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                    </svg>
+                                    Keluar
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
