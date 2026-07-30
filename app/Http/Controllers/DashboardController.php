@@ -42,7 +42,9 @@ class DashboardController extends Controller
             abort(403, "Anda tidak memiliki hak akses atau halaman belum tersedia. (Role Anda: {$role} | Folder yang dicari: dashboard.{$folder})");
         }
 
-        return view("dashboard.{$folder}");
+        $data = \App\Models\data::all();
+
+        return view("dashboard.{$folder}", compact('data'));
     }
 
     // ------------------------------------------
@@ -51,71 +53,79 @@ class DashboardController extends Controller
 
     public function dataPbpd()
     {
-        $folder = $this->getViewFolder();
-        $data = [];
-        if ($folder === 'up3') {
-            $data = \App\Models\data_pb_pd_UP3::all();
-        }
-        return view('dashboard.' . $folder . '.data_pbpd', compact('data'));
+        $data = \App\Models\data::all();
+        return view('dashboard.' . $this->getViewFolder() . '.data_pbpd', compact('data'));
     }
 
     public function tanpaPerluasan()
     {
-        return view('dashboard.' . $this->getViewFolder() . '.tanpa_perluasan');
+        $data = \App\Models\data::all();
+        return view('dashboard.' . $this->getViewFolder() . '.tanpa_perluasan', compact('data'));
     }
 
     public function perluasanJtm()
     {
-        return view('dashboard.' . $this->getViewFolder() . '.perluasan_jtm');
+        $data = \App\Models\data::all();
+        return view('dashboard.' . $this->getViewFolder() . '.perluasan_jtm', compact('data'));
     }
 
     public function perluasanJtr()
     {
-        return view('dashboard.' . $this->getViewFolder() . '.perluasan_jtr');
+        $data = \App\Models\data::all();
+        return view('dashboard.' . $this->getViewFolder() . '.perluasan_jtr', compact('data'));
     }
 
     public function pengoperasian()
     {
-        return view('dashboard.' . $this->getViewFolder() . '.pengoperasian');
+        $data = \App\Models\data::all();
+        return view('dashboard.' . $this->getViewFolder() . '.pengoperasian', compact('data'));
     }
 
     public function pencarian()
     {
-        return view('dashboard.' . $this->getViewFolder() . '.pencarian');
+        $data = \App\Models\data::all();
+        return view('dashboard.' . $this->getViewFolder() . '.pencarian', compact('data'));
     }
 
     public function prosesPerluasan()
     {
-        return view('dashboard.' . $this->getViewFolder() . '.proses_perluasan');
+        $data = \App\Models\data::all();
+        return view('dashboard.' . $this->getViewFolder() . '.proses_perluasan', compact('data'));
     }
 
     public function restitusi()
     {
-        return view('dashboard.' . $this->getViewFolder() . '.restitusi');
+        $data = \App\Models\data::all();
+        return view('dashboard.' . $this->getViewFolder() . '.restitusi', compact('data'));
     }
 
     public function laporan()
     {
-        return view('dashboard.' . $this->getViewFolder() . '.laporan');
+        $data = \App\Models\data::all();
+        return view('dashboard.' . $this->getViewFolder() . '.laporan', compact('data'));
     }
 
     public function notifikasi()
     {
-        return view('dashboard.' . $this->getViewFolder() . '.notifikasi');
+        $data = \App\Models\data::all();
+        return view('dashboard.' . $this->getViewFolder() . '.notifikasi', compact('data'));
     }
 
     public function baOperasi()
     {
-        return view('dashboard.' . $this->getViewFolder() . '.ba_operasi');
+        $data = \App\Models\data::all();
+        return view('dashboard.' . $this->getViewFolder() . '.ba_operasi', compact('data'));
     }
 
     public function survey()
     {
-        return view('dashboard.' . $this->getViewFolder() . '.survey');
+        $data = \App\Models\data::all();
+        return view('dashboard.' . $this->getViewFolder() . '.survey', compact('data'));
     }
 
     public function checklist()
     {
-        return view('dashboard.' . $this->getViewFolder() . '.checklist');
+        $data = \App\Models\data::all();
+        return view('dashboard.' . $this->getViewFolder() . '.checklist', compact('data'));
     }
 }

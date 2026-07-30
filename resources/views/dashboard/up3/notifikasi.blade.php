@@ -24,7 +24,7 @@
                 
                 <div class="flex items-center gap-2">
                     <span class="text-sm font-semibold text-slate-600">Jenis Transaksi :</span>
-                    <select class="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-slate-50 text-slate-700 transition min-w-[150px]">
+                    <select class="w-full border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-slate-50 text-slate-700 transition min-w-[150px]">
                         <option>--- pilih transaksi ---</option>
                         <option>Perluasan Pasang baru</option>
                         <option>Perluasan Perubahan daya</option>

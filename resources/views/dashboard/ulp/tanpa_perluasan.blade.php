@@ -24,15 +24,21 @@
                 </div>
                 {{-- Transaksi --}}
                 <div>
-                    <label class="block text-[0.7rem] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Transaksi</label>
-                    <input type="text" placeholder="Jenis transaksi..."
-                        class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 bg-slate-50 text-slate-700 transition placeholder:text-slate-400" />
+                    <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-widest">Transaksi</label>
+                    <select class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-slate-50 text-slate-700 transition">
+                        <option>--- semua ---</option>
+                        <option>Pasang baru</option>
+                        <option>Perubahan daya</option>
+                    </select>
                 </div>
                 {{-- Status Mohon --}}
                 <div>
-                    <label class="block text-[0.7rem] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Status Mohon</label>
-                    <input type="text" placeholder="Status..."
-                        class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 bg-slate-50 text-slate-700 transition placeholder:text-slate-400" />
+                    <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-widest">Status Mohon</label>
+                    <select class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-slate-50 text-slate-700 transition">
+                        <option>--- semua ---</option>
+                        <option>Mohon</option>
+                        <option>Bayar</option>
+                    </select>
                 </div>
             </div>
 

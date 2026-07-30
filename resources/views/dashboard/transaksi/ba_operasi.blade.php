@@ -23,21 +23,21 @@
                         class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 bg-slate-50 text-slate-700 transition placeholder:text-slate-400" />
                 </div>
                 {{-- Transaksi --}}
-                <div class="flex items-center gap-2">
-                    <span class="text-sm font-semibold text-slate-600">Jenis Transaksi :</span>
-                    <select class="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-slate-50 text-slate-700 transition min-w-[150px]">
-                        <option>--- pilih transaksi ---</option>
-                        <option>Perluasan Pasang baru</option>
-                        <option>Perluasan Perubahan daya</option>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-widest">Transaksi</label>
+                    <select class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-slate-50 text-slate-700 transition">
+                        <option>--- semua ---</option>
+                        <option>Pasang baru</option>
+                        <option>Perubahan daya</option>
                     </select>
                 </div>
                 {{-- Status Mohon --}}
-                <div class="flex items-center gap-2">
-                    <span class="text-sm font-semibold text-slate-600">Status Mohon :</span>
-                    <select class="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-slate-50 text-slate-700 transition min-w-[150px]">
-                        <option>--- pilih transaksi ---</option>
-                        <option>Perluasan Pasang baru</option>
-                        <option>Perluasan Perubahan daya</option>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-widest">Status Mohon</label>
+                    <select class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-slate-50 text-slate-700 transition">
+                        <option>--- semua ---</option>
+                        <option>Mohon</option>
+                        <option>Bayar</option>
                     </select>
                 </div>
 
@@ -127,20 +127,58 @@
                             <th class="border-b border-slate-200 px-3 py-1.5 text-center text-[0.7rem]">DAYA</th>
                         </tr>
                     </thead>
-                    <tbody id="tableBody">
-                        {{-- Alternating row colors as shown in the image (white and extremely light blue) --}}
-                        <tr class="bg-white hover:bg-slate-50 transition border-b border-slate-100">
-                            <td colspan="12" class="text-center py-16 text-slate-400 text-xs">
-                                <div class="flex flex-col items-center gap-3">
-                                    <div class="p-3 rounded-full bg-slate-50">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-slate-300" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9zm3.75 11.625a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
-                                        </svg>
-                                    </div>
-                                    <span>Tidak ada data ditemukan. Silakan sesuaikan filter Anda.</span>
+                                        <tbody id="tableBody">
+                        @forelse($data ?? [] as $index => $item)
+                        <tr class="bg-white hover:bg-slate-50 transition border-b border-slate-100 text-slate-700">
+                            <td class="border border-slate-200 px-3 py-2 text-center">{{ $index + 1 }}.</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center">
+                                @if(strtolower($item->dtl) === 'ada' || strtolower($item->dtl) === 'tidak ada' || true)
+                                <button onclick="openDetailModal({{ json_encode($item) }})" class="text-slate-500 hover:text-blue-600 transition" title="Lihat Detail">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                                    </svg>
+                                </button>
+                                @endif
+                            </td>
+                            <td class="border border-slate-200 px-3 py-2 text-left whitespace-nowrap">
+                                @if(strtolower($item->transaksi) === 'pasang baru')
+                                    <span class="px-2 py-1 rounded text-[10px] font-semibold bg-indigo-100 text-indigo-700">Pasang Baru</span>
+                                @elseif(strtolower($item->transaksi) === 'perubahan daya')
+                                    <span class="px-2 py-1 rounded text-[10px] font-semibold bg-purple-100 text-purple-700">Perubahan Daya</span>
+                                @else
+                                    <span class="px-2 py-1 rounded text-[10px] font-semibold bg-slate-100 text-slate-700">{{ $item->transaksi }}</span>
+                                @endif
+                            </td>
+                            <td class="border border-slate-200 px-3 py-2 text-left whitespace-nowrap">
+                                @if(strtolower($item->status) === 'mohon')
+                                    <span class="px-2 py-1 rounded text-[10px] font-semibold bg-amber-100 text-amber-700">Mohon</span>
+                                @elseif(strtolower($item->status) === 'bayar')
+                                    <span class="px-2 py-1 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-700">Bayar</span>
+                                @else
+                                    <span class="px-2 py-1 rounded text-[10px] font-semibold bg-blue-100 text-blue-800">{{ $item->status }}</span>
+                                @endif
+                            </td>
+                            <td class="border border-slate-200 px-3 py-2 text-center font-mono">{{ $item->no_agenda }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-left">Pelanggan {{ $item->no_agenda }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-left max-w-xs truncate" title="{{ $item->alamat }}">{{ $item->alamat }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->tarif_lama ?? '-' }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->daya_lama ?? 0 }} VA</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center font-semibold text-blue-900">{{ $item->tarif_baru ?? '-' }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center font-semibold text-blue-900">{{ $item->daya_baru ?? 0 }} VA</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center">-</td>
+                        </tr>
+                        @empty
+                        <tr id="emptyRow">
+                            <td colspan="12" class="text-center py-12 text-slate-400 italic text-xs">
+                                <div class="flex flex-col items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke-width="1.2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                                    </svg>
+                                    <span>Tidak ada data ditemukan untuk filter yang dipilih</span>
                                 </div>
                             </td>
                         </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -180,4 +218,128 @@
         }
     }
 </script>
+
+<!-- DTL Modal -->
+<div id="detailModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl relative overflow-hidden flex flex-col border border-slate-300">
+        <!-- Title Badge -->
+        <div class="absolute -top-0 -left-0">
+            <div class="bg-[#2B73FE] text-white font-bold px-5 py-1.5 rounded-br-2xl text-sm border-r-2 border-b-2 border-white shadow-sm flex items-center gap-1">
+                Detail Data Pelanggan
+            </div>
+        </div>
+        
+        <!-- Content -->
+        <div class="p-6 pt-12 text-xs text-slate-800 font-mono flex flex-col gap-4">
+            
+            <div class="absolute top-4 right-4 text-slate-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+            </div>
+
+            <div class="grid grid-cols-[150px_1fr] gap-1">
+                <div class="font-semibold">UP3</div>
+                <div>: <span id="mdl-up3">BOJONEGORO</span></div>
+                <div class="font-semibold">ULP</div>
+                <div>: <span id="mdl-ulp">LAMONGAN</span></div>
+            </div>
+            
+            <hr class="border-slate-300">
+            
+            <div class="grid grid-cols-[150px_1fr] gap-1">
+                <div class="font-semibold uppercase">Transaksi</div>
+                <div class="uppercase">: <span id="mdl-transaksi"></span></div>
+                <div class="font-semibold uppercase">Status Permohonan</div>
+                <div class="uppercase">: <span id="mdl-status"></span></div>
+            </div>
+
+            <hr class="border-slate-300">
+            
+            <div class="grid grid-cols-[150px_1fr] gap-1">
+                <div class="font-semibold uppercase">No. Agenda</div>
+                <div>: <span id="mdl-agenda"></span></div>
+                <div class="font-semibold uppercase">ID Pelanggan</div>
+                <div>: <span id="mdl-idpel"></span></div>
+                <div class="font-semibold uppercase">Nama</div>
+                <div class="uppercase">: <span id="mdl-nama"></span></div>
+                <div class="font-semibold uppercase">Alamat</div>
+                <div class="uppercase">: <span id="mdl-alamat"></span></div>
+                <div class="font-semibold uppercase">Tarif / Daya</div>
+                <div class="uppercase">: BARU : <span id="mdl-tbaru"></span> / <span id="mdl-dbaru"></span> <span class="text-slate-300 mx-1">|</span> LAMA : <span id="mdl-tlama"></span> / <span id="mdl-dlama"></span></div>
+            </div>
+            
+            <hr class="border-slate-300">
+            
+            <div class="grid grid-cols-[150px_1fr] gap-1">
+                <div class="font-semibold uppercase">RAB</div>
+                <div>: Rp. 20000,-</div>
+            </div>
+            
+            <hr class="border-slate-300 mb-2">
+            
+            <div class="w-1/2">
+                <table class="w-full text-center border-collapse border border-slate-400">
+                    <thead>
+                        <tr class="bg-red-200">
+                            <th colspan="2" class="border border-slate-400 py-1 uppercase text-[11px] font-bold">Tanggal Proses Faston 360°</th>
+                        </tr>
+                        <tr class="bg-slate-100">
+                            <th class="border border-slate-400 py-1 uppercase font-semibold text-[11px]">Mohon</th>
+                            <th class="border border-slate-400 py-1 uppercase font-semibold text-[11px]">Bayar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="border border-slate-400 py-1" id="mdl-tgl-mohon">2026-03-30</td>
+                            <td class="border border-slate-400 py-1" id="mdl-tgl-bayar">2026-03-30</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4 flex justify-end">
+                <button onclick="closeDetailModal()" class="bg-slate-600 hover:bg-slate-700 text-white px-4 py-1.5 rounded shadow text-sm transition">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openDetailModal(item) {
+    document.getElementById('mdl-up3').textContent = 'BOJONEGORO';
+    document.getElementById('mdl-ulp').textContent = item.ulp || '-';
+    document.getElementById('mdl-transaksi').textContent = item.transaksi || '-';
+    document.getElementById('mdl-status').textContent = item.status || '-';
+    document.getElementById('mdl-agenda').textContent = item.no_agenda || '-';
+    document.getElementById('mdl-idpel').textContent = item.no_agenda || '-';
+    document.getElementById('mdl-nama').textContent = 'Pelanggan ' + (item.no_agenda || '');
+    document.getElementById('mdl-alamat').textContent = item.alamat || '-';
+    document.getElementById('mdl-tbaru').textContent = item.tarif_baru || '-';
+    document.getElementById('mdl-dbaru').textContent = item.daya_baru || '0';
+    document.getElementById('mdl-tlama').textContent = item.tarif_lama || '-';
+    document.getElementById('mdl-dlama').textContent = item.daya_lama || '0';
+    
+    if(item.created_at) {
+        let d = new Date(item.created_at);
+        let ds = d.toISOString().split('T')[0];
+        document.getElementById('mdl-tgl-mohon').textContent = ds;
+        document.getElementById('mdl-tgl-bayar').textContent = ds;
+    }
+
+    let m = document.getElementById('detailModal');
+    if(m) {
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+    }
+}
+function closeDetailModal() {
+    let m = document.getElementById('detailModal');
+    if(m) {
+        m.classList.add('hidden');
+        m.classList.remove('flex');
+    }
+}
+</script>
+
 @endsection

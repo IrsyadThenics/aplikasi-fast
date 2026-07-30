@@ -11,18 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('data_pb_pd__u_p3_s', function (Blueprint $table) {
+        Schema::create('ba_operasis', function (Blueprint $table) {
             $table->id();
             $table->string('dtl');
             $table->string('ulp');
             $table->string('transaksi');
             $table->string('status');
-            $table->integer('no_agenda');
+            $table->string('no_agenda');
             $table->string('alamat');
             $table->string('tarif_lama')->nullable();
-            $table->integer('daya_lama')->default(0);
+            $table->integer('daya_lama')->nullable();
             $table->string('tarif_baru')->nullable();
-            $table->integer('daya_baru')->default(0);
+            $table->integer('daya_baru')->nullable();
             $table->timestamps();
         });
     }
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('data_pb_pd__u_p3_s');
+        Schema::dropIfExists('ba_operasis');
     }
 };

@@ -13,6 +13,16 @@ return new class extends Migration
     {
         Schema::create('perluasan_j_t_m_s', function (Blueprint $table) {
             $table->id();
+            $table->string('dtl');
+            $table->string('ulp');
+            $table->string('transaksi');
+            $table->string('status');
+            $table->string('no_agenda');
+            $table->string('alamat');
+            $table->string('tarif_lama')->nullable();
+            $table->integer('daya_lama')->nullable();
+            $table->string('tarif_baru')->nullable();
+            $table->integer('daya_baru')->nullable();
             $table->timestamps();
         });
     }

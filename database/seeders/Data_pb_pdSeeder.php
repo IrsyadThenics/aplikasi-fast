@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\data_pb_pd_UP3;
+use App\Models\data;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 

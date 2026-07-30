@@ -2,7 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\data_pb_pd_UP3;
+
+use App\Models\data;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class Data_pb_pdFactory extends Factory
 {
-    protected $model = data_pb_pd_UP3::class;
+    protected $model = data::class;
 
     /**
      * Define the model's default state.

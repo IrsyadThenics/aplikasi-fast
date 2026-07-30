@@ -29,14 +29,20 @@
                 {{-- Transaksi --}}
                 <div>
                     <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-widest">Transaksi</label>
-                    <input type="text" placeholder="Jenis transaksi..."
-                        class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-slate-50 text-slate-700 transition" />
+                    <select class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-slate-50 text-slate-700 transition">
+                        <option>--- semua ---</option>
+                        <option>Pasang baru</option>
+                        <option>Perubahan daya</option>
+                    </select>
                 </div>
                 {{-- Status Mohon --}}
                 <div>
                     <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-widest">Status Mohon</label>
-                    <input type="text" placeholder="Status..."
-                        class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-slate-50 text-slate-700 transition" />
+                    <select class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-slate-50 text-slate-700 transition">
+                        <option>--- semua ---</option>
+                        <option>Mohon</option>
+                        <option>Bayar</option>
+                    </select>
                 </div>
             </div>
 
@@ -67,7 +73,7 @@
             <div class="bg-gradient-to-r from-[#0D1B8C] to-[#0D1B8C] px-5 py-2.5 flex items-center justify-between flex-shrink-0">
                 <div class="flex items-center gap-2">
                     <span class="text-white font-bold text-sm tracking-wide">RECORD, JUMLAH TRANSAKSI PB/PD UP3</span>
-                    <span class="bg-white/20 text-white text-xs px-2 py-0.5 rounded-full font-mono" id="recordCount">0 data</span>
+                    <span class="bg-white/20 text-white text-xs px-2 py-0.5 rounded-full font-mono" id="recordCount">{{ count($data ?? []) }} data</span>
                 </div>
                 <button onclick="tutupTabel()" class="text-blue-200 hover:text-white text-xs transition flex items-center gap-1">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -190,7 +196,7 @@
 
             {{-- Footer --}}
             <div class="border-t border-slate-100 px-5 py-2 bg-slate-50 flex-shrink-0">
-                <span class="text-xs text-slate-400 font-mono">Records 0 to 0 of 0</span>
+                <span class="text-xs text-slate-400 font-mono">Records {{ count($data ?? []) > 0 ? "1 to " . count($data) : "0 to 0" }} of {{ count($data ?? []) }}</span>
             </div>
 
         </div>

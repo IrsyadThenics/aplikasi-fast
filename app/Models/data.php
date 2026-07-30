@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class data_pb_pd_UP3 extends Model
+class data extends Model
 {
     use HasFactory;
+
+    protected $table = 'data';
 
     protected $fillable = [
         'dtl',
@@ -19,7 +21,7 @@ class data_pb_pd_UP3 extends Model
         'tarif_lama',
         'daya_lama',
         'tarif_baru',
-        'daya_baru',
+        'daya_baru'
     ];
+    
 }
-
