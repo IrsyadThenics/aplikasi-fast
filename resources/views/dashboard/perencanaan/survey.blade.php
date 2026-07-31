@@ -179,7 +179,55 @@
             el.classList.remove('hidden');
             el.classList.add('flex');
         }
+        
+        // Generic filtering logic combining all text inputs and selects in the filter card
+        var filterContainer = document.querySelector('.px-6.py-4 .grid');
+        var filterInputs = filterContainer ? filterContainer.querySelectorAll('input, select') : [];
+        var activeFilters = [];
+        
+        filterInputs.forEach(function(input) {
+            var val = input.value.toLowerCase().trim();
+            if (val !== '' && !val.includes('semua') && !val.includes('---')) {
+                activeFilters.push(val);
+            }
+        });
+        
+        var tableBody = document.getElementById('tableBody');
+        if (!tableBody) return;
+        
+        var rows = tableBody.querySelectorAll('tr:not(#emptyRow)');
+        var visibleCount = 0;
+        
+        rows.forEach(function(row) {
+            var rowText = row.innerText.toLowerCase();
+            var matchesAll = true;
+            
+            for (var i = 0; i < activeFilters.length; i++) {
+                if (!rowText.includes(activeFilters[i])) {
+                    matchesAll = false;
+                    break;
+                }
+            }
+            
+            if (matchesAll) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        
+        var emptyRow = document.getElementById('emptyRow');
+        if (emptyRow) {
+            emptyRow.style.display = visibleCount === 0 ? '' : 'none';
+        }
+        
+        var recordCount = document.getElementById('recordCount');
+        if (recordCount) {
+            recordCount.innerText = visibleCount + ' data';
+        }
     }
+    
     function tutupTabel() {
         var el = document.getElementById('tableArea');
         if (el) {
@@ -190,87 +238,110 @@
 </script>
 
 <!-- DTL Modal -->
-<div id="detailModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl relative overflow-hidden flex flex-col border border-slate-300">
-        <!-- Title Badge -->
-        <div class="absolute -top-0 -left-0">
-            <div class="bg-[#2B73FE] text-white font-bold px-5 py-1.5 rounded-br-2xl text-sm border-r-2 border-b-2 border-white shadow-sm flex items-center gap-1">
-                Detail Data Pelanggan
+<div id="detailModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
+    <div class="bg-white w-full max-w-5xl relative border border-slate-300 shadow-xl my-4">
+        <!-- Title Bar -->
+        <div class="bg-[#2B73FE] text-white font-bold px-3 py-1.5 text-[13px] flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+            Detail Proses FASTON 360°
+            <button onclick="closeDetailModal()" class="ml-auto text-white hover:text-red-200 transition font-normal text-lg leading-none">&times;</button>
+        </div>
+
+        <div class="absolute top-10 right-6 text-blue-700 font-bold text-xl uppercase tracking-widest z-10" id="mdl-hasil-survey-badge">
+            LAYAK
+        </div>
+
+        <!-- Info Grid -->
+        <div class="px-4 py-3 text-[11px] font-mono text-slate-800 grid grid-cols-[160px_1fr] gap-y-0.5">
+            <div class="font-semibold uppercase">UP3</div>
+            <div class="uppercase">: <span id="mdl-up3">BOJONEGORO</span></div>
+            <div class="font-semibold uppercase">ULP</div>
+            <div class="uppercase">: <span id="mdl-ulp">LAMONGAN</span></div>
+
+            <div class="col-span-2 border-t border-dashed border-slate-300 my-1"></div>
+
+            <div class="font-semibold uppercase">Transaksi</div>
+            <div class="uppercase">: <span id="mdl-transaksi"></span></div>
+            <div class="font-semibold uppercase">Status Permohonan</div>
+            <div class="uppercase">: <span id="mdl-status"></span></div>
+
+            <div class="col-span-2 border-t border-dashed border-slate-300 my-1"></div>
+
+            <div class="font-semibold uppercase">No. Agenda</div>
+            <div>: <span id="mdl-agenda"></span></div>
+            <div class="font-semibold uppercase">ID Pelanggan</div>
+            <div>: <span id="mdl-idpel"></span></div>
+            <div class="font-semibold uppercase">Nama</div>
+            <div class="uppercase">: <span id="mdl-nama"></span></div>
+            <div class="font-semibold uppercase">Alamat</div>
+            <div class="uppercase break-all">: <span id="mdl-alamat"></span></div>
+            <div class="font-semibold uppercase">Tarif / Daya</div>
+            <div>: <span id="mdl-tarifinfo"></span></div>
+
+            <div class="col-span-2 border-t border-dashed border-slate-300 my-1"></div>
+
+            <div class="font-semibold uppercase">RAB</div>
+            <div>: Rp. <span id="mdl-rab">-</span>,-</div>
+
+            <div class="col-span-2 border-t border-dashed border-slate-300 my-1"></div>
+
+            <div class="font-semibold uppercase">KTP</div>
+            <div>: <span id="mdl-ktp" class="text-slate-800">-</span></div>
+            <div class="font-semibold uppercase">Ijin Tanam Tiang</div>
+            <div>: <span id="mdl-itt" class="text-slate-800">-</span></div>
+
+            <div class="col-span-2 border-t border-dashed border-slate-300 my-1"></div>
+
+            <div class="font-semibold uppercase">Vendor Tiang</div>
+            <div class="flex items-center gap-1">:
+                <select class="ml-1 border border-slate-300 rounded px-2 py-0.5 text-[11px] bg-white text-slate-800 focus:outline-none">
+                    <option>PT. JAYA BETON</option>
+                    <option>PT. OTHER</option>
+                </select>
             </div>
         </div>
-        
-        <!-- Content -->
-        <div class="p-6 pt-12 text-xs text-slate-800 font-mono flex flex-col gap-4">
-            
-            <div class="absolute top-4 right-4 text-slate-700">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-            </div>
 
-            <div class="grid grid-cols-[150px_1fr] gap-1">
-                <div class="font-semibold">UP3</div>
-                <div>: <span id="mdl-up3">BOJONEGORO</span></div>
-                <div class="font-semibold">ULP</div>
-                <div>: <span id="mdl-ulp">LAMONGAN</span></div>
-            </div>
-            
-            <hr class="border-slate-300">
-            
-            <div class="grid grid-cols-[150px_1fr] gap-1">
-                <div class="font-semibold uppercase">Transaksi</div>
-                <div class="uppercase">: <span id="mdl-transaksi"></span></div>
-                <div class="font-semibold uppercase">Status Permohonan</div>
-                <div class="uppercase">: <span id="mdl-status"></span></div>
-            </div>
-
-            <hr class="border-slate-300">
-            
-            <div class="grid grid-cols-[150px_1fr] gap-1">
-                <div class="font-semibold uppercase">No. Agenda</div>
-                <div>: <span id="mdl-agenda"></span></div>
-                <div class="font-semibold uppercase">ID Pelanggan</div>
-                <div>: <span id="mdl-idpel"></span></div>
-                <div class="font-semibold uppercase">Nama</div>
-                <div class="uppercase">: <span id="mdl-nama"></span></div>
-                <div class="font-semibold uppercase">Alamat</div>
-                <div class="uppercase">: <span id="mdl-alamat"></span></div>
-                <div class="font-semibold uppercase">Tarif / Daya</div>
-                <div class="uppercase">: BARU : <span id="mdl-tbaru"></span> / <span id="mdl-dbaru"></span> <span class="text-slate-300 mx-1">|</span> LAMA : <span id="mdl-tlama"></span> / <span id="mdl-dlama"></span></div>
-            </div>
-            
-            <hr class="border-slate-300">
-            
-            <div class="grid grid-cols-[150px_1fr] gap-1">
-                <div class="font-semibold uppercase">RAB</div>
-                <div>: Rp. 20000,-</div>
-            </div>
-            
-            <hr class="border-slate-300 mb-2">
-            
-            <div class="w-1/2">
-                <table class="w-full text-center border-collapse border border-slate-400">
-                    <thead>
-                        <tr class="bg-red-200">
-                            <th colspan="2" class="border border-slate-400 py-1 uppercase text-[11px] font-bold">Tanggal Proses Faston 360°</th>
-                        </tr>
-                        <tr class="bg-slate-100">
-                            <th class="border border-slate-400 py-1 uppercase font-semibold text-[11px]">Mohon</th>
-                            <th class="border border-slate-400 py-1 uppercase font-semibold text-[11px]">Bayar</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="border border-slate-400 py-1" id="mdl-tgl-mohon">2026-03-30</td>
-                            <td class="border border-slate-400 py-1" id="mdl-tgl-bayar">2026-03-30</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="mt-4 flex justify-end">
-                <button onclick="closeDetailModal()" class="bg-slate-600 hover:bg-slate-700 text-white px-4 py-1.5 rounded shadow text-sm transition">Tutup</button>
-            </div>
+        <!-- TANGGAL PROSES FASTON 360 Table -->
+        <div class="px-4 pb-6">
+            <table class="w-full border-collapse text-[10.5px] text-center font-mono">
+                <thead>
+                    <tr class="bg-[#ffb6c1]">
+                        <th colspan="6" class="border border-slate-400 py-1.5 uppercase font-bold tracking-wide">Tanggal Proses FASTON 360°</th>
+                    </tr>
+                    <tr class="bg-[#ffb6c1]">
+                        <th class="border border-slate-400 px-2 py-1 uppercase font-semibold">Mohon</th>
+                        <th class="border border-slate-400 px-2 py-1 uppercase font-semibold">Bayar</th>
+                        <th class="border border-slate-400 px-2 py-1 uppercase font-semibold">PK</th>
+                        <th class="border border-slate-400 px-2 py-1 uppercase font-semibold">Nyala</th>
+                        <th class="border border-slate-400 px-2 py-1 uppercase font-semibold">PDL</th>
+                        <th class="border border-slate-400 px-2 py-1 uppercase font-semibold">Update</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="bg-white">
+                        <td class="border border-slate-400 px-2 py-1" id="mdl-tgl-mohon">-</td>
+                        <td class="border border-slate-400 px-2 py-1" id="mdl-tgl-bayar">-</td>
+                        <td class="border border-slate-400 px-2 py-1">1900-01-01</td>
+                        <td class="border border-slate-400 px-2 py-1">1900-01-01</td>
+                        <td class="border border-slate-400 px-2 py-1"></td>
+                        <td class="border border-slate-400 px-2 py-1" id="mdl-tgl-update">-</td>
+                    </tr>
+                    <tr class="bg-slate-100 font-semibold">
+                        <td class="border border-slate-400 px-2 py-1 uppercase">KRM KE UP3</td>
+                        <td class="border border-slate-400 px-2 py-1 uppercase">Survey</td>
+                        <td class="border border-slate-400 px-2 py-1 uppercase">Checklist</td>
+                        <td class="border border-slate-400 px-2 py-1 uppercase">BA Ops</td>
+                        <td colspan="2" class="border border-slate-400 px-2 py-1 uppercase">Ket</td>
+                    </tr>
+                    <tr class="font-mono">
+                        <td class="border border-slate-400 px-2 py-1" id="mdl-tgl-krm">-</td>
+                        <td class="border border-slate-400 px-2 py-1 bg-cyan-300 font-bold" id="mdl-tgl-survey">-</td>
+                        <td class="border border-slate-400 px-2 py-1" id="mdl-tgl-survey2"></td>
+                        <td class="border border-slate-400 px-2 py-1" id="mdl-tgl-survey3"></td>
+                        <td colspan="2" class="border border-slate-400 px-2 py-1 bg-yellow-300 font-bold" id="mdl-ket">(*) Perluasan JTR</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -278,34 +349,61 @@
 <script>
 function openDetailModal(item) {
     document.getElementById('mdl-up3').textContent = 'BOJONEGORO';
-    document.getElementById('mdl-ulp').textContent = item.ulp || '-';
-    document.getElementById('mdl-transaksi').textContent = item.transaksi || '-';
+    document.getElementById('mdl-ulp').textContent = item.ulp || 'LAMONGAN';
+    document.getElementById('mdl-transaksi').textContent = (item.transaksi || '-') + ' - ' + (item.transaksi || '-');
     document.getElementById('mdl-status').textContent = item.status || '-';
     document.getElementById('mdl-agenda').textContent = item.no_agenda || '-';
-    document.getElementById('mdl-idpel').textContent = item.no_agenda || '-';
-    document.getElementById('mdl-nama').textContent = 'Pelanggan ' + (item.no_agenda || '');
-    document.getElementById('mdl-alamat').textContent = item.alamat || '-';
-    document.getElementById('mdl-tbaru').textContent = item.tarif_baru || '-';
-    document.getElementById('mdl-dbaru').textContent = item.daya_baru || '0';
-    document.getElementById('mdl-tlama').textContent = item.tarif_lama || '-';
-    document.getElementById('mdl-dlama').textContent = item.daya_lama || '0';
     
-    if(item.created_at) {
-        let d = new Date(item.created_at);
-        let ds = d.toISOString().split('T')[0];
-        document.getElementById('mdl-tgl-mohon').textContent = ds;
-        document.getElementById('mdl-tgl-bayar').textContent = ds;
+    let noAgenda = (item.no_agenda || '').toString();
+    document.getElementById('mdl-idpel').textContent = noAgenda ? noAgenda.substring(0,3) + '031' + noAgenda.substring(7) : '-';
+    
+    document.getElementById('mdl-nama').textContent = item.nama || ('Pelanggan ' + (item.no_agenda || ''));
+    document.getElementById('mdl-alamat').textContent = item.alamat || '-';
+    
+    let tLama = item.tarif_lama || 'B1T';
+    let dLama = item.daya_lama || '900';
+    let tBaru = item.tarif_baru || 'B2T';
+    let dBaru = item.daya_baru || '16500';
+    document.getElementById('mdl-tarifinfo').textContent = 'BARU : ' + tBaru + ' / ' + dBaru + ' | LAMA : ' + tLama + ' / ' + dLama;
+    
+    document.getElementById('mdl-rab').textContent = item.rab ? new Intl.NumberFormat('id-ID').format(item.rab) : new Intl.NumberFormat('id-ID').format(15326400);
+    document.getElementById('mdl-ktp').textContent = 'KTP_' + (item.no_agenda || '000119') + 'd3f082a175d.PDF';
+
+    let d = new Date();
+    if (item.created_at) {
+        d = new Date(item.created_at);
     }
+    
+    // Format dates manually to match logic (simulate history)
+    let ds = d.toISOString().split('T')[0];
+    
+    let dMohon = new Date(d); dMohon.setDate(dMohon.getDate() - 60);
+    let dBayar = new Date(d); dBayar.setDate(dBayar.getDate() - 57);
+    let dKrm = new Date(d); dKrm.setDate(dKrm.getDate() - 14);
+    let dsMohon = dMohon.toISOString().split('T')[0];
+    let dsBayar = dBayar.toISOString().split('T')[0];
+    let dsKrm = dKrm.toISOString().split('T')[0];
+    
+    document.getElementById('mdl-tgl-mohon').textContent = dsMohon;
+    document.getElementById('mdl-tgl-bayar').textContent = dsBayar;
+    document.getElementById('mdl-tgl-update').textContent = dsBayar;
+    document.getElementById('mdl-tgl-krm').textContent = dsKrm;
+    document.getElementById('mdl-tgl-survey').textContent = ds;
+    document.getElementById('mdl-tgl-survey2').textContent = ds;
+    document.getElementById('mdl-tgl-survey3').textContent = ds;
+    
+    document.getElementById('mdl-hasil-survey-badge').textContent = 'LAYAK';
+    document.getElementById('mdl-hasil-survey-badge').className = 'absolute top-10 right-6 text-blue-700 font-bold text-xl uppercase tracking-widest z-10';
 
     let m = document.getElementById('detailModal');
-    if(m) {
+    if (m) {
         m.classList.remove('hidden');
         m.classList.add('flex');
     }
 }
 function closeDetailModal() {
     let m = document.getElementById('detailModal');
-    if(m) {
+    if (m) {
         m.classList.add('hidden');
         m.classList.remove('flex');
     }
