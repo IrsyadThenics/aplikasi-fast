@@ -208,6 +208,11 @@
         }
 
         /* ── ERROR ── */
+        .input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
         .error-message {
             color: #fca5a5;
             font-size: 0.82rem;
@@ -369,24 +374,28 @@
                 @csrf
                 
                 <div class="form-group">
-                    <input type="text" name="user_id" id="user_id" placeholder="User Id" required autocomplete="username">
-                    <span class="input-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-3.75V8.25m-6 3.75h6m-6 0a3 3 0 116 0 3 3 0 01-6 0z" />
-                        </svg>
-                    </span>
+                    <div class="input-wrapper">
+                        <input type="text" name="user_id" id="user_id" placeholder="User Id" required autocomplete="username">
+                        <span class="input-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-3.75V8.25m-6 3.75h6m-6 0a3 3 0 116 0 3 3 0 01-6 0z" />
+                            </svg>
+                        </span>
+                    </div>
                     @error('user_id')
                         <span class="error-message">{{ $message }}</span>
                     @enderror
                 </div>
 
                 <div class="form-group">
-                    <input type="password" name="password" id="password" placeholder="Password" required autocomplete="current-password">
-                    <span class="input-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                        </svg>
-                    </span>
+                    <div class="input-wrapper">
+                        <input type="password" name="password" id="password" placeholder="Password" required autocomplete="current-password">
+                        <span class="input-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                            </svg>
+                        </span>
+                    </div>
                     @error('password')
                         <span class="error-message">{{ $message }}</span>
                     @enderror

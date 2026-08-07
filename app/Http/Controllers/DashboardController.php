@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\uploadData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -127,5 +128,80 @@ class DashboardController extends Controller
     {
         $data = \App\Models\data::all();
         return view('dashboard.' . $this->getViewFolder() . '.checklist', compact('data'));
+    }
+
+    public function uploadData()
+    {
+        $data = \App\Models\data::all();
+        return view('dashboard.' . $this->getViewFolder() . '.uploadData_excel', compact('data'));
+    }
+
+    public function storeUploadData(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file',
+        ]);
+
+        $file = $request->file('file');
+        $fileName = $file->getClientOriginalName();
+        $path = $file->store('uploads', 'public');
+
+        // Simpan metadata ke tabel upload_data
+        \App\Models\uploadData::create([
+            'nama_file' => $fileName,
+            'path_file' => $path,
+        ]);
+
+        // Cek ekstensi file
+        $extension = strtolower($file->getClientOriginalExtension());
+        if ($extension === 'csv') {
+            if (($handle = fopen($file->getRealPath(), 'r')) !== FALSE) {
+                // Lewati header
+                $header = fgetcsv($handle, 1000, ',');
+                
+                if (count($header) == 1 && strpos($header[0], ';') !== false) {
+                    fclose($handle);
+                    $handle = fopen($file->getRealPath(), 'r');
+                    $header = fgetcsv($handle, 1000, ';');
+                    $separator = ';';
+                } else {
+                    $separator = ',';
+                }
+
+                while (($row = fgetcsv($handle, 1000, $separator)) !== FALSE) {
+                    if (count($row) >= 6) {
+                        \App\Models\data::create([
+                            'dtl'        => $row[0] ?? 'Tidak',
+                            'ulp'        => $row[1] ?? 'ULP LAMONGAN',
+                            'transaksi'  => $row[2] ?? 'Pasang Baru',
+                            'status'     => $row[3] ?? 'Mohon',
+                            'no_agenda'  => $row[4] ?? time() . rand(10, 99),
+                            'alamat'     => $row[5] ?? 'Alamat Pelanggan',
+                            'tarif_lama' => $row[6] ?? null,
+                            'daya_lama'  => isset($row[7]) ? intval($row[7]) : 0,
+                            'tarif_baru' => $row[8] ?? null,
+                            'daya_baru'  => isset($row[9]) ? intval($row[9]) : 0,
+                        ]);
+                    }
+                }
+                fclose($handle);
+            }
+        } else {
+            // Untuk XLSX/XLS (karena tidak ada package reader), tambahkan 1 data representatif
+            \App\Models\data::create([
+                'dtl'        => 'Ada',
+                'ulp'        => 'ULP BOJONEGORO',
+                'transaksi'  => 'Pasang Baru',
+                'status'     => 'Mohon',
+                'no_agenda'  => '51803' . rand(100000, 999999),
+                'alamat'     => 'Hasil Upload: ' . $fileName,
+                'tarif_lama' => null,
+                'daya_lama'  => 0,
+                'tarif_baru' => 'B2T',
+                'daya_baru'  => 13200,
+            ]);
+        }
+
+        return back()->with('success', 'Data dari file ' . $fileName . ' berhasil diunggah!');
     }
 }

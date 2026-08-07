@@ -56,6 +56,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/ba-operasi', [DashboardController::class, 'baOperasi'])->name('ba_operasi');
             Route::get('/survey', [DashboardController::class, 'survey'])->name('survey');
             Route::get('/checklist', [DashboardController::class, 'checklist'])->name('checklist');
+            Route::get('/upload-data', [DashboardController::class, 'uploadData'])->name('upload_data');
+            Route::post('/upload-data', [DashboardController::class, 'storeUploadData'])->name('upload_data.store');
         });
     }
 });
