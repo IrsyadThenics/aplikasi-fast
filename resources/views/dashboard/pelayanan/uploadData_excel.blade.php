@@ -13,6 +13,15 @@
         </div>
     @endif
 
+    @if (session('error'))
+        <div class="p-4 bg-rose-100 border border-rose-300 text-rose-800 rounded-xl flex items-center gap-2 text-sm font-medium flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-rose-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {{ session('error') }}
+        </div>
+    @endif
+
     {{-- ===== UPLOAD CARD ===== --}}
     <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden flex-shrink-0">
 
@@ -93,7 +102,7 @@
             {{-- Footer --}}
             <div class="border-t border-slate-100 px-5 py-2 bg-slate-50 flex-shrink-0 flex items-center justify-between">
                 <span id="previewFooter" class="text-xs text-slate-400 font-mono"></span>
-                <span class="text-xs text-amber-600 font-medium">⚠ Ini hanya preview. Klik "Simpan ke Database" untuk mengimpor data.</span>
+                <span class="text-xs text-amber-600 font-medium">⚠ Ini hanya preview. Klik "Upload ke Database" untuk mengimpor data.</span>
             </div>
 
         </div>

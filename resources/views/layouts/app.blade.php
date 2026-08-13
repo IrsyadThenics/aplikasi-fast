@@ -123,7 +123,7 @@
                 'administrator' => ['dashboard','data_pbpd','proses_perluasan','perluasan_jtm', 'perluasan_jtr','pengoperasian','restitusi', 'pencarian', 'laporan', 'notifikasi'],
                 'jaringan' => ['dashboard','data_pbpd','perluasan_jtm', 'perluasan_jtr','pengoperasian','pencarian', 'laporan', 'notifikasi'],
                 'konstruksi' => ['dashboard','data_pbpd','perluasan_jtm', 'perluasan_jtr','checklist', 'pencarian', 'laporan', 'notifikasi'],
-                'pelayanan' => ['dashboard','data_pbpd', 'perluasan_jtm', 'perluasan_jtr', 'proses_perluasan', 'restitusi', 'upload_data','laporan', 'notifikasi'],
+                'pelayanan' => ['dashboard','data_pbpd', 'perluasan_jtm', 'perluasan_jtr', 'tanpa_perluasan', 'restitusi', 'upload_data','laporan', 'notifikasi'],
                 'perencanaan' => ['dashboard','data_pbpd', 'perluasan_jtm', 'perluasan_jtr', 'survey','pencarian', 'laporan', 'notifikasi'],
                 'transaksi' => ['dashboard','data_pbpd', 'perluasan_jtm', 'perluasan_jtr', 'ba_operasi', 'pencarian', 'laporan', 'notifikasi'],
             ];

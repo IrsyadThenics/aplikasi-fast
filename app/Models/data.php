@@ -14,6 +14,8 @@ class data extends Model
     protected $fillable = [
         'dtl',
         'ulp',
+        'nama',
+        'tanggal_ulp',
         'transaksi',
         'status',
         'no_agenda',
@@ -21,7 +23,10 @@ class data extends Model
         'tarif_lama',
         'daya_lama',
         'tarif_baru',
-        'daya_baru'
+        'daya_baru',
+        'total_biaya',
+        'tanggal_bayar',
+        'durasi_hari_kerja',
     ];
     
 }

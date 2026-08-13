@@ -152,6 +152,9 @@ class DashboardController extends Controller
             'path_file' => $path,
         ]);
 
+        // Hapus data lama agar setiap kali upload, data di menu PB/PD berubah menjadi data terbaru
+        \App\Models\data::truncate();
+
         // Cek ekstensi file
         $extension = strtolower($file->getClientOriginalExtension());
         if ($extension === 'csv') {
@@ -168,38 +171,146 @@ class DashboardController extends Controller
                     $separator = ',';
                 }
 
+                // Map header names to column index
+                $map = [];
+                foreach ($header as $idx => $h) {
+                    $map[strtoupper(trim($h))] = $idx;
+                }
+
+                // Match indices based on header names
+                $idx_no_agenda      = $map['NOAGENDA'] ?? $map['NO AGENDA'] ?? $map['NOMOR AGENDA'] ?? null;
+                $idx_nama           = $map['NAMA'] ?? $map['NAMA PELANGGAN'] ?? null;
+                $idx_alamat         = $map['ALAMAT'] ?? $map['ALAMAT PELANGGAN'] ?? null;
+                $idx_tarif_lama     = $map['TARIF_LAMA'] ?? $map['TARIF LAMA'] ?? null;
+                $idx_daya_lama      = $map['DAYA_LAMA'] ?? $map['DAYA LAMA'] ?? null;
+                $idx_tarif_baru     = $map['TARIF'] ?? $map['TARIF_BARU'] ?? $map['TARIF BARU'] ?? null;
+                $idx_daya_baru      = $map['DAYA'] ?? $map['DAYA_BARU'] ?? $map['DAYA BARU'] ?? null;
+                $idx_transaksi      = $map['JENIS_TRANSAKSI'] ?? $map['TRANSAKSI'] ?? $map['JENIS TRANSAKSI'] ?? null;
+                $idx_status         = $map['STATUS_PERMOHONAN'] ?? $map['STATUS'] ?? $map['STATUS PERMOHONAN'] ?? null;
+                $idx_ulp            = $map['NAMAUP'] ?? $map['ULP'] ?? $map['NAMA_UP'] ?? $map['NAMA ULP'] ?? null;
+                $idx_tanggal_ulp    = $map['TGLMOHON'] ?? $map['TGL_MOHON'] ?? $map['TANGGAL MOHON'] ?? null;
+                $idx_total_biaya    = $map['TOTALBIAYA'] ?? $map['TOTAL_BIAYA'] ?? $map['TOTAL BIAYA'] ?? null;
+                $idx_tanggal_bayar  = $map['TGLBAYAR'] ?? $map['TGL_BAYAR'] ?? $map['TANGGAL BAYAR'] ?? null;
+                $idx_durasi_hk      = $map['DURASI_HARI_KERJA'] ?? $map['DURASI HARI KERJA'] ?? null;
+
+                // Fallbacks if header mapping fails
+                if ($idx_no_agenda === null) $idx_no_agenda = 4;
+                if ($idx_nama === null) $idx_nama = null;
+                if ($idx_alamat === null) $idx_alamat = 5;
+                if ($idx_tarif_lama === null) $idx_tarif_lama = 6;
+                if ($idx_daya_lama === null) $idx_daya_lama = 7;
+                if ($idx_tarif_baru === null) $idx_tarif_baru = 8;
+                if ($idx_daya_baru === null) $idx_daya_baru = 9;
+                if ($idx_transaksi === null) $idx_transaksi = 2;
+                if ($idx_status === null) $idx_status = 3;
+                if ($idx_ulp === null) $idx_ulp = 1;
+
                 while (($row = fgetcsv($handle, 1000, $separator)) !== FALSE) {
-                    if (count($row) >= 6) {
+                    $agenda = trim($row[$idx_no_agenda] ?? '');
+                    if ($agenda !== '') {
                         \App\Models\data::create([
-                            'dtl'        => $row[0] ?? 'Tidak',
-                            'ulp'        => $row[1] ?? 'ULP LAMONGAN',
-                            'transaksi'  => $row[2] ?? 'Pasang Baru',
-                            'status'     => $row[3] ?? 'Mohon',
-                            'no_agenda'  => $row[4] ?? time() . rand(10, 99),
-                            'alamat'     => $row[5] ?? 'Alamat Pelanggan',
-                            'tarif_lama' => $row[6] ?? null,
-                            'daya_lama'  => isset($row[7]) ? intval($row[7]) : 0,
-                            'tarif_baru' => $row[8] ?? null,
-                            'daya_baru'  => isset($row[9]) ? intval($row[9]) : 0,
+                            'dtl'              => 'Ada',
+                            'ulp'              => $row[$idx_ulp] ?? 'ULP LAMONGAN',
+                            'nama'             => $idx_nama !== null ? ($row[$idx_nama] ?? null) : null,
+                            'tanggal_ulp'      => $idx_tanggal_ulp !== null ? ($row[$idx_tanggal_ulp] ?? null) : null,
+                            'transaksi'        => $row[$idx_transaksi] ?? 'Pasang Baru',
+                            'status'           => $row[$idx_status] ?? 'Mohon',
+                            'no_agenda'        => $agenda,
+                            'alamat'           => $row[$idx_alamat] ?? '',
+                            'tarif_lama'       => $row[$idx_tarif_lama] ?? null,
+                            'daya_lama'        => isset($row[$idx_daya_lama]) && is_numeric($row[$idx_daya_lama]) ? intval($row[$idx_daya_lama]) : 0,
+                            'tarif_baru'       => $row[$idx_tarif_baru] ?? null,
+                            'daya_baru'        => isset($row[$idx_daya_baru]) && is_numeric($row[$idx_daya_baru]) ? intval($row[$idx_daya_baru]) : 0,
+                            'total_biaya'      => $idx_total_biaya !== null ? ($row[$idx_total_biaya] ?? null) : null,
+                            'tanggal_bayar'    => $idx_tanggal_bayar !== null ? ($row[$idx_tanggal_bayar] ?? null) : null,
+                            'durasi_hari_kerja'=> $idx_durasi_hk !== null ? ($row[$idx_durasi_hk] ?? null) : null,
                         ]);
                     }
                 }
                 fclose($handle);
             }
+        } elseif (in_array($extension, ['xlsx', 'xls'])) {
+            $rows = [];
+            if ($extension === 'xlsx') {
+                if ($xlsx = \Shuchkin\SimpleXLSX::parse($file->getRealPath())) {
+                    $rows = $xlsx->rows();
+                }
+            } else {
+                if ($xls = \Shuchkin\SimpleXLS::parse($file->getRealPath())) {
+                    $rows = $xls->rows();
+                }
+            }
+
+            if (!empty($rows)) {
+                $headers = array_shift($rows);
+                
+                // Map header names to column index
+                $map = [];
+                foreach ($headers as $idx => $h) {
+                    $h_clean = strtoupper(trim($h));
+                    $map[$h_clean] = $idx;
+                }
+
+                // Match indices based on header names (case-insensitive)
+                $idx_no_agenda      = $map['NOAGENDA'] ?? $map['NO AGENDA'] ?? $map['NOMOR AGENDA'] ?? null;
+                $idx_nama           = $map['NAMA'] ?? $map['NAMA PELANGGAN'] ?? null;
+                $idx_alamat         = $map['ALAMAT'] ?? $map['ALAMAT PELANGGAN'] ?? null;
+                $idx_tarif_lama     = $map['TARIF_LAMA'] ?? $map['TARIF LAMA'] ?? null;
+                $idx_daya_lama      = $map['DAYA_LAMA'] ?? $map['DAYA LAMA'] ?? null;
+                $idx_tarif_baru     = $map['TARIF'] ?? $map['TARIF_BARU'] ?? $map['TARIF BARU'] ?? null;
+                $idx_daya_baru      = $map['DAYA'] ?? $map['DAYA_BARU'] ?? $map['DAYA BARU'] ?? null;
+                $idx_transaksi      = $map['JENIS_TRANSAKSI'] ?? $map['TRANSAKSI'] ?? $map['JENIS TRANSAKSI'] ?? null;
+                $idx_status         = $map['STATUS_PERMOHONAN'] ?? $map['STATUS'] ?? $map['STATUS PERMOHONAN'] ?? null;
+                $idx_ulp            = $map['NAMAUP'] ?? $map['ULP'] ?? $map['NAMA_UP'] ?? $map['NAMA ULP'] ?? null;
+                $idx_tanggal_ulp    = $map['TGLMOHON'] ?? $map['TGL_MOHON'] ?? $map['TANGGAL MOHON'] ?? null;
+                $idx_total_biaya    = $map['TOTALBIAYA'] ?? $map['TOTAL_BIAYA'] ?? $map['TOTAL BIAYA'] ?? null;
+                $idx_tanggal_bayar  = $map['TGLBAYAR'] ?? $map['TGL_BAYAR'] ?? $map['TANGGAL BAYAR'] ?? null;
+                $idx_durasi_hk      = $map['DURASI_HARI_KERJA'] ?? $map['DURASI HARI KERJA'] ?? null;
+                
+                // Fallbacks if headers differ but are close to typical indexes
+                if ($idx_no_agenda === null) $idx_no_agenda = 0;
+                if ($idx_nama === null) $idx_nama = 4;
+                if ($idx_alamat === null) $idx_alamat = 5;
+                if ($idx_tarif_lama === null) $idx_tarif_lama = 11;
+                if ($idx_daya_lama === null) $idx_daya_lama = 12;
+                if ($idx_tarif_baru === null) $idx_tarif_baru = 13;
+                if ($idx_daya_baru === null) $idx_daya_baru = 14;
+                if ($idx_transaksi === null) $idx_transaksi = 15;
+                if ($idx_status === null) $idx_status = 33;
+                if ($idx_ulp === null) $idx_ulp = 40;
+                if ($idx_tanggal_ulp === null) $idx_tanggal_ulp = 2;
+                if ($idx_total_biaya === null) $idx_total_biaya = 17;
+                if ($idx_tanggal_bayar === null) $idx_tanggal_bayar = 18;
+                if ($idx_durasi_hk === null) $idx_durasi_hk = 19;
+
+                foreach ($rows as $row) {
+                    $agenda = trim($row[$idx_no_agenda] ?? '');
+                    if ($agenda !== '') {
+                        \App\Models\data::create([
+                            'dtl'               => 'Ada',
+                            'ulp'               => $row[$idx_ulp] ?? 'ULP LAMONGAN',
+                            'nama'              => $row[$idx_nama] ?? null,
+                            'tanggal_ulp'       => $row[$idx_tanggal_ulp] ?? null,
+                            'transaksi'         => $row[$idx_transaksi] ?? 'Pasang Baru',
+                            'status'            => $row[$idx_status] ?? 'Mohon',
+                            'no_agenda'         => $agenda,
+                            'alamat'            => $row[$idx_alamat] ?? '',
+                            'tarif_lama'        => $row[$idx_tarif_lama] ?? null,
+                            'daya_lama'         => isset($row[$idx_daya_lama]) && is_numeric($row[$idx_daya_lama]) ? intval($row[$idx_daya_lama]) : 0,
+                            'tarif_baru'        => $row[$idx_tarif_baru] ?? null,
+                            'daya_baru'         => isset($row[$idx_daya_baru]) && is_numeric($row[$idx_daya_baru]) ? intval($row[$idx_daya_baru]) : 0,
+                            'total_biaya'       => $row[$idx_total_biaya] ?? null,
+                            'tanggal_bayar'     => $row[$idx_tanggal_bayar] ?? null,
+                            'durasi_hari_kerja' => $row[$idx_durasi_hk] ?? null,
+                        ]);
+                    }
+                }
+            } else {
+                $err = $extension === 'xlsx' ? \Shuchkin\SimpleXLSX::parseError() : \Shuchkin\SimpleXLS::parseError();
+                return back()->with('error', 'Gagal membaca file Excel: ' . $err);
+            }
         } else {
-            // Untuk XLSX/XLS (karena tidak ada package reader), tambahkan 1 data representatif
-            \App\Models\data::create([
-                'dtl'        => 'Ada',
-                'ulp'        => 'ULP BOJONEGORO',
-                'transaksi'  => 'Pasang Baru',
-                'status'     => 'Mohon',
-                'no_agenda'  => '51803' . rand(100000, 999999),
-                'alamat'     => 'Hasil Upload: ' . $fileName,
-                'tarif_lama' => null,
-                'daya_lama'  => 0,
-                'tarif_baru' => 'B2T',
-                'daya_baru'  => 13200,
-            ]);
+            return back()->with('error', 'Format file tidak didukung. Harap unggah file CSV, XLSX, atau XLS.');
         }
 
         return back()->with('success', 'Data dari file ' . $fileName . ' berhasil diunggah!');

@@ -90,14 +90,17 @@
                         <tr class="bg-[#0D1B8C] text-white">
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NO.</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">DTL</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">TANGGAL<br>MOHON</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">ULP</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">TRANSAKSI</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">STATUS</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NO AGENDA</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NAMA PELANGGAN</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NAMA<br>PELANGGAN</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">ALAMAT</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">JENIS<br>TRANSAKSI</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" colspan="2">LAMA</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" colspan="2">BARU</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">TOTAL<br>BIAYA</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">TANGGAL<br>BAYAR</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">DURASI<br>HARI KERJA</th>
                         </tr>
                         <tr class="bg-[#0D1B8C] text-white">
                             <th class="border border-blue-600 px-3 py-1.5 text-center font-medium">TARIF</th>
@@ -111,44 +114,40 @@
                         <tr class="bg-white hover:bg-slate-50 transition border-b border-slate-100 text-slate-700">
                             <td class="border border-slate-200 px-3 py-2 text-center">{{ $index + 1 }}.</td>
                             <td class="border border-slate-200 px-3 py-2 text-center">
-                                @if(strtolower($item->dtl) === 'ada' || strtolower($item->dtl) === 'tidak ada' || true)
                                 <button onclick="openDetailModal({{ json_encode($item) }})" class="text-slate-500 hover:text-blue-600 transition" title="Lihat Detail">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                                     </svg>
                                 </button>
-                                @endif
                             </td>
+                            <td class="border border-slate-200 px-2 py-2 text-center text-xs text-slate-500 whitespace-nowrap">{{ $item->tanggal_ulp ? \Carbon\Carbon::parse($item->tanggal_ulp)->format('d/m/Y') : '-' }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-left whitespace-nowrap font-medium text-slate-700">{{ $item->ulp }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->no_agenda ?? '-' }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-left">{{ $item->nama ?? '-' }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-left max-w-xs truncate" title="{{ $item->alamat }}">{{ $item->alamat }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-left whitespace-nowrap">
                                 @if(strtolower($item->transaksi) === 'pasang baru')
                                     <span class="px-2 py-1 rounded text-[10px] font-semibold bg-indigo-100 text-indigo-700">Pasang Baru</span>
-                                @elseif(strtolower($item->transaksi) === 'perubahan daya')
-                                    <span class="px-2 py-1 rounded text-[10px] font-semibold bg-purple-100 text-purple-700">Perubahan Daya</span>
+                                @elseif(str_contains(strtolower($item->transaksi), 'perubahan') || str_contains(strtolower($item->transaksi), 'daya'))
+                                    <span class="px-2 py-1 rounded text-[10px] font-semibold bg-purple-100 text-purple-700">{{ $item->transaksi }}</span>
+                                @elseif(str_contains(strtolower($item->transaksi), 'balik'))
+                                    <span class="px-2 py-1 rounded text-[10px] font-semibold bg-orange-100 text-orange-700">{{ $item->transaksi }}</span>
                                 @else
                                     <span class="px-2 py-1 rounded text-[10px] font-semibold bg-slate-100 text-slate-700">{{ $item->transaksi }}</span>
                                 @endif
                             </td>
-                            <td class="border border-slate-200 px-3 py-2 text-left whitespace-nowrap">
-                                @if(strtolower($item->status) === 'mohon')
-                                    <span class="px-2 py-1 rounded text-[10px] font-semibold bg-amber-100 text-amber-700">Mohon</span>
-                                @elseif(strtolower($item->status) === 'bayar')
-                                    <span class="px-2 py-1 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-700">Bayar</span>
-                                @else
-                                    <span class="px-2 py-1 rounded text-[10px] font-semibold bg-blue-100 text-blue-800">{{ $item->status }}</span>
-                                @endif
-                            </td>
-                            <td class="border border-slate-200 px-3 py-2 text-center font-mono">{{ $item->no_agenda }}</td>
-                            <td class="border border-slate-200 px-3 py-2 text-left">Pelanggan {{ $item->no_agenda }}</td>
-                            <td class="border border-slate-200 px-3 py-2 text-left max-w-xs truncate" title="{{ $item->alamat }}">{{ $item->alamat }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->tarif_lama ?? '-' }}</td>
-                            <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->daya_lama ?? 0 }} VA</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->daya_lama ? $item->daya_lama . ' VA' : '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-center font-semibold text-blue-900">{{ $item->tarif_baru ?? '-' }}</td>
-                            <td class="border border-slate-200 px-3 py-2 text-center font-semibold text-blue-900">{{ $item->daya_baru ?? 0 }} VA</td>
-                            <td class="border border-slate-200 px-3 py-2 text-center">-</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center font-semibold text-blue-900">{{ $item->daya_baru ? $item->daya_baru . ' VA' : '-' }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->total_biaya ? 'Rp '.number_format($item->total_biaya, 0, ',', '.') : '-' }}</td>
+                            <td class="border border-slate-200 px-2 py-2 text-center text-xs whitespace-nowrap">{{ $item->tanggal_bayar ? \Carbon\Carbon::parse($item->tanggal_bayar)->format('d/m/Y') : '-' }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->durasi_hari_kerja ?? '-' }}</td>
+                        </tr>
                         </tr>
                         @empty
                         <tr id="emptyRow">
-                            <td colspan="12" class="text-center py-12 text-slate-400 italic text-xs">
+                            <td colspan="15" class="text-center py-12 text-slate-400 italic text-xs">
                                 <div class="flex flex-col items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke-width="1.2" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
@@ -291,7 +290,7 @@
             
             <div class="grid grid-cols-[150px_1fr] gap-1">
                 <div class="font-semibold uppercase">RAB</div>
-                <div>: Rp. 20000,-</div>
+                <div>: Rp. <span id="mdl-rab">0</span>,-</div>
             </div>
             
             <hr class="border-slate-300 mb-2">
@@ -330,20 +329,19 @@ function openDetailModal(item) {
     document.getElementById('mdl-transaksi').textContent = item.transaksi || '-';
     document.getElementById('mdl-status').textContent = item.status || '-';
     document.getElementById('mdl-agenda').textContent = item.no_agenda || '-';
-    document.getElementById('mdl-idpel').textContent = item.no_agenda || '-';
-    document.getElementById('mdl-nama').textContent = 'Pelanggan ' + (item.no_agenda || '');
+    document.getElementById('mdl-idpel').textContent = item.id_pelanggan || item.no_agenda || '-';
+    document.getElementById('mdl-nama').textContent = item.nama || item.nama_pelanggan || ('Pelanggan ' + (item.no_agenda || ''));
     document.getElementById('mdl-alamat').textContent = item.alamat || '-';
     document.getElementById('mdl-tbaru').textContent = item.tarif_baru || '-';
     document.getElementById('mdl-dbaru').textContent = item.daya_baru || '0';
     document.getElementById('mdl-tlama').textContent = item.tarif_lama || '-';
     document.getElementById('mdl-dlama').textContent = item.daya_lama || '0';
     
-    if(item.created_at) {
-        let d = new Date(item.created_at);
-        let ds = d.toISOString().split('T')[0];
-        document.getElementById('mdl-tgl-mohon').textContent = ds;
-        document.getElementById('mdl-tgl-bayar').textContent = ds;
-    }
+    let formatter = new Intl.NumberFormat('id-ID');
+    document.getElementById('mdl-rab').textContent = item.total_biaya ? formatter.format(item.total_biaya) : '0';
+    
+    document.getElementById('mdl-tgl-mohon').textContent = item.tanggal_ulp ? item.tanggal_ulp.split(' ')[0] : '-';
+    document.getElementById('mdl-tgl-bayar').textContent = item.tanggal_bayar ? item.tanggal_bayar.split(' ')[0] : '-';
 
     let m = document.getElementById('detailModal');
     if(m) {
