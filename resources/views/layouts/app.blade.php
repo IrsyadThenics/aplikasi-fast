@@ -118,7 +118,7 @@
 
             // Daftar menu yang tersedia untuk setiap role
             $roleMenus = [
-                'managerULP' => ['dashboard', 'data_pbpd', 'proses_perluasan', 'restitusi', 'pencarian', 'laporan', 'notifikasi'],
+                'managerULP' => ['dashboard', 'data_pbpd', 'tanpa_perluasan', 'restitusi', 'pencarian', 'laporan', 'notifikasi'],
                 'managerUP3' => ['dashboard','data_pbpd', 'tanpa_perluasan', 'perluasan_jtm', 'perluasan_jtr', 'proses_perluasan', 'restitusi', 'pengoperasian', 'pencarian', 'laporan', 'notifikasi'],
                 'administrator' => ['dashboard','data_pbpd','proses_perluasan','perluasan_jtm', 'perluasan_jtr','pengoperasian','restitusi', 'pencarian', 'laporan', 'notifikasi'],
                 'jaringan' => ['dashboard','data_pbpd','perluasan_jtm', 'perluasan_jtr','pengoperasian','pencarian', 'laporan', 'notifikasi'],
