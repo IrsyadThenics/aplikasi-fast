@@ -91,7 +91,6 @@
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NO.</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">DTL</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">TANGGAL<br>MOHON</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">ULP</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NO AGENDA</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NAMA<br>PELANGGAN</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">ALAMAT</th>
@@ -109,10 +108,10 @@
                             <th class="border border-blue-600 px-3 py-1.5 text-center font-medium">DAYA</th>
                         </tr>
                     </thead>
-                                        <tbody id="tableBody">
+                    <tbody id="tableBody">
                         @forelse($data ?? [] as $index => $item)
                         <tr class="bg-white hover:bg-slate-50 transition border-b border-slate-100 text-slate-700">
-                            <td class="border border-slate-200 px-3 py-2 text-center">{{ $index + 1 }}.</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center text-slate-500 text-[11px] font-mono">{{ $index + 1 }}.</td>
                             <td class="border border-slate-200 px-3 py-2 text-center">
                                 <button onclick="openDetailModal({{ json_encode($item) }})" class="text-slate-500 hover:text-blue-600 transition" title="Lihat Detail">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -121,8 +120,7 @@
                                 </button>
                             </td>
                             <td class="border border-slate-200 px-2 py-2 text-center text-xs text-slate-500 whitespace-nowrap">{{ $item->tanggal_ulp ? \Carbon\Carbon::parse($item->tanggal_ulp)->format('d/m/Y') : '-' }}</td>
-                            <td class="border border-slate-200 px-3 py-2 text-left whitespace-nowrap font-medium text-slate-700">{{ $item->ulp }}</td>
-                            <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->no_agenda ?? '-' }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center font-medium text-slate-700">{{ $item->no_agenda ?? '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-left">{{ $item->nama ?? '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-left max-w-xs truncate" title="{{ $item->alamat }}">{{ $item->alamat }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-left whitespace-nowrap">
@@ -144,10 +142,9 @@
                             <td class="border border-slate-200 px-2 py-2 text-center text-xs whitespace-nowrap">{{ $item->tanggal_bayar ? \Carbon\Carbon::parse($item->tanggal_bayar)->format('d/m/Y') : '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->durasi_hari_kerja ?? '-' }}</td>
                         </tr>
-                        </tr>
                         @empty
                         <tr id="emptyRow">
-                            <td colspan="15" class="text-center py-12 text-slate-400 italic text-xs">
+                            <td colspan="12" class="text-center py-12 text-slate-400 italic text-xs">
                                 <div class="flex flex-col items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke-width="1.2" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
@@ -289,8 +286,8 @@
             <hr class="border-slate-300">
             
             <div class="grid grid-cols-[150px_1fr] gap-1">
-                <div class="font-semibold uppercase">RAB</div>
-                <div>: Rp. <span id="mdl-rab">0</span>,-</div>
+                <div class="font-semibold uppercase">BP</div>
+                <div>: Rp. <span id="mdl-bp">0</span>,-</div>
             </div>
             
             <hr class="border-slate-300 mb-2">
@@ -359,3 +356,7 @@ function closeDetailModal() {
 </script>
 
 @endsection
+
+
+
+

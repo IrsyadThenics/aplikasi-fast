@@ -54,7 +54,7 @@ class DashboardController extends Controller
 
     public function dataPbpd()
     {
-        $data = \App\Models\data::all();
+        $data = \App\Models\data::whereRaw('LOWER(no_agenda) != ?', ['ulp lamongan'])->get();
         return view('dashboard.' . $this->getViewFolder() . '.data_pbpd', compact('data'));
     }
 
