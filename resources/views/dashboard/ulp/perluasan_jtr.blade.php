@@ -89,6 +89,7 @@
                     <thead class="sticky top-0 z-10">
                         <tr class="bg-[#0D1B8C] text-white">
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">NO.</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">ASAL ULP</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">DTL</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">ULP</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">TRANSAKSI</th>
@@ -110,6 +111,7 @@
                         @forelse($data ?? [] as $index => $item)
                         <tr class="bg-white hover:bg-slate-50 transition border-b border-slate-100 text-slate-700">
                             <td class="border border-slate-200 px-3 py-2 text-center">{{ $index + 1 }}.</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center text-[10px] font-bold">{{ $item->ulp ?? '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-center">
                                 <button onclick="openDetailModal({{ json_encode($item) }})" class="text-slate-500 hover:text-blue-600 transition" title="Lihat Detail">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

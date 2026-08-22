@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('content')
 <div class="h-full flex flex-col bg-slate-50 p-5">
@@ -186,7 +186,7 @@
                             {{-- KIRIM --}}
                             <td class="border border-slate-200 px-2 py-2 text-center">
                                 <button id="btn-kirim-{{ $agendaKey }}"
-                                    onclick="handleKirim('{{ $agendaKey }}')"
+                                    onclick="handleKirim('{{ $agendaKey }}', {{ json_encode($item) }})"
                                     disabled
                                     title="Lengkapi berkas pendukung & ijin tanam tiang terlebih dahulu"
                                     class="kirim-btn px-2 py-1 rounded text-[10px] font-semibold transition-all duration-200 cursor-not-allowed bg-slate-100 text-slate-400 border border-slate-200">
@@ -222,35 +222,44 @@
 
 <!-- Destination Picker Modal -->
 <div id="destModal" class="fixed inset-0 z-[200] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md relative overflow-hidden border border-slate-200">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative overflow-hidden border border-slate-200">
         <div class="bg-gradient-to-r from-[#0D1B8C] to-[#2B73FE] px-6 py-4 flex items-center justify-between">
             <div>
                 <p class="text-white font-bold text-sm tracking-wide">Pilih Tujuan Pengiriman</p>
                 <p class="text-blue-200 text-xs mt-0.5">Data akan dikirim ke halaman yang dipilih</p>
             </div>
             <button onclick="closeDestModal()" class="text-white/60 hover:text-white transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
         <div class="p-6">
             <p class="text-slate-600 text-xs mb-5 text-center font-sans">Pilih tujuan pengiriman data berkas yang sudah dilengkapi:</p>
-            <div class="grid grid-cols-2 gap-4">
-                <button onclick="confirmKirim('jtm')" class="group flex flex-col items-center gap-3 p-5 rounded-xl border-2 border-slate-200 hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 active:scale-95">
-                    <div class="w-12 h-12 rounded-full bg-blue-100 group-hover:bg-blue-200 flex items-center justify-center transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
+            <div class="grid grid-cols-3 gap-3">
+                <button onclick="confirmKirim('jtm')" class="group flex flex-col items-center gap-3 p-4 rounded-xl border-2 border-slate-200 hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 active:scale-95">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 group-hover:bg-blue-200 flex items-center justify-center transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
                     </div>
                     <div class="text-center">
-                        <p class="font-bold text-slate-700 text-sm group-hover:text-blue-700 transition">Perluasan JTM</p>
-                        <p class="text-[10px] text-slate-400 mt-0.5">Jaringan Tegangan Menengah</p>
+                        <p class="font-bold text-slate-700 text-xs group-hover:text-blue-700 transition">Perluasan JTM</p>
+                        <p class="text-[9px] text-slate-400 mt-0.5">Jaringan Tegangan Menengah</p>
                     </div>
                 </button>
-                <button onclick="confirmKirim('jtr')" class="group flex flex-col items-center gap-3 p-5 rounded-xl border-2 border-slate-200 hover:border-indigo-500 hover:bg-indigo-50 transition-all duration-200 active:scale-95">
-                    <div class="w-12 h-12 rounded-full bg-indigo-100 group-hover:bg-indigo-200 flex items-center justify-center transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
+                <button onclick="confirmKirim('jtr')" class="group flex flex-col items-center gap-3 p-4 rounded-xl border-2 border-slate-200 hover:border-indigo-500 hover:bg-indigo-50 transition-all duration-200 active:scale-95">
+                    <div class="w-10 h-10 rounded-full bg-indigo-100 group-hover:bg-indigo-200 flex items-center justify-center transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
                     </div>
                     <div class="text-center">
-                        <p class="font-bold text-slate-700 text-sm group-hover:text-indigo-700 transition">Perluasan JTR</p>
-                        <p class="text-[10px] text-slate-400 mt-0.5">Jaringan Tegangan Rendah</p>
+                        <p class="font-bold text-slate-700 text-xs group-hover:text-indigo-700 transition">Perluasan JTR</p>
+                        <p class="text-[9px] text-slate-400 mt-0.5">Jaringan Tegangan Rendah</p>
+                    </div>
+                </button>
+                <button onclick="confirmKirim('tanpa_perluasan')" class="group flex flex-col items-center gap-3 p-4 rounded-xl border-2 border-slate-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all duration-200 active:scale-95">
+                    <div class="w-10 h-10 rounded-full bg-emerald-100 group-hover:bg-emerald-200 flex items-center justify-center transition font-sans">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" /></svg>
+                    </div>
+                    <div class="text-center">
+                        <p class="font-bold text-slate-700 text-xs group-hover:text-emerald-700 transition">Tanpa Perluasan</p>
+                        <p class="text-[9px] text-slate-400 mt-0.5">Langsung Sambung / Tanpa Jaringan</p>
                     </div>
                 </button>
             </div>
@@ -260,6 +269,34 @@
 </div>
 
 <script>
+    function reIndexTable() {
+        var tbody = document.getElementById('tableBody');
+        if (!tbody) return;
+        var rows = tbody.querySelectorAll('tr:not(#emptyRow)');
+        var visibleIndex = 1;
+        var visibleCount = 0;
+        rows.forEach(function(row) {
+            if (row.style.display !== 'none') {
+                var firstTd = row.querySelector('td');
+                if (firstTd) {
+                    firstTd.textContent = visibleIndex + '.';
+                    visibleIndex++;
+                }
+                visibleCount++;
+            }
+        });
+        
+        var emptyRow = document.getElementById('emptyRow');
+        if (emptyRow) {
+            emptyRow.style.display = visibleCount === 0 ? '' : 'none';
+        }
+        
+        var recordCount = document.getElementById('recordCount');
+        if (recordCount) {
+            recordCount.innerText = visibleCount + ' data';
+        }
+    }
+
     function tampilkanTabel() {
         var el = document.getElementById('tableArea');
         if (el) {
@@ -283,9 +320,14 @@
         if (!tableBody) return;
         
         var rows = tableBody.querySelectorAll('tr:not(#emptyRow)');
-        var visibleCount = 0;
         
         rows.forEach(function(row) {
+            var agendaKey = row.id.replace('row-', '');
+            if (_checkedRows[agendaKey]) {
+                row.style.display = 'none';
+                return;
+            }
+
             var rowText = row.innerText.toLowerCase();
             var matchesAll = true;
             
@@ -298,21 +340,12 @@
             
             if (matchesAll) {
                 row.style.display = '';
-                visibleCount++;
             } else {
                 row.style.display = 'none';
             }
         });
         
-        var emptyRow = document.getElementById('emptyRow');
-        if (emptyRow) {
-            emptyRow.style.display = visibleCount === 0 ? '' : 'none';
-        }
-        
-        var recordCount = document.getElementById('recordCount');
-        if (recordCount) {
-            recordCount.innerText = visibleCount + ' data';
-        }
+        reIndexTable();
     }
     
     function tutupTabel() {
@@ -671,13 +704,10 @@ document.addEventListener('DOMContentLoaded', function() {
         req.onsuccess = function() {
             (req.result || []).forEach(function(r) {
                 _checkedRows[r.agendaKey] = true;
-                var icon = document.getElementById('chk-send-icon-' + r.agendaKey);
-                var btn  = document.getElementById('chk-send-' + r.agendaKey);
                 var row  = document.getElementById('row-' + r.agendaKey);
-                if (icon) icon.classList.remove('hidden');
-                if (btn)  { btn.classList.add('bg-emerald-50','border-emerald-500'); btn.classList.remove('bg-white','border-slate-300'); }
-                if (row)  { row.classList.add('bg-emerald-50'); row.classList.remove('bg-white'); }
+                if (row) { row.style.display = 'none'; }
             });
+            reIndexTable();
         };
     }).catch(function() {});
 });
@@ -935,20 +965,18 @@ function confirmKirim(dest) {
         tarif_baru  : item.tarif_baru  || '-',
         daya_baru   : item.daya_baru   || '-',
         total_biaya : item.total_biaya || 0,
+        ulp         : item.ulp || '-',
         sentAt      : new Date().toISOString(),
         ktpCount    : docs.ktp ? docs.ktp.length : 0,
         ittCount    : docs.itt ? docs.itt.length : 0
     };
     saveSentItem(record).then(function() {
         _checkedRows[agendaKey] = true;
-        var icon = document.getElementById('chk-send-icon-' + agendaKey);
-        var btn  = document.getElementById('chk-send-' + agendaKey);
         var row  = document.getElementById('row-' + agendaKey);
-        if (icon) icon.classList.remove('hidden');
-        if (btn)  { btn.classList.add('bg-emerald-50','border-emerald-500'); btn.classList.remove('bg-white','border-slate-300'); }
-        if (row)  { row.classList.add('bg-emerald-50'); row.classList.remove('bg-white'); }
+        if (row)  { row.style.display = 'none'; }
+        reIndexTable();
         closeDestModal();
-        alert('Data berhasil dikirim ke Perluasan ' + dest.toUpperCase() + '!');
+        alert('Data berhasil dikirim ke ' + (dest === 'tanpa_perluasan' ? 'Tanpa Perluasan' : 'Perluasan ' + dest.toUpperCase()) + '!');
     }).catch(function(e) {
         console.error('Gagal kirim:', e);
         alert('Gagal mengirim data. Silakan coba lagi.');
@@ -956,13 +984,13 @@ function confirmKirim(dest) {
     });
 }
 
-function handleKirim(agendaKey) {
+function handleKirim(agendaKey, item) {
     var docs = uploadedDocs[agendaKey] || { ktp: [], itt: [] };
     if (!(docs.ktp && docs.ktp.length > 0) || !(docs.itt && docs.itt.length > 0)) {
         alert('Lengkapi berkas pendukung dan ijin tanam tiang terlebih dahulu.'); return;
     }
     _pendingKirimKey  = agendaKey;
-    _pendingKirimItem = null;
+    _pendingKirimItem = item;
     openDestModal();
 }
 </script>

@@ -110,6 +110,7 @@
                         @forelse($data ?? [] as $index => $item)
                         <tr class="bg-white hover:bg-slate-50 transition border-b border-slate-100 text-slate-700">
                             <td class="border border-slate-200 px-3 py-2 text-center">{{ $index + 1 }}.</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center text-[10px] font-bold">{{ $item->ulp ?? '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-center">
                                 @if(strtolower($item->dtl) === 'ada' || strtolower($item->dtl) === 'tidak ada' || true)
                                 <button onclick="openDetailModal({{ json_encode($item) }})" class="text-slate-500 hover:text-blue-600 transition" title="Lihat Detail">
@@ -148,7 +149,7 @@
                         </tr>
                         @empty
                         <tr id="emptyRow">
-                            <td colspan="12" class="text-center py-12 text-slate-400 italic text-xs">
+                            <td colspan="13" class="text-center py-12 text-slate-400 italic text-xs">
                                 <div class="flex flex-col items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke-width="1.2" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />

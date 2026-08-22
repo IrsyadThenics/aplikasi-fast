@@ -105,27 +105,42 @@
         @php
             $role = Auth::user()->role ?? 'managerULP';
             $prefixMap = [
-                'managerULP'    => 'ulp',
-                'managerUP3'    => 'up3',
-                'administrator' => 'admin',
-                'pelayanan'     => 'pelayanan',
-                'konstruksi'    => 'konstruksi',
-                'jaringan'      => 'jaringan',
-                'perencanaan'   => 'perencanaan',
-                'transaksi'     => 'transaksi',
+                'managerULP'          => 'ulp',
+                'managerULP_babat'    => 'ulp_babat',
+                'managerULP_brondong' => 'ulp_brondong',
+                'managerULP_padangan' => 'ulp_padangan',
+                'managerULP_bjn'      => 'ulp_bjn',
+                'managerULP_sumberejo'=> 'ulp_sumberejo',
+                'managerULP_tuban'    => 'ulp_tuban',
+                'managerULP_jatirogo' => 'ulp_jatirogo',
+                'managerUP3'          => 'up3',
+                'administrator'       => 'admin',
+                'pelayanan'           => 'pelayanan',
+                'konstruksi'          => 'konstruksi',
+                'jaringan'            => 'jaringan',
+                'perencanaan'         => 'perencanaan',
+                'transaksi'           => 'transaksi',
             ];
             $prefix = $prefixMap[$role] ?? 'dashboard';
 
             // Daftar menu yang tersedia untuk setiap role
+            $ulpMenuItems = ['dashboard', 'data_pbpd', 'perluasan_jtr', 'perluasan_jtm', 'tanpa_perluasan', 'restitusi', 'pencarian', 'laporan', 'notifikasi'];
             $roleMenus = [
-                'managerULP' => ['dashboard', 'data_pbpd', 'tanpa_perluasan', 'restitusi', 'pencarian', 'laporan', 'notifikasi'],
+                'managerULP'          => $ulpMenuItems,
+                'managerULP_babat'    => $ulpMenuItems,
+                'managerULP_brondong' => $ulpMenuItems,
+                'managerULP_padangan' => $ulpMenuItems,
+                'managerULP_bjn'      => $ulpMenuItems,
+                'managerULP_sumberejo'=> $ulpMenuItems,
+                'managerULP_tuban'    => $ulpMenuItems,
+                'managerULP_jatirogo' => $ulpMenuItems,
                 'managerUP3' => ['dashboard','data_pbpd', 'tanpa_perluasan', 'perluasan_jtm', 'perluasan_jtr', 'proses_perluasan', 'restitusi', 'pengoperasian', 'pencarian', 'laporan', 'notifikasi'],
-                'administrator' => ['dashboard','data_pbpd','proses_perluasan','perluasan_jtm', 'perluasan_jtr','pengoperasian','restitusi', 'pencarian', 'laporan', 'notifikasi'],
-                'jaringan' => ['dashboard','data_pbpd','perluasan_jtm', 'perluasan_jtr','pengoperasian','pencarian', 'laporan', 'notifikasi'],
-                'konstruksi' => ['dashboard','data_pbpd','perluasan_jtm', 'perluasan_jtr','checklist', 'pencarian', 'laporan', 'notifikasi'],
+                'administrator' => ['dashboard','data_pbpd','proses_perluasan','perluasan_jtm', 'perluasan_jtr', 'tanpa_perluasan','pengoperasian','restitusi', 'pencarian', 'laporan', 'notifikasi'],
+                'jaringan' => ['dashboard','data_pbpd','perluasan_jtm', 'perluasan_jtr', 'tanpa_perluasan','pengoperasian','pencarian', 'laporan', 'notifikasi'],
+                'konstruksi' => ['dashboard','data_pbpd','perluasan_jtm', 'perluasan_jtr','tanpa_perluasan','checklist', 'pencarian', 'laporan', 'notifikasi'],
                 'pelayanan' => ['dashboard','data_pbpd', 'perluasan_jtm', 'perluasan_jtr', 'tanpa_perluasan', 'restitusi', 'upload_data','laporan', 'notifikasi'],
-                'perencanaan' => ['dashboard','data_pbpd', 'perluasan_jtm', 'perluasan_jtr', 'survey','pencarian', 'laporan', 'notifikasi'],
-                'transaksi' => ['dashboard','data_pbpd', 'perluasan_jtm', 'perluasan_jtr', 'ba_operasi', 'pencarian', 'laporan', 'notifikasi'],
+                'perencanaan' => ['dashboard','data_pbpd', 'perluasan_jtm', 'perluasan_jtr', 'tanpa_perluasan','survey','pencarian', 'laporan', 'notifikasi'],
+                'transaksi' => ['dashboard','data_pbpd', 'perluasan_jtm', 'perluasan_jtr', 'tanpa_perluasan', 'ba_operasi', 'pencarian', 'laporan', 'notifikasi'],
             ];
             
             $activeRoleMenus = $roleMenus[$role] ?? [];

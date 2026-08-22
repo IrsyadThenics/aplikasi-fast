@@ -89,6 +89,7 @@
                     <thead class="sticky top-0 z-10">
                         <tr class="bg-[#0D1B8C] text-white">
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">NO.</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">ASAL ULP</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">DTL</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">TRANSAKSI</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">STATUS</th>
@@ -110,6 +111,7 @@
                         @forelse($data ?? [] as $index => $item)
                         <tr class="bg-white hover:bg-slate-50 transition border-b border-slate-100 text-slate-700">
                             <td class="border border-slate-200 px-3 py-2 text-center">{{ $index + 1 }}.</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center text-[10px] font-bold">{{ $item->ulp ?? '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-center">
                                 @if(strtolower($item->dtl) === 'ada' || strtolower($item->dtl) === 'tidak ada' || true)
                                 <button onclick="openDetailModal({{ json_encode($item) }})" class="text-slate-500 hover:text-blue-600 transition" title="Lihat Detail">
@@ -148,7 +150,7 @@
                         </tr>
                         @empty
                         <tr id="emptyRow">
-                            <td colspan="12" class="text-center py-12 text-slate-400 italic text-xs">
+                            <td colspan="13" class="text-center py-12 text-slate-400 italic text-xs">
                                 <div class="flex flex-col items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke-width="1.2" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
@@ -289,6 +291,15 @@
             <div>: <span id="mdl-ktp" class="text-slate-800">-</span></div>
             <div class="font-semibold uppercase">Ijin Tanam Tiang</div>
             <div>: <span id="mdl-itt" class="text-slate-800">-</span></div>
+            <div class="font-semibold uppercase">WO (Work Order)</div>
+            <div class="flex items-center gap-1.5">:
+                <span id="mdl-wo-display" class="text-slate-800 ml-1">-</span>
+                <input type="file" id="mdl-wo-input" class="hidden" accept="application/pdf,image/*" onchange="handleWoUpload(event)">
+                <button id="btn-wo-upload" onclick="document.getElementById('mdl-wo-input').click()" class="ml-2 bg-blue-600 hover:bg-blue-700 text-white px-2 py-0.5 rounded text-[10px]">Upload</button>
+                <button id="btn-wo-preview" onclick="previewWo()" class="ml-1 bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-0.5 rounded text-[10px] hidden">Preview</button>
+                <button id="btn-wo-edit" onclick="document.getElementById('mdl-wo-input').click()" class="ml-1 bg-amber-500 hover:bg-amber-600 text-white px-2 py-0.5 rounded text-[10px] hidden">Edit</button>
+                <button id="btn-wo-delete" onclick="deleteWo()" class="ml-1 bg-red-600 hover:bg-red-700 text-white px-2 py-0.5 rounded text-[10px] hidden">Hapus</button>
+            </div>
 
             <div class="col-span-2 border-t border-dashed border-slate-300 my-1"></div>
 
@@ -346,8 +357,236 @@
     </div>
 </div>
 
+<!-- WO Preview Modal -->
+<div id="woPreviewModal" class="fixed inset-0 z-[110] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div class="bg-white w-full max-w-3xl rounded-lg overflow-hidden shadow-2xl flex flex-col h-[80vh]">
+        <div class="bg-[#0D1B8C] text-white px-4 py-3 flex items-center justify-between">
+            <span class="font-bold text-sm" id="woPreviewTitle">Preview Berkas WO</span>
+            <button onclick="closeWoPreviewModal()" class="text-white hover:text-red-200 text-xl font-bold leading-none">&times;</button>
+        </div>
+        <div class="flex-1 bg-slate-100 p-4 flex items-center justify-center overflow-auto" id="woPreviewContainer">
+            <!-- Will be dynamically populated with img or iframe -->
+        </div>
+    </div>
+</div>
+
 <script>
+let currentAgenda = null;
+const dbName = 'FastOnDB';
+const storeName = 'wo_files';
+
+function getDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(dbName, 1);
+        request.onupgradeneeded = function(e) {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(storeName)) {
+                db.createObjectStore(storeName, { keyPath: 'agenda' });
+            }
+        };
+        request.onsuccess = function(e) {
+            resolve(e.target.result);
+        };
+        request.onerror = function(e) {
+            reject(e.target.error);
+        };
+    });
+}
+
+async function saveWoToIndexedDB(agenda, fileData) {
+    const db = await getDB();
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(storeName, 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const data = {
+            agenda: agenda,
+            name: fileData.name,
+            type: fileData.type,
+            data: fileData.data
+        };
+        const request = store.put(data);
+        request.onsuccess = () => resolve();
+        request.onerror = (e) => reject(e.target.error);
+    });
+}
+
+async function getWoFromIndexedDB(agenda) {
+    const db = await getDB();
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(storeName, 'readonly');
+        const store = transaction.objectStore(storeName);
+        const request = store.get(agenda);
+        request.onsuccess = (e) => resolve(e.target.result);
+        request.onerror = (e) => reject(e.target.error);
+    });
+}
+
+async function deleteWoFromIndexedDB(agenda) {
+    const db = await getDB();
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(storeName, 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const request = store.delete(agenda);
+        request.onsuccess = () => resolve();
+        request.onerror = (e) => reject(e.target.error);
+    });
+}
+
+async function loadWoData() {
+    if (!currentAgenda) return;
+    try {
+        const fileData = await getWoFromIndexedDB(currentAgenda);
+        const displaySpan = document.getElementById('mdl-wo-display');
+        const btnUpload = document.getElementById('btn-wo-upload');
+        const btnPreview = document.getElementById('btn-wo-preview');
+        const btnEdit = document.getElementById('btn-wo-edit');
+        const btnDelete = document.getElementById('btn-wo-delete');
+
+        if (fileData) {
+            displaySpan.textContent = fileData.name;
+            btnUpload.classList.add('hidden');
+            btnPreview.classList.remove('hidden');
+            btnEdit.classList.remove('hidden');
+            btnDelete.classList.remove('hidden');
+        } else {
+            displaySpan.textContent = '-';
+            btnUpload.classList.remove('hidden');
+            btnPreview.classList.add('hidden');
+            btnEdit.classList.add('hidden');
+            btnDelete.classList.add('hidden');
+        }
+    } catch (e) {
+        console.error('Error loading WO data:', e);
+    }
+}
+
+function handleWoUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const saveWo = async (name, type, dataUrl) => {
+        const fileData = {
+            name: name,
+            type: type,
+            data: dataUrl
+        };
+        try {
+            await saveWoToIndexedDB(currentAgenda, fileData);
+            await loadWoData();
+        } catch (e) {
+            alert('Gagal menyimpan berkas WO: ' + e.message);
+        }
+    };
+
+    if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                // Batasi dimensi maksimal gambar ke 1200px untuk kompresi optimal
+                const MAX_WIDTH = 1200;
+                const MAX_HEIGHT = 1200;
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Kompres gambar menjadi format JPEG dengan kualitas 70%
+                const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                saveWo(file.name.replace(/\.[^/.]+$/, "") + ".jpg", "image/jpeg", compressedDataUrl);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    } else {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            saveWo(file.name, file.type, e.target.result);
+        };
+        reader.readAsDataURL(file);
+    }
+    event.target.value = '';
+}
+
+async function deleteWo() {
+    if (confirm('Apakah Anda yakin ingin menghapus berkas WO ini?')) {
+        try {
+            await deleteWoFromIndexedDB(currentAgenda);
+            await loadWoData();
+        } catch (e) {
+            alert('Gagal menghapus berkas: ' + e.message);
+        }
+    }
+}
+
+async function previewWo() {
+    try {
+        const fileData = await getWoFromIndexedDB(currentAgenda);
+        if (!fileData) return;
+
+        const container = document.getElementById('woPreviewContainer');
+        const title = document.getElementById('woPreviewTitle');
+        title.textContent = 'Preview Berkas WO: ' + fileData.name;
+        container.innerHTML = '';
+
+        if (fileData.type.startsWith('image/')) {
+            const img = document.createElement('img');
+            img.src = fileData.data;
+            img.className = 'max-w-full max-h-[60vh] object-contain rounded border shadow-sm';
+            container.appendChild(img);
+        } else if (fileData.type === 'application/pdf') {
+            const iframe = document.createElement('iframe');
+            iframe.src = fileData.data;
+            iframe.className = 'w-full h-full border-none rounded';
+            container.appendChild(iframe);
+        } else {
+            const link = document.createElement('a');
+            link.href = fileData.data;
+            link.download = fileData.name;
+            link.className = 'bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded text-xs';
+            link.textContent = 'Unduh Berkas ' + fileData.name;
+            container.appendChild(link);
+        }
+
+        const modal = document.getElementById('woPreviewModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+    } catch (e) {
+        alert('Gagal menampilkan preview: ' + e.message);
+    }
+}
+
+function closeWoPreviewModal() {
+    const modal = document.getElementById('woPreviewModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+}
+
 function openDetailModal(item) {
+    currentAgenda = item.no_agenda || '-';
+    loadWoData();
+
     document.getElementById('mdl-up3').textContent = 'BOJONEGORO';
     document.getElementById('mdl-ulp').textContent = item.ulp || 'LAMONGAN';
     document.getElementById('mdl-transaksi').textContent = (item.transaksi || '-') + ' - ' + (item.transaksi || '-');

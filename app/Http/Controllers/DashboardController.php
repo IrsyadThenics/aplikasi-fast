@@ -17,14 +17,21 @@ class DashboardController extends Controller
 
         // Map role ke nama folder jika ada perbedaan (misal: managerULP -> ulp)
         $map = [
-            'managerULP'    => 'ulp',
-            'managerUP3'    => 'up3',
-            'administrator' => 'administrator',
-            'pelayanan'     => 'pelayanan',
-            'konstruksi'    => 'konstruksi',
-            'jaringan'      => 'jaringan',
-            'perencanaan'   => 'perencanaan',
-            'transaksi'     => 'transaksi',
+            'managerULP'          => 'ulp',
+            'managerULP_babat'    => 'ulp_babat',
+            'managerULP_brondong' => 'ulp_brondong',
+            'managerULP_padangan' => 'ulp_padangan',
+            'managerULP_bjn'      => 'ulp_bjn',
+            'managerULP_sumberejo'=> 'ulp_sumberejo',
+            'managerULP_tuban'    => 'ulp_tuban',
+            'managerULP_jatirogo' => 'ulp_jatirogo',
+            'managerUP3'          => 'up3',
+            'administrator'       => 'administrator',
+            'pelayanan'           => 'pelayanan',
+            'konstruksi'          => 'konstruksi',
+            'jaringan'            => 'jaringan',
+            'perencanaan'         => 'perencanaan',
+            'transaksi'           => 'transaksi',
         ];
 
         return $map[$role] ?? $role;
@@ -43,7 +50,7 @@ class DashboardController extends Controller
             abort(403, "Anda tidak memiliki hak akses atau halaman belum tersedia. (Role Anda: {$role} | Folder yang dicari: dashboard.{$folder})");
         }
 
-        $data = \App\Models\data::all();
+        $data = $this->getFilteredData();
 
         return view("dashboard.{$folder}", compact('data'));
     }
@@ -52,87 +59,131 @@ class DashboardController extends Controller
     // SUB-MENU DINAMIS UNTUK SEMUA ROLE
     // ------------------------------------------
 
+    private function getFilteredData()
+    {
+        $role = Auth::user()->role;
+        $query = \App\Models\data::query();
+
+        $ulpMap = [
+            'managerULP'          => 'LAMONGAN',
+            'managerULP_babat'    => 'BABAT',
+            'managerULP_brondong' => 'BRONDONG',
+            'managerULP_padangan' => 'PADANGAN',
+            'managerULP_bjn'      => 'BOJONEGORO',
+            'managerULP_sumberejo'=> 'SUMBEREJO',
+            'managerULP_tuban'    => 'TUBAN',
+            'managerULP_jatirogo' => 'JATIROGO',
+        ];
+
+        if (array_key_exists($role, $ulpMap)) {
+            $query->where('ulp', 'like', '%' . $ulpMap[$role] . '%');
+        }
+
+        return $query->get();
+    }
+
     public function dataPbpd()
     {
-        $data = \App\Models\data::whereRaw('LOWER(no_agenda) != ?', ['ulp lamongan'])->get();
-        return view('dashboard.' . $this->getViewFolder() . '.data_pbpd', compact('data'));
+        $data = $this->getFilteredData();
+
+        $role = Auth::user()->role;
+
+        // Semua role managerULP (termasuk per-ULP) pakai view khusus dengan tombol "Kirim"
+        $ulpRoles = [
+            'managerULP'          => 'dashboard.ulp.data_pbpd',
+            'managerULP_babat'    => 'dashboard.ulp_babat.data_pbpd',
+            'managerULP_brondong' => 'dashboard.ulp_brondong.data_pbpd',
+            'managerULP_padangan' => 'dashboard.ulp_padangan.data_pbpd',
+            'managerULP_bjn'      => 'dashboard.ulp_bjn.data_pbpd',
+            'managerULP_sumberejo'=> 'dashboard.ulp_sumberejo.data_pbpd',
+            'managerULP_tuban'    => 'dashboard.ulp_tuban.data_pbpd',
+            'managerULP_jatirogo' => 'dashboard.ulp_jatirogo.data_pbpd',
+        ];
+
+        if (isset($ulpRoles[$role])) {
+            return view($ulpRoles[$role], compact('data'));
+        }
+
+        // Semua role lain: pakai shared view yang otomatis menyembunyikan
+        // data yang sudah dikirim ke JTM/JTR/Tanpa Perluasan via IndexedDB
+        return view('dashboard.shared.data_pbpd', compact('data'));
     }
 
     public function tanpaPerluasan()
     {
-        $data = \App\Models\data::all();
-        return view('dashboard.' . $this->getViewFolder() . '.tanpa_perluasan', compact('data'));
+        $data = $this->getFilteredData();
+        return view('dashboard.shared.tanpa_perluasan', compact('data'));
     }
 
     public function perluasanJtm()
     {
-        $data = \App\Models\data::all();
-        return view('dashboard.' . $this->getViewFolder() . '.perluasan_jtm', compact('data'));
+        $data = $this->getFilteredData();
+        return view('dashboard.shared.perluasan_jtm', compact('data'));
     }
 
     public function perluasanJtr()
     {
-        $data = \App\Models\data::all();
-        return view('dashboard.' . $this->getViewFolder() . '.perluasan_jtr', compact('data'));
+        $data = $this->getFilteredData();
+        return view('dashboard.shared.perluasan_jtr', compact('data'));
     }
 
     public function pengoperasian()
     {
-        $data = \App\Models\data::all();
+        $data = $this->getFilteredData();
         return view('dashboard.' . $this->getViewFolder() . '.pengoperasian', compact('data'));
     }
 
     public function pencarian()
     {
-        $data = \App\Models\data::all();
+        $data = $this->getFilteredData();
         return view('dashboard.' . $this->getViewFolder() . '.pencarian', compact('data'));
     }
 
     public function prosesPerluasan()
     {
-        $data = \App\Models\data::all();
+        $data = $this->getFilteredData();
         return view('dashboard.' . $this->getViewFolder() . '.proses_perluasan', compact('data'));
     }
 
     public function restitusi()
     {
-        $data = \App\Models\data::all();
+        $data = $this->getFilteredData();
         return view('dashboard.' . $this->getViewFolder() . '.restitusi', compact('data'));
     }
 
     public function laporan()
     {
-        $data = \App\Models\data::all();
+        $data = $this->getFilteredData();
         return view('dashboard.' . $this->getViewFolder() . '.laporan', compact('data'));
     }
 
     public function notifikasi()
     {
-        $data = \App\Models\data::all();
+        $data = $this->getFilteredData();
         return view('dashboard.' . $this->getViewFolder() . '.notifikasi', compact('data'));
     }
 
     public function baOperasi()
     {
-        $data = \App\Models\data::all();
+        $data = $this->getFilteredData();
         return view('dashboard.' . $this->getViewFolder() . '.ba_operasi', compact('data'));
     }
 
     public function survey()
     {
-        $data = \App\Models\data::all();
+        $data = $this->getFilteredData();
         return view('dashboard.' . $this->getViewFolder() . '.survey', compact('data'));
     }
 
     public function checklist()
     {
-        $data = \App\Models\data::all();
+        $data = $this->getFilteredData();
         return view('dashboard.' . $this->getViewFolder() . '.checklist', compact('data'));
     }
 
     public function uploadData()
     {
-        $data = \App\Models\data::all();
+        $data = $this->getFilteredData();
         return view('dashboard.' . $this->getViewFolder() . '.uploadData_excel', compact('data'));
     }
 

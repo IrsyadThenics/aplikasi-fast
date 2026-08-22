@@ -23,13 +23,76 @@ class DatabaseSeeder extends Seeder
             'lokasi_ULP' => 'Bojonegoro',
         ]);
 
-        // manager ULP
+        // manager ULP - Lamongan
         User::factory()->create([
             'user_id' => '51803',
             'password' => bcrypt('password'),
             'role' => 'managerULP',
             'lokasi_UP3' => 'UP3 Bojonegoro',
             'lokasi_ULP' => 'Lamongan',
+        ]);
+
+        // manager ULP - Babat
+        User::factory()->create([
+            'user_id' => '51803BAB',
+            'password' => bcrypt('password'),
+            'role' => 'managerULP_babat',
+            'lokasi_UP3' => 'UP3 Bojonegoro',
+            'lokasi_ULP' => 'Babat',
+        ]);
+
+        // manager ULP - Brondong
+        User::factory()->create([
+            'user_id' => '51803BRO',
+            'password' => bcrypt('password'),
+            'role' => 'managerULP_brondong',
+            'lokasi_UP3' => 'UP3 Bojonegoro',
+            'lokasi_ULP' => 'Brondong',
+        ]);
+
+        // manager ULP - Padangan
+        User::factory()->create([
+            'user_id' => '51803PAD',
+            'password' => bcrypt('password'),
+            'role' => 'managerULP_padangan',
+            'lokasi_UP3' => 'UP3 Bojonegoro',
+            'lokasi_ULP' => 'Padangan',
+        ]);
+
+        // manager ULP - Bojonegoro
+        User::factory()->create([
+            'user_id' => '51803BJN',
+            'password' => bcrypt('password'),
+            'role' => 'managerULP_bjn',
+            'lokasi_UP3' => 'UP3 Bojonegoro',
+            'lokasi_ULP' => 'Bojonegoro',
+        ]);
+
+        // manager ULP - Sumberejo
+        User::factory()->create([
+            'user_id' => '51803SUM',
+            'password' => bcrypt('password'),
+            'role' => 'managerULP_sumberejo',
+            'lokasi_UP3' => 'UP3 Bojonegoro',
+            'lokasi_ULP' => 'Sumberejo',
+        ]);
+
+        // manager ULP - Tuban
+        User::factory()->create([
+            'user_id' => '51803TBN',
+            'password' => bcrypt('password'),
+            'role' => 'managerULP_tuban',
+            'lokasi_UP3' => 'UP3 Bojonegoro',
+            'lokasi_ULP' => 'Tuban',
+        ]);
+
+        // manager ULP - Jatirogo
+        User::factory()->create([
+            'user_id' => '51803JAT',
+            'password' => bcrypt('password'),
+            'role' => 'managerULP_jatirogo',
+            'lokasi_UP3' => 'UP3 Bojonegoro',
+            'lokasi_ULP' => 'Jatirogo',
         ]);
 
         // KONSTRUKSI

@@ -89,6 +89,7 @@
                     <thead class="sticky top-0 z-10">
                         <tr class="bg-[#0D1B8C] text-white">
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">NO.</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">ASAL ULP</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">DTL</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">FASTON<br>360&deg;</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" colspan="2">SYARAT</th>

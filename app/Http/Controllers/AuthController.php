@@ -25,14 +25,21 @@ class AuthController extends Controller
 
             // Map role ke prefix route yang sesuai di web.php
             $routePrefixes = [
-                'managerUP3'    => 'up3',
-                'managerULP'    => 'ulp',
-                'administrator' => 'admin',
-                'pelayanan'     => 'pelayanan',
-                'konstruksi'    => 'konstruksi',
-                'jaringan'      => 'jaringan',
-                'perencanaan'   => 'perencanaan',
-                'transaksi'     => 'transaksi',
+                'managerUP3'         => 'up3',
+                'managerULP'         => 'ulp',
+                'managerULP_babat'   => 'ulp_babat',
+                'managerULP_brondong'=> 'ulp_brondong',
+                'managerULP_padangan'=> 'ulp_padangan',
+                'managerULP_bjn'     => 'ulp_bjn',
+                'managerULP_sumberejo'=> 'ulp_sumberejo',
+                'managerULP_tuban'   => 'ulp_tuban',
+                'managerULP_jatirogo'=> 'ulp_jatirogo',
+                'administrator'      => 'admin',
+                'pelayanan'          => 'pelayanan',
+                'konstruksi'         => 'konstruksi',
+                'jaringan'           => 'jaringan',
+                'perencanaan'        => 'perencanaan',
+                'transaksi'          => 'transaksi',
             ];
 
             if (array_key_exists($role, $routePrefixes)) {
