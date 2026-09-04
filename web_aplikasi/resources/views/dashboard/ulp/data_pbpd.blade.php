@@ -1037,31 +1037,43 @@ function closeDestModal() {
 function confirmKirim(dest) {
     var keys = Object.keys(_selectedItems);
     if (keys.length === 0) { closeDestModal(); return; }
-    
+
     var promises = keys.map(function(agendaKey) {
         var item = _selectedItems[agendaKey];
         var docs = uploadedDocs[agendaKey] || { ktp: [], itt: [] };
-        var record = {
-            agendaKey   : agendaKey, dest        : dest,
+        var data = {
+            agendaKey   : agendaKey,
+            dest        : dest,
             no_agenda   : item.no_agenda   || agendaKey,
             nama        : item.nama        || '-',
             alamat      : item.alamat      || '-',
             transaksi   : item.transaksi   || '-',
             status      : item.status      || '-',
             tarif_lama  : item.tarif_lama  || '-',
-            daya_lama   : item.daya_lama   || '-',
+            daya_lama   : item.daya_lama   || 0,
             tarif_baru  : item.tarif_baru  || '-',
-            daya_baru   : item.daya_baru   || '-',
+            daya_baru   : item.daya_baru   || 0,
             total_biaya : item.total_biaya || 0,
             ulp         : item.ulp || '-',
-            sentAt      : new Date().toISOString(),
             ktpCount    : docs.ktp ? docs.ktp.length : 0,
             ittCount    : docs.itt ? docs.itt.length : 0
         };
-        return saveSentItem(record).then(function() {
-            _checkedRows[agendaKey] = true;
-            var row = document.getElementById('row-' + agendaKey);
-            if (row) { row.style.display = 'none'; }
+
+        var rolePrefix = window.location.pathname.split('/')[1] || 'ulp';
+
+        return fetch('/' + rolePrefix + '/api/kirim-data', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify(data)
+        }).then(function(res) { return res.json(); }).then(function(res) {
+            if(res.success) {
+                _checkedRows[agendaKey] = true;
+                var row = document.getElementById('row-' + agendaKey);
+                if (row) { row.style.display = 'none'; }
+            }
         });
     });
 

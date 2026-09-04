@@ -65,6 +65,11 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/checklist', [DashboardController::class, 'checklist'])->name('checklist');
             Route::get('/upload-data', [DashboardController::class, 'uploadData'])->name('upload_data');
             Route::post('/upload-data', [DashboardController::class, 'storeUploadData'])->name('upload_data.store');
+
+            // API untuk kirim data & simpan berkas
+            Route::post('/api/kirim-data', [DashboardController::class, 'apiKirimData']);
+            Route::get('/api/get-pengiriman', [DashboardController::class, 'apiGetPengiriman']);
+            Route::post('/api/simpan-rab', [DashboardController::class, 'apiSimpanRab']);
         });
     }
 });

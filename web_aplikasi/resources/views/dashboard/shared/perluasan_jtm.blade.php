@@ -160,23 +160,9 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
     }
 
     function loadSentItems(dest) {
-        return openDB().then(function(db) {
-            return new Promise(function(resolve, reject) {
-                var tx    = db.transaction(SENT_STORE, 'readonly');
-                var store = tx.objectStore(SENT_STORE);
-                var req   = store.getAll();
-                req.onsuccess = function() {
-                    var items = (req.result || []).filter(function(r) { return r.dest === dest; });
-                    if (window._ulpRoleFilter) {
-                        items = items.filter(function(r) {
-                            return (r.ulp || '').toUpperCase().indexOf(window._ulpRoleFilter) !== -1;
-                        });
-                    }
-                    resolve(items);
-                };
-                req.onerror = function(e) { reject(e); };
-            });
-        });
+        var rolePrefix = window.location.pathname.split('/')[1] || 'ulp';
+        return fetch('/' + rolePrefix + '/api/get-pengiriman?dest=' + dest)
+            .then(function(res) { return res.json(); });
     }
 
     function formatDate(iso) {
@@ -349,7 +335,7 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
             <hr class="border-slate-200">
 
             {{-- RAB --}}
-            <div class="grid grid-cols-[150px_1fr] gap-2 items-center bg-blue-50/50 p-3 rounded-lg border border-blue-100">
+            <div id="rab-section_jtm" class="grid grid-cols-[150px_1fr] gap-2 items-center bg-blue-50/50 p-3 rounded-lg border border-blue-100">
                 <div class="font-bold text-[#0D1B8C] uppercase tracking-wider flex items-center gap-1.5">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     RAB
@@ -366,7 +352,7 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
             </div>
 
                         {{-- Berkas WO / Excel Section --}}
-            <div class="bg-amber-50/60 border border-amber-200 rounded-lg p-3 flex flex-col gap-2">
+            <div id="wo-section_jtm" class="bg-amber-50/60 border border-amber-200 rounded-lg p-3 flex flex-col gap-2">
                 <div class="font-bold text-amber-800 uppercase tracking-wider flex items-center gap-1.5 text-[13px]">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                     <span id="wo-title_jtm">Berkas WO</span>
@@ -408,6 +394,60 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                         <input type="checkbox" id="excel-check-status_jtm" disabled class="w-4 h-4 accent-emerald-600 rounded border-slate-300">
                         <label class="text-xs font-bold text-slate-700 cursor-default">File Excel Tersedia <span class="text-slate-400 font-normal">(dari Transaksi)</span></label>
                     </div>
+                </div>
+            </div>
+
+            {{-- Tujuan PT & Kelayakan --}}
+            <div id="vendor-section_jtm" class="bg-slate-50 border border-slate-200 rounded-lg p-4 flex flex-col gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {{-- Pilih PT --}}
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Tujuan Kirim ke PT</label>
+                        <select id="jtm-mdl-pt" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white">
+                            <option value="">-- Pilih PT --</option>
+                            <option value="PT. A">PT. ALPHA</option>
+                            <option value="PT. B">PT. BRAVO</option>
+                            <option value="PT. C">PT. CHARLIE</option>
+                        </select>
+                    </div>
+                    {{-- Status Layak --}}
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Status Kelayakan</label>
+                        <div class="flex items-center gap-4 mt-1">
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="radio" name="jtm_status_layak" value="layak" class="w-4 h-4 text-blue-600">
+                                <span class="text-sm font-bold text-emerald-600 group-hover:text-emerald-700">LAYAK</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="radio" name="jtm_status_layak" value="tidak_layak" class="w-4 h-4 text-red-600">
+                                <span class="text-sm font-bold text-red-600 group-hover:text-red-700">TIDAK LAYAK</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {{-- Upload Berkas Kelayakan --}}
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Upload Berkas Kelayakan</label>
+                        <div class="flex items-center gap-2">
+                            <input type="file" id="jtm-mdl-file-kelayakan" accept=".pdf,.jpg,.jpeg,.png" class="text-xs border border-slate-300 rounded-lg p-1.5 w-full bg-white">
+                        </div>
+                    </div>
+                    {{-- Upload Berkas WO Tiang --}}
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Upload Berkas WO Tiang</label>
+                        <div class="flex items-center gap-2">
+                            <input type="file" id="jtm-mdl-file-wo-tiang" accept=".pdf,.jpg,.jpeg,.png" class="text-xs border border-slate-300 rounded-lg p-1.5 w-full bg-white">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end">
+                    <button onclick="kirimVendor_jtm()" class="bg-[#0D1B8C] hover:bg-blue-800 text-white px-6 py-2 rounded-lg font-bold text-sm shadow-md transition flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                        Kirim ke Vendor
+                    </button>
                 </div>
             </div>
 
@@ -554,15 +594,21 @@ function openDetailModal_jtm(item) {
         };
     };
 
-    window.currentItem_jtm = item;
+    window.currentItem_jtm = item; // Penting untuk inisialisasi
     renderWoList_jtm(agendaKey);
 
     var m = document.getElementById('detailModal_jtm');
     if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
 }
-function closeDetailModal_jtm() {
-    var m = document.getElementById('detailModal_jtm');
-    if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
+function kirimVendor_jtm() {
+    var pt = document.getElementById('jtm-mdl-pt').value;
+    var layak = document.querySelector('input[name="jtm_status_layak"]:checked');
+
+    if (!pt) { alert('Pilih Tujuan PT terlebih dahulu.'); return; }
+    if (!layak) { alert('Pilih Status Kelayakan terlebih dahulu.'); return; }
+
+    alert('Data berhasil dikirim ke ' + pt + ' dengan status: ' + layak.value.toUpperCase());
+    closeDetailModal_jtm();
 }
 
 function saveRabField_jtm() {

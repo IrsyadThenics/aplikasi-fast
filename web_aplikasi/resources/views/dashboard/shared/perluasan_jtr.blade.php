@@ -160,23 +160,9 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
     }
 
     function loadSentItems(dest) {
-        return openDB().then(function(db) {
-            return new Promise(function(resolve, reject) {
-                var tx    = db.transaction(SENT_STORE, 'readonly');
-                var store = tx.objectStore(SENT_STORE);
-                var req   = store.getAll();
-                req.onsuccess = function() {
-                    var items = (req.result || []).filter(function(r) { return r.dest === dest; });
-                    if (window._ulpRoleFilter) {
-                        items = items.filter(function(r) {
-                            return (r.ulp || '').toUpperCase().indexOf(window._ulpRoleFilter) !== -1;
-                        });
-                    }
-                    resolve(items);
-                };
-                req.onerror = function(e) { reject(e); };
-            });
-        });
+        var rolePrefix = window.location.pathname.split('/')[1] || 'ulp';
+        return fetch('/' + rolePrefix + '/api/get-pengiriman?dest=' + dest)
+            .then(function(res) { return res.json(); });
     }
 
     function formatDate(iso) {
@@ -411,6 +397,60 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                 </div>
             </div>
 
+            {{-- Tujuan PT & Kelayakan --}}
+            <div id="vendor-section_jtr" class="bg-slate-50 border border-slate-200 rounded-lg p-4 flex flex-col gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {{-- Pilih PT --}}
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Tujuan Kirim ke PT</label>
+                        <select id="jtr-mdl-pt" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white">
+                            <option value="">-- Pilih PT --</option>
+                            <option value="PT. A">PT. ALPHA</option>
+                            <option value="PT. B">PT. BRAVO</option>
+                            <option value="PT. C">PT. CHARLIE</option>
+                        </select>
+                    </div>
+                    {{-- Status Layak --}}
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Status Kelayakan</label>
+                        <div class="flex items-center gap-4 mt-1">
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="radio" name="jtr_status_layak" value="layak" class="w-4 h-4 text-blue-600">
+                                <span class="text-sm font-bold text-emerald-600 group-hover:text-emerald-700">LAYAK</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer group">
+                                <input type="radio" name="jtr_status_layak" value="tidak_layak" class="w-4 h-4 text-red-600">
+                                <span class="text-sm font-bold text-red-600 group-hover:text-red-700">TIDAK LAYAK</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {{-- Upload Berkas Kelayakan --}}
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Upload Berkas Kelayakan</label>
+                        <div class="flex items-center gap-2">
+                            <input type="file" id="jtr-mdl-file-kelayakan" accept=".pdf,.jpg,.jpeg,.png" class="text-xs border border-slate-300 rounded-lg p-1.5 w-full bg-white">
+                        </div>
+                    </div>
+                    {{-- Upload Berkas WO Tiang --}}
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Upload Berkas WO Tiang</label>
+                        <div class="flex items-center gap-2">
+                            <input type="file" id="jtr-mdl-file-wo-tiang" accept=".pdf,.jpg,.jpeg,.png" class="text-xs border border-slate-300 rounded-lg p-1.5 w-full bg-white">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end">
+                    <button onclick="kirimVendor_jtr()" class="bg-[#0D1B8C] hover:bg-blue-800 text-white px-6 py-2 rounded-lg font-bold text-sm shadow-md transition flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                        Kirim ke Vendor
+                    </button>
+                </div>
+            </div>
+
             <hr class="border-slate-200 mb-2">
 
             <div class="w-full md:w-1/2">
@@ -554,15 +594,21 @@ function openDetailModal_jtr(item) {
         };
     };
 
-    window.currentItem_jtr = item;
+    window.currentItem_jtr = item; // Penting untuk inisialisasi
     renderWoList_jtr(agendaKey);
 
     var m = document.getElementById('detailModal_jtr');
     if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
 }
-function closeDetailModal_jtr() {
-    var m = document.getElementById('detailModal_jtr');
-    if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
+function kirimVendor_jtr() {
+    var pt = document.getElementById('jtr-mdl-pt').value;
+    var layak = document.querySelector('input[name="jtr_status_layak"]:checked');
+
+    if (!pt) { alert('Pilih Tujuan PT terlebih dahulu.'); return; }
+    if (!layak) { alert('Pilih Status Kelayakan terlebih dahulu.'); return; }
+
+    alert('Data berhasil dikirim ke ' + pt + ' dengan status: ' + layak.value.toUpperCase());
+    closeDetailModal_jtr();
 }
 
 function saveRabField_jtr() {
