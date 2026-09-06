@@ -360,13 +360,9 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
 
                 {{-- Perencanaan: Upload WO --}}
                 <div id="wo-controls_jtm" class="hidden flex-col gap-2">
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <label class="cursor-pointer flex items-center gap-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-                            Pilih File WO
-                            <input type="file" id="jtm-mdl-wo-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png" multiple onchange="handleWoUpload_jtm(this)" />
-                        </label>
-                        <span class="text-[11px] text-amber-700 italic">PDF / JPG / JPEG / PNG</span>
+                    <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Berkas WO</label>
+                    <div class="flex items-center gap-2">
+                        <input type="file" id="jtm-mdl-wo-input" accept=".pdf,.jpg,.jpeg,.png" class="text-xs border border-slate-300 rounded-lg p-1.5 w-full bg-white" onchange="handleWoUpload_jtm(this)" />
                     </div>
                     <ul id="jtm-mdl-wo-list" class="flex flex-col gap-1 mt-1"></ul>
                 </div>

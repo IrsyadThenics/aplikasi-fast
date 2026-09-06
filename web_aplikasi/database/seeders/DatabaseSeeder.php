@@ -150,6 +150,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
+            VendorUserSeeder::class,
             Data_pb_pdSeeder::class,
             JTMSeeder::class,
             TanpaPerluasanSeeder::class,

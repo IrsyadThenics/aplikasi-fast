@@ -4,19 +4,21 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\PengirimanData;
 use App\Models\uploadData;
-use App\Models\data;
 
 class FileController extends Controller
 {
-    // Cukup melihat file yang di-upload
+    // Mengambil data pengiriman dari Perencanaan beserta seluruh berkasnya (WO, KTP, ITT, dll) per pelanggan
     public function getFiles()
     {
-        // Get files ordered by latest
-        $files = uploadData::orderBy('created_at', 'desc')->get();
+        $pengiriman = PengirimanData::with('berkas')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return response()->json([
             'success' => true,
-            'data' => $files
+            'data'    => $pengiriman
         ]);
     }
 
@@ -37,14 +39,10 @@ class FileController extends Controller
             'path_file' => $path,
         ]);
 
-        // (Opsional) bisa parse CSV/Excel di sini seperti di web, atau hanya menyimpan file.
-        // Jika dibutuhkan seperti DashboardController::storeUploadData, kita bisa menggunakan script yang sama.
-        // Namun, untuk Flutter API, ini sudah cukup untuk upload.
-
         return response()->json([
             'success' => true,
             'message' => 'File uploaded successfully',
-            'data' => $uploadData
+            'data'    => $uploadData
         ]);
     }
 }
