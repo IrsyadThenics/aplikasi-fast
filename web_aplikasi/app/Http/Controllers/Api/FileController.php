@@ -9,7 +9,7 @@ use App\Models\uploadData;
 
 class FileController extends Controller
 {
-    // Mengambil data pengiriman dari Perencanaan beserta seluruh berkasnya (WO, KTP, ITT, dll) per pelanggan
+    // Mengambil data pengiriman dari Perencanaan beserta berkas pendukungnya
     public function getFiles()
     {
         $pengiriman = PengirimanData::with('berkas')

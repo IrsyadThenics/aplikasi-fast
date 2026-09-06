@@ -57,7 +57,7 @@ Sistem mendukung multi-role dengan kontrol akses penuh:
 |-------------------------|-----------------------------------------|
 | `administrator`         | Admin sistem dengan akses penuh         |
 | `managerUP3`            | Manager UP3 (Unit Pelaksana Pelanggan)  |
-| `managerULP`            | Manager ULP Lamongan                    |
+| `managerULP_Lamongan`            | Manager ULP Lamongan                    |
 | `managerULP_babat`      | Manager ULP Babat                       |
 | `managerULP_brondong`   | Manager ULP Brondong                    |
 | `managerULP_padangan`   | Manager ULP Padangan                    |
@@ -124,9 +124,9 @@ php artisan key:generate
 DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
 DB_PORT=5432
-DB_DATABASE=nama_database
-DB_USERNAME=postgres
-DB_PASSWORD=password_anda
+DB_DATABASE=isi dengan konfigurasi anda
+DB_USERNAME=isi sesuaikan dengan konfigurasi kalian
+DB_PASSWORD=isi dengan konfigurasi anda
 
 APP_URL=http://localhost:8000
 APP_ENV=local

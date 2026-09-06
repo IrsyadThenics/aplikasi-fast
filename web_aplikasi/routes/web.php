@@ -5,8 +5,18 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+// Public Storage Route for Mobile App / Shared Preview
+Route::get('/storage/{path}', function ($path) {
+    $fullPath = storage_path('app/public/' . $path);
+    if (!file_exists($fullPath)) {
+        return response('Pratinjau Berkas: ' . basename($path) . "\n(File simulasi dari Perencanaan)", 200)
+            ->header('Content-Type', 'text/plain');
+    }
+    return response()->file($fullPath);
+})->where('path', '.*');
+
 // ==========================================
-// RUTE AUTENTIKASI 
+// RUTE AUTENTIKASI
 // ==========================================
 Route::get('/', [AuthController::class, 'showLogin'])->name('auth.login')->middleware('guest');
 Route::post('/login', [AuthController::class, 'login'])->name('auth.authenticate');

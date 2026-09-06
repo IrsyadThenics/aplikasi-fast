@@ -395,6 +395,7 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
 
             {{-- Tujuan PT & Kelayakan --}}
             <div id="vendor-section_jtm" class="bg-slate-50 border border-slate-200 rounded-lg p-4 flex flex-col gap-4">
+                @if ((Auth::user()->role ?? '') !== 'konstruksi')
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {{-- Pilih PT --}}
                     <div>
@@ -421,11 +422,12 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                         </div>
                     </div>
                 </div>
+                @endif
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {{-- Upload Berkas Kelayakan --}}
+                    {{-- Upload Berkas Kelayakan / WO --}}
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Upload Berkas Kelayakan</label>
+                        <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">{{ (Auth::user()->role ?? '') === 'konstruksi' ? 'Upload Berkas WO' : 'Upload Berkas Kelayakan' }}</label>
                         <div class="flex items-center gap-2">
                             <input type="file" id="jtm-mdl-file-kelayakan" accept=".pdf,.jpg,.jpeg,.png" class="text-xs border border-slate-300 rounded-lg p-1.5 w-full bg-white">
                         </div>
@@ -597,13 +599,18 @@ function openDetailModal_jtm(item) {
     if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
 }
 function kirimVendor_jtm() {
-    var pt = document.getElementById('jtm-mdl-pt').value;
+    var isKonstruksi = @json((Auth::user()->role ?? '') === 'konstruksi');
+    var pt = document.getElementById('jtm-mdl-pt');
     var layak = document.querySelector('input[name="jtm_status_layak"]:checked');
 
-    if (!pt) { alert('Pilih Tujuan PT terlebih dahulu.'); return; }
-    if (!layak) { alert('Pilih Status Kelayakan terlebih dahulu.'); return; }
+    if (!isKonstruksi) {
+        if (!pt || !pt.value) { alert('Pilih Tujuan PT terlebih dahulu.'); return; }
+        if (!layak) { alert('Pilih Status Kelayakan terlebih dahulu.'); return; }
+    }
 
-    alert('Data berhasil dikirim ke ' + pt + ' dengan status: ' + layak.value.toUpperCase());
+    alert(isKonstruksi
+        ? 'Data berhasil dikirim.'
+        : 'Data berhasil dikirim ke ' + pt.value + ' dengan status: ' + layak.value.toUpperCase());
     closeDetailModal_jtm();
 }
 
