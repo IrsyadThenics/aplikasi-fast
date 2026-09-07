@@ -121,7 +121,8 @@ class DashboardController extends Controller
     public function tanpaPerluasan()
     {
         $data = $this->getFilteredData();
-        return view('dashboard.shared.tanpa_perluasan', compact('data'));
+        $vendorUploads = \App\Models\uploadData::orderBy('created_at', 'desc')->get();
+        return view('dashboard.shared.tanpa_perluasan', compact('data', 'vendorUploads'));
     }
 
     public function perluasanJtm()

@@ -454,6 +454,29 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
 
             <hr class="border-slate-200 mb-2">
 
+            {{-- Laporan Vendor Section --}}
+            <div class="bg-slate-50/60 border border-slate-200 rounded-lg p-3 flex flex-col gap-2">
+                <div class="font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5 text-[13px]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" /></svg>
+                    Laporan Vendor (Semua Laporan)
+                </div>
+                <ul class="flex flex-col gap-1 mt-1 max-h-32 overflow-y-auto pr-1">
+                    @forelse($vendorUploads ?? [] as $uv)
+                        <li class="flex items-center justify-between bg-white border border-slate-100 rounded px-2 py-1.5 text-[11.5px]">
+                            <span class="truncate max-w-[300px] text-slate-700 font-medium">{{ $uv->nama_file }}</span>
+                            <div class="flex items-center gap-2 ml-2 flex-shrink-0">
+                                <a href="{{ asset('storage/' . $uv->path_file) }}" target="_blank" class="text-blue-600 font-bold hover:underline">Lihat</a>
+                                <span class="text-slate-400 text-[10px]">{{ $uv->created_at ? $uv->created_at->format('d M y') : '' }}</span>
+                            </div>
+                        </li>
+                    @empty
+                        <li class="text-[11px] text-slate-500 italic px-2 py-1">Belum ada laporan dari vendor</li>
+                    @endforelse
+                </ul>
+            </div>
+
+            <hr class="border-slate-200 mb-2">
+
             <div class="w-full md:w-1/2">
                 <table class="w-full text-center border-collapse border border-slate-200 rounded-lg overflow-hidden shadow-sm">
                     <thead>

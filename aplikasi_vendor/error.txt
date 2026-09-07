@@ -1,0 +1,2 @@
+ERROR|COMPILE_TIME_ERROR|UNDEFINED_GETTER|C:\\Users\\NabilaAP\\Documents\\aplikasi-fast\\aplikasi_vendor\\lib\\screens\\beranda_screen.dart|76|36|5|The getter 'files' isn't defined for the type 'List<PlatformFile>'.
+ERROR|COMPILE_TIME_ERROR|UNDEFINED_GETTER|C:\\Users\\NabilaAP\\Documents\\aplikasi-fast\\aplikasi_vendor\\lib\\screens\\beranda_screen.dart|78|27|5|The getter 'files' isn't defined for the type 'List<PlatformFile>'.

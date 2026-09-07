@@ -29,6 +29,10 @@ class FileController extends Controller
             'file' => 'required|file',
         ]);
 
+        // Detect destination from route prefix (perencanaan or konstruksi)
+        $dest = $request->route()->getPrefix() ?? 'unknown';
+        $dest = trim($dest, '/');
+
         $file = $request->file('file');
         $fileName = $file->getClientOriginalName();
         $path = $file->store('uploads', 'public');
@@ -37,6 +41,7 @@ class FileController extends Controller
         $uploadData = \App\Models\uploadData::create([
             'nama_file' => $fileName,
             'path_file' => $path,
+            'dest'      => $dest,
         ]);
 
         return response()->json([

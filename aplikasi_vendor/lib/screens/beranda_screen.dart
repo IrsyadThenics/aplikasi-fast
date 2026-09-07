@@ -78,16 +78,17 @@ class _BerandaScreenState extends State<BerandaScreen> {
       final file = result.first;
       final fileName = file.name;
       final filePath = file.path;
+      final bytes = await file.readAsBytes();
       final token = await _getToken();
 
-      if (filePath == null) {
-        _showSnack('Gagal membaca jalur file', isError: true);
+      if (filePath == null && bytes.isEmpty) {
+        _showSnack('Gagal membaca data file', isError: true);
         return;
       }
 
       _showSnack('Mengunggah $fileName ke $type…');
 
-      final endpoint = type == 'Konstruksi' ? 'perencanaan' : 'perencanaan';
+      final endpoint = type == 'Konstruksi' ? 'konstruksi' : 'perencanaan';
 
       final req = http.MultipartRequest(
         'POST',
@@ -97,11 +98,19 @@ class _BerandaScreenState extends State<BerandaScreen> {
           'Accept': 'application/json',
         });
 
-      req.files.add(await http.MultipartFile.fromPath(
-        'file',
-        filePath,
-        filename: fileName,
-      ));
+      if (bytes.isNotEmpty) {
+        req.files.add(http.MultipartFile.fromBytes(
+          'file',
+          bytes,
+          filename: fileName,
+        ));
+      } else {
+        req.files.add(await http.MultipartFile.fromPath(
+          'file',
+          filePath!,
+          filename: fileName,
+        ));
+      }
 
       final streamed = await req.send();
       if (streamed.statusCode == 200) {

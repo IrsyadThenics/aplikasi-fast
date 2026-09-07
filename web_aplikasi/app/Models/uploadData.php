@@ -11,5 +11,6 @@ class uploadData extends Model
     protected $fillable = [
         'nama_file',
         'path_file',
+        'dest',
     ];
 }

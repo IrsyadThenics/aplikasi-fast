@@ -17,4 +17,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/files', [FileController::class, 'getFiles']);
         Route::post('/upload', [FileController::class, 'uploadFile']);
     });
+
+    Route::prefix('konstruksi')->group(function () {
+        Route::get('/files', [FileController::class, 'getFiles']);
+        Route::post('/upload', [FileController::class, 'uploadFile']);
+    });
 });
