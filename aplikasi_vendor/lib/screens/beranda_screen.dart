@@ -196,6 +196,169 @@ class _BerandaScreenState extends State<BerandaScreen> {
     );
   }
 
+  Future<bool> _submitVendorReport({
+    required String noAgenda,
+    required List<PlatformFile> files,
+    required List<String> checklist,
+    required String catatan,
+  }) async {
+    final token = await _getToken();
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse('$baseUrl/vendor/laporan'),
+    )
+      ..headers.addAll({
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      })
+      ..fields['no_agenda'] = noAgenda
+      ..fields['catatan'] = catatan;
+
+    for (var index = 0; index < checklist.length; index++) {
+      request.fields['checklist[$index]'] = checklist[index];
+    }
+
+    for (final file in files) {
+      request.files.add(http.MultipartFile.fromBytes(
+        'files[]',
+        await file.readAsBytes(),
+        filename: file.name,
+      ));
+    }
+
+    try {
+      final response = await request.send();
+      if (response.statusCode == 201) {
+        _showSnack('Laporan berhasil dikirim ke Perencanaan.');
+        return true;
+      }
+      _showSnack(
+        'Pengiriman gagal: ${await response.stream.bytesToString()}',
+        isError: true,
+      );
+    } catch (e) {
+      _showSnack('Pengiriman gagal: $e', isError: true);
+    }
+    return false;
+  }
+
+  void _showVendorReportForm(dynamic item) {
+    final noAgenda = (item['no_agenda'] ?? '').toString();
+    final catatanController = TextEditingController();
+    final selectedChecklist = <String>{};
+    final selectedFiles = <PlatformFile>[];
+    const checklistOptions = [
+      'Dokumen pekerjaan lengkap',
+      'Pekerjaan sesuai WO',
+      'Foto dokumentasi terlampir',
+      'Siap ditindaklanjuti Perencanaan',
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setSheetState) => Padding(
+          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: Container(
+            constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * .88),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+            decoration: const BoxDecoration(
+              color: Color(0xFF0A1A6B),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Kirim Laporan ke Perencanaan', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 4),
+                  Text('No. agenda: $noAgenda', style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 12)),
+                  const SizedBox(height: 18),
+                  const Text('Checklist pekerjaan', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                  ...checklistOptions.map((option) => CheckboxListTile(
+                    value: selectedChecklist.contains(option),
+                    onChanged: (checked) => setSheetState(() {
+                      checked == true ? selectedChecklist.add(option) : selectedChecklist.remove(option);
+                    }),
+                    title: Text(option, style: const TextStyle(color: Colors.white, fontSize: 13)),
+                    activeColor: _accent,
+                    contentPadding: EdgeInsets.zero,
+                    controlAffinity: ListTileControlAffinity.leading,
+                  )),
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: () async {
+                      final result = await FilePicker.pickFiles(
+                        allowMultiple: true,
+                        withData: true,
+                        type: FileType.custom,
+                        allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
+                      );
+                      if (result.isNotEmpty) setSheetState(() => selectedFiles.addAll(result));
+                    },
+                    icon: const Icon(Icons.attach_file_rounded),
+                    label: const Text('Pilih dokumen / berkas'),
+                    style: OutlinedButton.styleFrom(foregroundColor: Colors.white),
+                  ),
+                  if (selectedFiles.isNotEmpty)
+                    ...selectedFiles.map((file) => Padding(
+                      padding: const EdgeInsets.only(top: 5),
+                      child: Row(children: [
+                        const Icon(Icons.description_outlined, color: Colors.lightBlueAccent, size: 16),
+                        const SizedBox(width: 6),
+                        Expanded(child: Text(file.name, style: const TextStyle(color: Colors.white70, fontSize: 12))),
+                        IconButton(
+                          onPressed: () => setSheetState(() => selectedFiles.remove(file)),
+                          icon: const Icon(Icons.close_rounded, color: Colors.white70, size: 18),
+                        ),
+                      ]),
+                    )),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: catatanController,
+                    maxLines: 3,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
+                      labelText: 'Catatan untuk Perencanaan (opsional)',
+                      labelStyle: TextStyle(color: Colors.white70),
+                      enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white38)),
+                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.lightBlueAccent)),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () async {
+                        if (selectedFiles.isEmpty) {
+                          _showSnack('Pilih minimal satu dokumen atau berkas.', isError: true);
+                          return;
+                        }
+                        final sent = await _submitVendorReport(
+                          noAgenda: noAgenda,
+                          files: selectedFiles,
+                          checklist: selectedChecklist.toList(),
+                          catatan: catatanController.text.trim(),
+                        );
+                        if (sent && context.mounted) Navigator.pop(context);
+                      },
+                      icon: const Icon(Icons.send_rounded),
+                      label: const Text('Kirim ke Perencanaan'),
+                      style: ElevatedButton.styleFrom(backgroundColor: _accent, foregroundColor: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   // ── Decorative circle (same as login) ──
   Widget _buildDecorativeCircle(double size, Color color) {
     return Container(
@@ -320,13 +483,6 @@ class _BerandaScreenState extends State<BerandaScreen> {
             ),
           ),
         ],
-      ),
-
-      // FAB
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showUploadOptions,
-        backgroundColor: _accent,
-        child: const Icon(Icons.add, color: Colors.white, size: 28),
       ),
     );
   }
@@ -680,6 +836,24 @@ class _BerandaScreenState extends State<BerandaScreen> {
                           );
                         }).toList(),
                     ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _showVendorReportForm(item);
+                    },
+                    icon: const Icon(Icons.send_rounded, size: 18),
+                    label: const Text('Kirim Laporan ke Perencanaan'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _accent,
+                      foregroundColor: Colors.white,
+                    ),
                   ),
                 ),
               ),

@@ -79,6 +79,16 @@ class DashboardController extends Controller
             $query->whereRaw('LOWER(ulp) LIKE ?', ['%' . strtolower($ulpMap[$role]) . '%']);
         }
 
+        // Data yang telah dikirim oleh ULP dipindahkan ke History dan tidak lagi
+        // ditampilkan pada Data PB/PD, termasuk setelah halaman dimuat ulang.
+        if (str_starts_with($role, 'managerULP')) {
+            $sentItems = \App\Models\PengirimanData::query();
+            if (array_key_exists($role, $ulpMap)) {
+                $sentItems->whereRaw('LOWER(ulp) LIKE ?', ['%' . strtolower($ulpMap[$role]) . '%']);
+            }
+            $query->whereNotIn('no_agenda', $sentItems->select('no_agenda'));
+        }
+
         // Tampilkan data dengan berbagai status yang relevan
         $query->where(function ($q) {
             $q->whereRaw('LOWER(status) LIKE ?', ['%cetak pk%'])
@@ -121,20 +131,25 @@ class DashboardController extends Controller
     public function tanpaPerluasan()
     {
         $data = $this->getFilteredData();
-        $vendorUploads = \App\Models\uploadData::orderBy('created_at', 'desc')->get();
-        return view('dashboard.shared.tanpa_perluasan', compact('data', 'vendorUploads'));
+        $agendas = \App\Models\PengirimanData::where('dest', 'tanpa_perluasan')->pluck('no_agenda');
+        $vendorReports = \App\Models\VendorReport::with('files')->whereIn('no_agenda', $agendas)->latest()->get();
+        return view('dashboard.shared.tanpa_perluasan', compact('data', 'vendorReports'));
     }
 
     public function perluasanJtm()
     {
         $data = $this->getFilteredData();
-        return view('dashboard.shared.perluasan_jtm', compact('data'));
+        $agendas = \App\Models\PengirimanData::where('dest', 'jtm')->pluck('no_agenda');
+        $vendorReports = \App\Models\VendorReport::with('files')->whereIn('no_agenda', $agendas)->latest()->get();
+        return view('dashboard.shared.perluasan_jtm', compact('data', 'vendorReports'));
     }
 
     public function perluasanJtr()
     {
         $data = $this->getFilteredData();
-        return view('dashboard.shared.perluasan_jtr', compact('data'));
+        $agendas = \App\Models\PengirimanData::where('dest', 'jtr')->pluck('no_agenda');
+        $vendorReports = \App\Models\VendorReport::with('files')->whereIn('no_agenda', $agendas)->latest()->get();
+        return view('dashboard.shared.perluasan_jtr', compact('data', 'vendorReports'));
     }
 
     public function pengoperasian()
@@ -223,6 +238,127 @@ class DashboardController extends Controller
     {
         $data = $this->getFilteredData();
         return view('dashboard.' . $this->getViewFolder() . '.cek_kwh', compact('data'));
+    }
+
+    public function historyPengiriman()
+    {
+        $role = Auth::user()->role;
+        $query = $this->getUlpPengirimanQuery();
+
+        if ($role === 'perencanaan') {
+            $query->where('vendor_sent', true)
+                  ->latest('vendor_sent_at')
+                  ->latest('sentAt');
+        } else {
+            $query->latest('sentAt');
+        }
+
+        $history = $query->get();
+        return view('dashboard.ulp.history', compact('history'));
+    }
+
+    public function storeHistoryPengiriman(Request $request)
+    {
+        $role = Auth::user()->role;
+        abort_unless(str_starts_with($role, 'managerULP') || $role === 'perencanaan', 403);
+
+        $ulpMap = [
+            'managerULP'          => 'LAMONGAN',
+            'managerULP_babat'    => 'BABAT',
+            'managerULP_brondong' => 'BRONDONG',
+            'managerULP_padangan' => 'PADANGAN',
+            'managerULP_bjn'      => 'BOJONEGORO',
+            'managerULP_sumberejo'=> 'SUMBEREJO',
+            'managerULP_tuban'    => 'TUBAN',
+            'managerULP_jatirogo' => 'JATIROGO',
+        ];
+
+        $validated = $request->validate([
+            'no_agenda'   => ['required', 'string', 'max:255'],
+            'nama'        => ['required', 'string', 'max:255'],
+            'alamat'      => ['nullable', 'string', 'max:1000'],
+            'transaksi'   => ['nullable', 'string', 'max:100'],
+            'status'      => ['nullable', 'string', 'max:100'],
+            'dest'        => ['required', 'in:jtm,jtr,tanpa_perluasan'],
+            'tarif_lama'  => ['nullable', 'string', 'max:100'],
+            'daya_lama'   => ['nullable', 'integer', 'min:0'],
+            'tarif_baru'  => ['nullable', 'string', 'max:100'],
+            'daya_baru'   => ['nullable', 'integer', 'min:0'],
+            'total_biaya' => ['nullable', 'numeric', 'min:0'],
+            'ulp'         => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $validated['agendaKey'] = $validated['no_agenda'];
+        $validated['ulp']       = $request->input('ulp') ?: ($ulpMap[$role] ?? 'PERENCANAAN');
+        $validated['sentAt']    = now();
+        $validated['vendor_sent'] = true;
+        $validated['vendor_sent_at'] = now();
+
+        \App\Models\PengirimanData::updateOrCreate(
+            ['agendaKey' => $validated['agendaKey']],
+            $validated
+        );
+
+        return back()->with('success', 'Riwayat pengiriman berhasil ditambahkan.');
+    }
+
+    public function updateHistoryPengiriman(Request $request, \App\Models\PengirimanData $pengiriman)
+    {
+        $this->ensureUlpOwnsPengiriman($pengiriman);
+        $validated = $request->validate([
+            'no_agenda'   => ['nullable', 'string', 'max:255'],
+            'nama'        => ['nullable', 'string', 'max:255'],
+            'alamat'      => ['nullable', 'string', 'max:1000'],
+            'transaksi'   => ['nullable', 'string', 'max:100'],
+            'status'      => ['nullable', 'string', 'max:100'],
+            'dest'        => ['required', 'in:jtm,jtr,tanpa_perluasan'],
+            'tarif_lama'  => ['nullable', 'string', 'max:100'],
+            'daya_lama'   => ['nullable', 'integer', 'min:0'],
+            'tarif_baru'  => ['nullable', 'string', 'max:100'],
+            'daya_baru'   => ['nullable', 'integer', 'min:0'],
+            'total_biaya' => ['nullable', 'numeric', 'min:0'],
+            'ulp'         => ['nullable', 'string', 'max:255'],
+        ]);
+
+        if (!empty($validated['no_agenda'])) {
+            $validated['agendaKey'] = $validated['no_agenda'];
+        }
+
+        $pengiriman->update($validated);
+        return back()->with('success', 'Riwayat pengiriman berhasil diperbarui.');
+    }
+
+    public function destroyHistoryPengiriman(\App\Models\PengirimanData $pengiriman)
+    {
+        $this->ensureUlpOwnsPengiriman($pengiriman);
+        $pengiriman->delete();
+        return back()->with('success', 'Riwayat pengiriman berhasil dihapus.');
+    }
+
+    private function getUlpPengirimanQuery()
+    {
+        $role = Auth::user()->role;
+        abort_unless(str_starts_with($role, 'managerULP') || $role === 'perencanaan', 403);
+        $ulpMap = [
+            'managerULP'          => 'LAMONGAN',
+            'managerULP_babat'    => 'BABAT',
+            'managerULP_brondong' => 'BRONDONG',
+            'managerULP_padangan' => 'PADANGAN',
+            'managerULP_bjn'      => 'BOJONEGORO',
+            'managerULP_sumberejo'=> 'SUMBEREJO',
+            'managerULP_tuban'    => 'TUBAN',
+            'managerULP_jatirogo' => 'JATIROGO',
+        ];
+        $query = \App\Models\PengirimanData::query();
+        if (isset($ulpMap[$role])) {
+            $query->whereRaw('LOWER(ulp) LIKE ?', ['%' . strtolower($ulpMap[$role]) . '%']);
+        }
+        return $query;
+    }
+
+    private function ensureUlpOwnsPengiriman(\App\Models\PengirimanData $pengiriman): void
+    {
+        abort_unless($this->getUlpPengirimanQuery()->whereKey($pengiriman->getKey())->exists(), 403);
     }
 
     public function storeUploadData(Request $request)
@@ -482,4 +618,115 @@ class DashboardController extends Controller
 
         return response()->json(['success' => false, 'message' => 'Data tidak ditemukan'], 404);
     }
+
+    public function apiKirimVendor(Request $request)
+    {
+        $request->validate([
+            'agendaKey' => 'nullable|string',
+            'no_agenda' => 'nullable|string',
+            'vendor_pt' => 'nullable|string',
+            'vendor_status_layak' => 'nullable|string',
+            'file_kelayakan' => 'nullable|file',
+            'file_wo_tiang' => 'nullable|file',
+        ]);
+
+        $query = \App\Models\PengirimanData::query();
+        if ($request->filled('agendaKey')) {
+            $query->where('agendaKey', $request->agendaKey);
+        } elseif ($request->filled('no_agenda')) {
+            $query->where('no_agenda', $request->no_agenda);
+        } else {
+            return response()->json(['success' => false, 'message' => 'No agenda or agendaKey specified.'], 400);
+        }
+
+        $pengiriman = $query->first();
+        if (!$pengiriman) {
+            return response()->json(['success' => false, 'message' => 'Data pengiriman tidak ditemukan.'], 404);
+        }
+
+        $updateData = [
+            'vendor_sent' => true,
+            'vendor_sent_at' => now(),
+        ];
+        if ($request->filled('vendor_pt')) {
+            $updateData['vendor_pt'] = $request->vendor_pt;
+        }
+        if ($request->filled('vendor_status_layak')) {
+            $updateData['vendor_status_layak'] = $request->vendor_status_layak;
+        }
+
+        $pengiriman->update($updateData);
+
+        if ($request->hasFile('file_kelayakan')) {
+            $file = $request->file('file_kelayakan');
+            $path = $file->store('uploads', 'public');
+            \App\Models\BerkasDokumen::create([
+                'pengiriman_id' => $pengiriman->id,
+                'jenis_berkas' => 'kelayakan',
+                'nama_file' => $file->getClientOriginalName(),
+                'path_file' => $path,
+            ]);
+        }
+
+        if ($request->hasFile('file_wo_tiang')) {
+            $file = $request->file('file_wo_tiang');
+            $path = $file->store('uploads', 'public');
+            \App\Models\BerkasDokumen::create([
+                'pengiriman_id' => $pengiriman->id,
+                'jenis_berkas' => 'wo_tiang',
+                'nama_file' => $file->getClientOriginalName(),
+                'path_file' => $path,
+            ]);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Data berhasil dikirim ke vendor.', 'data' => $pengiriman->load('berkas')]);
+    }
+
+    public function apiUploadBerkas(Request $request)
+    {
+        $request->validate([
+            'no_agenda' => 'nullable|string',
+            'agendaKey' => 'nullable|string',
+            'jenis_berkas' => 'nullable|string',
+            'file' => 'required|file',
+        ]);
+
+        $query = \App\Models\PengirimanData::query();
+        if ($request->filled('agendaKey')) {
+            $query->where('agendaKey', $request->agendaKey);
+        } elseif ($request->filled('no_agenda')) {
+            $query->where('no_agenda', $request->no_agenda);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Agenda Key atau No Agenda wajib diisi.'], 400);
+        }
+
+        $pengiriman = $query->first();
+        if (!$pengiriman) {
+            $pengiriman = \App\Models\PengirimanData::create([
+                'agendaKey' => $request->agendaKey ?? $request->no_agenda,
+                'dest' => 'tanpa_perluasan',
+                'no_agenda' => $request->no_agenda ?? $request->agendaKey,
+                'sentAt' => now(),
+            ]);
+        }
+
+        $file = $request->file('file');
+        $fileName = $file->getClientOriginalName();
+        $path = $file->store('uploads', 'public');
+        $jenis = $request->input('jenis_berkas', 'dokumen');
+
+        $berkas = \App\Models\BerkasDokumen::create([
+            'pengiriman_id' => $pengiriman->id,
+            'jenis_berkas' => $jenis,
+            'nama_file' => $fileName,
+            'path_file' => $path,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Berkas berhasil diunggah ke server.',
+            'data' => $berkas
+        ]);
+    }
 }
+

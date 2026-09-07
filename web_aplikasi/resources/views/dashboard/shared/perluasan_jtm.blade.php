@@ -351,49 +351,45 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                 </div>
             </div>
 
-                        {{-- Berkas WO / Excel Section --}}
+            {{-- Berkas WO / Excel Section --}}
             <div id="wo-section_jtm" class="bg-amber-50/60 border border-amber-200 rounded-lg p-3 flex flex-col gap-2">
                 <div class="font-bold text-amber-800 uppercase tracking-wider flex items-center gap-1.5 text-[13px]">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                    <span id="wo-title_jtm">Berkas WO</span>
+                    <span id="wo-title_jtm">Berkas & Dokumen</span>
                 </div>
 
-                {{-- Perencanaan: Upload WO --}}
-                <div id="wo-controls_jtm" class="hidden flex-col gap-2">
-                    <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Berkas WO</label>
-                    <div class="flex items-center gap-2">
-                        <input type="file" id="jtm-mdl-wo-input" accept=".pdf,.jpg,.jpeg,.png" class="text-xs border border-slate-300 rounded-lg p-1.5 w-full bg-white" onchange="handleWoUpload_jtm(this)" />
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {{-- Berkas WO --}}
+                    <div id="wo-controls_jtm" class="flex flex-col gap-1.5 bg-white p-2.5 rounded-lg border border-amber-200">
+                        <div class="flex items-center justify-between">
+                            <label class="text-[11px] font-bold text-amber-900 uppercase tracking-wider">Berkas WO</label>
+                            @if ((Auth::user()->role ?? '') === 'perencanaan')
+                            <label class="cursor-pointer bg-amber-600 hover:bg-amber-700 text-white text-[10.5px] font-bold px-2 py-1 rounded shadow-sm transition">
+                                Upload WO
+                                <input type="file" id="jtm-mdl-wo-input" accept=".pdf,.jpg,.jpeg,.png" class="hidden" onchange="handleWoUpload_jtm(this)" />
+                            </label>
+                            @endif
+                        </div>
+                        <ul id="jtm-mdl-wo-list" class="flex flex-col gap-1 mt-1"></ul>
                     </div>
-                    <ul id="jtm-mdl-wo-list" class="flex flex-col gap-1 mt-1"></ul>
-                </div>
 
-                {{-- Transaksi: Upload Excel --}}
-                <div id="excel-controls_jtm" class="hidden flex-col gap-2">
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <label class="cursor-pointer flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                            Pilih Dokumen
-                            <input type="file" id="jtm-mdl-excel-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="handleExcelUpload_jtm(this)" />
-                        </label>
-                        <span class="text-[11px] text-emerald-700 italic">PDF / JPG / JPEG / PNG</span>
-                    </div>
-                    <ul id="jtm-mdl-excel-list" class="flex flex-col gap-1 mt-1"></ul>
-                </div>
-
-                {{-- Konstruksi & Lainnya: Checklist --}}
-                <div id="wo-checklist_jtm" class="hidden flex-col gap-2">
-                    <div class="flex items-center gap-2 bg-white px-3 py-2 border border-amber-200 rounded-lg shadow-sm">
-                        <input type="checkbox" id="wo-check-status_jtm" disabled class="w-4 h-4 accent-emerald-600 rounded border-slate-300">
-                        <label class="text-xs font-bold text-slate-700 cursor-default">Berkas WO Tersedia <span class="text-slate-400 font-normal">(dari Perencanaan)</span></label>
-                    </div>
-                    <div class="flex items-center gap-2 bg-white px-3 py-2 border border-amber-200 rounded-lg shadow-sm">
-                        <input type="checkbox" id="excel-check-status_jtm" disabled class="w-4 h-4 accent-emerald-600 rounded border-slate-300">
-                        <label class="text-xs font-bold text-slate-700 cursor-default">Dokumen Tersedia <span class="text-slate-400 font-normal">(dari Transaksi)</span></label>
+                    {{-- Dokumen Excel --}}
+                    <div id="excel-controls_jtm" class="flex flex-col gap-1.5 bg-white p-2.5 rounded-lg border border-emerald-200">
+                        <div class="flex items-center justify-between">
+                            <label class="text-[11px] font-bold text-emerald-900 uppercase tracking-wider">Dokumen Excel</label>
+                            @if ((Auth::user()->role ?? '') === 'transaksi')
+                            <label class="cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white text-[10.5px] font-bold px-2 py-1 rounded shadow-sm transition">
+                                Upload Dokumen
+                                <input type="file" id="jtm-mdl-excel-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="handleExcelUpload_jtm(this)" />
+                            </label>
+                            @endif
+                        </div>
+                        <ul id="jtm-mdl-excel-list" class="flex flex-col gap-1 mt-1"></ul>
                     </div>
                 </div>
             </div>
 
-            @if ((Auth::user()->role ?? '') !== 'transaksi')
+            @if (!str_starts_with(Auth::user()->role ?? '', 'managerULP') && (Auth::user()->role ?? '') !== 'transaksi')
             {{-- Tujuan PT & Kelayakan --}}
             <div id="vendor-section_jtm" class="bg-slate-50 border border-slate-200 rounded-lg p-4 flex flex-col gap-4">
                 @if ((Auth::user()->role ?? '') !== 'konstruksi')
@@ -449,8 +445,9 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                     </button>
                 </div>
             </div>
-
             @endif
+
+            @include('dashboard.shared.vendor_reports')
 
             <hr class="border-slate-200 mb-2">
 
@@ -491,56 +488,75 @@ function showBerkasModal(agendaKey) {
     modal.classList.remove('hidden');
     modal.classList.add('flex');
 
+    var itemData = (typeof allItems !== 'undefined') ? allItems.find(function(x) { return String(x.no_agenda || '') === String(agendaKey || ''); }) : null;
+
     var req = indexedDB.open('FastOnDocs', 2);
     req.onsuccess = function(e) {
         var db = e.target.result;
-        if (!db.objectStoreNames.contains('uploadedDocs')) {
-            list.innerHTML = '<li class="text-center py-6 text-slate-400 italic text-sm">Database tidak ditemukan</li>';
-            return;
+        var d = null;
+        if (db.objectStoreNames.contains('uploadedDocs')) {
+            var tx     = db.transaction('uploadedDocs', 'readonly');
+            var store  = tx.objectStore('uploadedDocs');
+            var getReq = store.get(agendaKey);
+            getReq.onsuccess = function() {
+                d = getReq.result;
+                renderAllBerkas();
+            };
+            getReq.onerror = function() { renderAllBerkas(); };
+        } else {
+            renderAllBerkas();
         }
-        var tx     = db.transaction('uploadedDocs', 'readonly');
-        var store  = tx.objectStore('uploadedDocs');
-        var getReq = store.get(agendaKey);
-        getReq.onsuccess = function() {
-            var d = getReq.result;
+
+        function renderAllBerkas() {
             list.innerHTML = '';
             var allFiles = [];
             if (d) {
                 (d.ktp || []).forEach(function(f) { allFiles.push({ label: 'BP/KTP', file: f }); });
                 (d.itt || []).forEach(function(f) { allFiles.push({ label: 'ITT',    file: f }); });
+                (d.wo || []).forEach(function(f) { allFiles.push({ label: 'WO',     file: f }); });
+                (d.excel || []).forEach(function(f) { allFiles.push({ label: 'EXCEL', file: f }); });
+            }
+            if (itemData && itemData.berkas && itemData.berkas.length) {
+                itemData.berkas.forEach(function(b) {
+                    allFiles.push({ label: (b.jenis_berkas || 'BERKAS').toUpperCase(), file: { name: b.nama_file || b.path_file, path: b.path_file } });
+                });
             }
             if (allFiles.length === 0) {
                 list.innerHTML = '<li class="text-center py-6 text-slate-400 italic text-sm">Tidak ada berkas untuk no. agenda ini</li>';
                 return;
             }
-            allFiles.forEach(function(item) {
+            allFiles.forEach(function(itemFile) {
                 var li = document.createElement('li');
-                li.className = 'flex items-center justify-between py-2.5 px-1 text-xs';
+                li.className = 'flex items-center justify-between py-2.5 px-1 text-xs border-b border-slate-100';
                 
                 var div = document.createElement('div');
                 div.className = 'flex items-center gap-2 min-w-0';
                 div.innerHTML = '<span class="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-bold ' +
-                                (item.label === 'BP/KTP' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700') + '">' +
-                                item.label + '</span>' +
-                                '<span class="truncate text-slate-700 font-medium">' + item.file.name + '</span>';
+                                (itemFile.label === 'BP/KTP' ? 'bg-emerald-100 text-emerald-700' : (itemFile.label === 'ITT' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700')) + '">' +
+                                itemFile.label + '</span>' +
+                                '<span class="truncate text-slate-700 font-medium">' + itemFile.file.name + '</span>';
                 
                 var btn = document.createElement('button');
                 btn.className = 'shrink-0 ml-3 text-blue-600 font-semibold hover:underline cursor-pointer';
                 btn.textContent = 'Lihat';
                 btn.onclick = function() {
-                    try {
-                        var byteString = atob(item.file.url.split(',')[1]);
-                        var mimeString = item.file.url.split(',')[0].split(':')[1].split(';')[0];
-                        var ab = new ArrayBuffer(byteString.length);
-                        var ia = new Uint8Array(ab);
-                        for (var i = 0; i < byteString.length; i++) {
-                            ia[i] = byteString.charCodeAt(i);
+                    if (itemFile.file.url) {
+                        try {
+                            var byteString = atob(itemFile.file.url.split(',')[1]);
+                            var mimeString = itemFile.file.url.split(',')[0].split(':')[1].split(';')[0];
+                            var ab = new ArrayBuffer(byteString.length);
+                            var ia = new Uint8Array(ab);
+                            for (var i = 0; i < byteString.length; i++) {
+                                ia[i] = byteString.charCodeAt(i);
+                            }
+                            var blob = new Blob([ab], {type: mimeString});
+                            var blobUrl = URL.createObjectURL(blob);
+                            window.open(blobUrl, '_blank');
+                        } catch(e) {
+                            alert('Gagal membuka preview: ' + e);
                         }
-                        var blob = new Blob([ab], {type: mimeString});
-                        var blobUrl = URL.createObjectURL(blob);
-                        window.open(blobUrl, '_blank');
-                    } catch(e) {
-                        alert('Gagal membuka preview: ' + e);
+                    } else if (itemFile.file.path) {
+                        window.open('/storage/' + itemFile.file.path, '_blank');
                     }
                 };
                 
@@ -548,7 +564,7 @@ function showBerkasModal(agendaKey) {
                 li.appendChild(btn);
                 list.appendChild(li);
             });
-        };
+        }
     };
 }
 function closeFileModal() {
@@ -596,11 +612,83 @@ function openDetailModal_jtm(item) {
     };
 
     window.currentItem_jtm = item; // Penting untuk inisialisasi
+    var ptEl = document.getElementById('jtm-mdl-pt');
+    if (ptEl) ptEl.value = item.vendor_pt || '';
+    var layakRadios = document.querySelectorAll('input[name="jtm_status_layak"]');
+    layakRadios.forEach(function(r) {
+        r.checked = (item.vendor_status_layak && r.value === item.vendor_status_layak);
+    });
+
     renderWoList_jtm(agendaKey);
+    renderExcelList_jtm(agendaKey);
+    if (typeof renderVendorReportsForAgenda === 'function') {
+        renderVendorReportsForAgenda(item.no_agenda);
+    }
 
     var m = document.getElementById('detailModal_jtm');
     if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
 }
+function uploadServerBerkas_jtm(noAgenda, agendaKey, jenis, file) {
+    var formData = new FormData();
+    formData.append('no_agenda', noAgenda || '');
+    formData.append('agendaKey', agendaKey || '');
+    formData.append('jenis_berkas', jenis);
+    formData.append('file', file);
+
+    fetch('/' + _currentRole + '/api/upload-berkas', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: formData
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+        if (res.success && window.currentItem_jtm) {
+            if (!window.currentItem_jtm.berkas) window.currentItem_jtm.berkas = [];
+            window.currentItem_jtm.berkas.push(res.data);
+        }
+    })
+    .catch(function(err) { console.error('Upload server berkas error:', err); });
+}
+
+function syncIndexedDBFilesToServer_jtm(agendaKey, noAgenda) {
+    if (!agendaKey) return;
+    var req = indexedDB.open('FastOnDocs', 2);
+    req.onsuccess = function(e) {
+        var db = e.target.result;
+        if (!db || !db.objectStoreNames.contains('uploadedDocs')) return;
+        var tx = db.transaction('uploadedDocs', 'readonly');
+        var store = tx.objectStore('uploadedDocs');
+        var getReq = store.get(agendaKey);
+        getReq.onsuccess = function() {
+            var d = getReq.result;
+            if (!d) return;
+            var types = ['ktp', 'itt', 'wo', 'excel'];
+            types.forEach(function(type) {
+                if (d[type] && d[type].length) {
+                    d[type].forEach(function(f) {
+                        if (f.url && f.name) {
+                            try {
+                                var parts = f.url.split(',');
+                                if (parts.length < 2) return;
+                                var mime = parts[0].split(':')[1].split(';')[0];
+                                var bstr = atob(parts[1]);
+                                var n = bstr.length;
+                                var u8arr = new Uint8Array(n);
+                                while(n--){ u8arr[n] = bstr.charCodeAt(n); }
+                                var blob = new Blob([u8arr], {type: mime});
+                                var file = new File([blob], f.name, {type: mime});
+                                uploadServerBerkas_jtm(noAgenda, agendaKey, type, file);
+                            } catch(err) { console.error('Error syncing file:', err); }
+                        }
+                    });
+                }
+            });
+        };
+    };
+}
+
 function kirimVendor_jtm() {
     var isKonstruksi = @json((Auth::user()->role ?? '') === 'konstruksi');
     var pt = document.getElementById('jtm-mdl-pt');
@@ -611,10 +699,64 @@ function kirimVendor_jtm() {
         if (!layak) { alert('Pilih Status Kelayakan terlebih dahulu.'); return; }
     }
 
-    alert(isKonstruksi
-        ? 'Data berhasil dikirim.'
-        : 'Data berhasil dikirim ke ' + pt.value + ' dengan status: ' + layak.value.toUpperCase());
-    closeDetailModal_jtm();
+    var item = window.currentItem_jtm;
+    if (!item) { alert('Data agenda tidak ditemukan.'); return; }
+
+    var ptVal = pt ? pt.value : '';
+    var layakVal = layak ? layak.value : '';
+
+    syncIndexedDBFilesToServer_jtm(item.agendaKey || item.no_agenda, item.no_agenda);
+
+    var formData = new FormData();
+    formData.append('agendaKey', item.agendaKey || '');
+    formData.append('no_agenda', item.no_agenda || '');
+    formData.append('vendor_pt', ptVal);
+    formData.append('vendor_status_layak', layakVal);
+
+    var fileKelayakan = document.getElementById('jtm-mdl-file-kelayakan');
+    if (fileKelayakan && fileKelayakan.files && fileKelayakan.files[0]) {
+        formData.append('file_kelayakan', fileKelayakan.files[0]);
+    }
+
+    var fileWoTiang = document.getElementById('jtm-mdl-file-wo-tiang');
+    if (fileWoTiang && fileWoTiang.files && fileWoTiang.files[0]) {
+        formData.append('file_wo_tiang', fileWoTiang.files[0]);
+    }
+
+    fetch('/' + _currentRole + '/api/kirim-vendor', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: formData
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+        if (res.success) {
+            alert(isKonstruksi
+                ? 'Data berhasil dikirim.'
+                : 'Data berhasil dikirim ke ' + ptVal + ' dengan status: ' + layakVal.toUpperCase());
+            if (window.currentItem_jtm) {
+                window.currentItem_jtm.vendor_sent = 1;
+                window.currentItem_jtm.vendor_pt = ptVal;
+                window.currentItem_jtm.vendor_status_layak = layakVal;
+                if (res.data && res.data.berkas) {
+                    window.currentItem_jtm.berkas = res.data.berkas;
+                }
+            }
+            closeDetailModal_jtm();
+        } else {
+            alert('Gagal mengirim data: ' + (res.message || 'Error server'));
+        }
+    })
+    .catch(function(err) {
+        console.error(err);
+        alert('Terjadi kesalahan saat mengirim data ke vendor.');
+    });
+}
+function closeDetailModal_jtm() {
+    var m = document.getElementById('detailModal_jtm');
+    if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
 }
 
 function saveRabField_jtm() {
@@ -646,7 +788,11 @@ function handleWoUpload_jtm(input) {
     var agendaKey = window.currentItem_jtm.no_agenda || 'default';
     var files = Array.from(input.files);
     if (!files.length) return;
-    
+
+    files.forEach(function(file) {
+        uploadServerBerkas_jtm(window.currentItem_jtm.no_agenda, agendaKey, 'wo', file);
+    });
+
     var readers = files.map(function(file) {
         return new Promise(function(resolve) {
             var reader = new FileReader();
@@ -686,50 +832,18 @@ function renderWoList_jtm(agendaKey) {
         gr.onsuccess = function() {
             var d = gr.result;
             var role = (typeof _currentRole !== "undefined") ? _currentRole : "";
-            var ctrlWo    = document.getElementById("wo-controls_jtm");
-            var ctrlXls   = document.getElementById("excel-controls_jtm");
-            var ctrlChk   = document.getElementById("wo-checklist_jtm");
-            var titleEl   = document.getElementById("wo-title_jtm");
-            var chkWo     = document.getElementById("wo-check-status_jtm");
-            var chkXls    = document.getElementById("excel-check-status_jtm");
-
-            if (role === "perencanaan") {
-                if (ctrlWo)  { ctrlWo.style.display  = "flex"; ctrlWo.classList.remove("hidden"); }
-                if (ctrlXls) { ctrlXls.style.display = "none"; }
-                if (ctrlChk) { ctrlChk.style.display = "none"; }
-                if (titleEl) titleEl.textContent = "Upload Berkas WO";
-            } else if (role === "transaksi") {
-                if (ctrlWo)  { ctrlWo.style.display  = "none"; }
-                if (ctrlXls) { ctrlXls.style.display = "flex"; ctrlXls.classList.remove("hidden"); }
-                if (ctrlChk) { ctrlChk.style.display = "none"; }
-                if (titleEl) titleEl.textContent = "Upload Dokumen";
-                // render excel list
-                renderExcelList_jtm(agendaKey);
-            } else {
-                if (ctrlWo)  { ctrlWo.style.display  = "none"; }
-                if (ctrlXls) { ctrlXls.style.display = "none"; }
-                if (ctrlChk) { ctrlChk.style.display = "flex"; ctrlChk.classList.remove("hidden"); }
-                if (titleEl) titleEl.textContent = "Status Berkas";
-                var hasWo  = (d && d.wo    && d.wo.length    > 0);
-                var hasXls = (d && d.excel && d.excel.length > 0);
-                if (chkWo)  chkWo.checked  = hasWo;
-                if (chkXls) chkXls.checked = hasXls;
-                return;
-            }
-
-            // render WO list (only for perencanaan)
             var list = document.getElementById("jtm-mdl-wo-list");
             if (!list) return;
             list.innerHTML = "";
             if (!d || !d.wo || !d.wo.length) {
-                list.innerHTML = '<li class="text-[11px] text-amber-600 italic">Belum ada berkas WO</li>';
+                list.innerHTML = '<li class="text-[11px] text-slate-400 italic py-0.5">Belum ada berkas WO</li>';
                 return;
             }
             d.wo.forEach(function(f, idx) {
                 var li = document.createElement("li");
-                li.className = "flex items-center justify-between bg-white border border-amber-100 rounded px-2 py-1 text-[11.5px]";
+                li.className = "flex items-center justify-between bg-amber-50/50 border border-amber-100 rounded px-2 py-1 text-[11.5px]";
                 var span = document.createElement("span");
-                span.className = "truncate max-w-[220px] text-slate-700";
+                span.className = "truncate max-w-[180px] text-slate-700 font-medium";
                 span.textContent = f.name;
                 var div = document.createElement("div");
                 div.className = "flex items-center gap-2 ml-2 flex-shrink-0";
@@ -746,14 +860,18 @@ function renderWoList_jtm(agendaKey) {
                         window.open(URL.createObjectURL(new Blob([ab], {type: mime})), "_blank");
                     } catch(e) { alert("Gagal preview: " + e); }
                 }; })(f);
-                var delBtn = document.createElement("button");
-                delBtn.className = "text-red-500 hover:text-red-700 font-bold text-xs";
-                delBtn.textContent = "Hapus";
-                delBtn.onclick = (function(keyRef, idxRef) { return function() {
-                    deleteWoFile_jtm(keyRef, idxRef);
-                }; })(agendaKey, idx);
                 div.appendChild(viewBtn);
-                div.appendChild(delBtn);
+
+                if (role === "perencanaan") {
+                    var delBtn = document.createElement("button");
+                    delBtn.className = "text-red-500 hover:text-red-700 font-bold text-xs";
+                    delBtn.textContent = "Hapus";
+                    delBtn.onclick = (function(keyRef, idxRef) { return function() {
+                        deleteWoFile_jtm(keyRef, idxRef);
+                    }; })(agendaKey, idx);
+                    div.appendChild(delBtn);
+                }
+
                 li.appendChild(span);
                 li.appendChild(div);
                 list.appendChild(li);
@@ -790,6 +908,11 @@ function handleExcelUpload_jtm(input) {
         input.value = '';
         return;
     }
+
+    files.forEach(function(file) {
+        uploadServerBerkas_jtm(window.currentItem_jtm.no_agenda, agendaKey, 'excel', file);
+    });
+
     var readers = files.map(function(file) {
         return new Promise(function(resolve) {
             var reader = new FileReader();

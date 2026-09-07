@@ -10,9 +10,16 @@ use App\Models\uploadData;
 class FileController extends Controller
 {
     // Mengambil data pengiriman dari Perencanaan beserta berkas pendukungnya
-    public function getFiles()
+    public function getFiles(Request $request)
     {
-        $pengiriman = PengirimanData::with('berkas')
+        $query = PengirimanData::with('berkas')
+            ->where('vendor_sent', true);
+
+        if ($request->filled('vendor_pt')) {
+            $query->where('vendor_pt', $request->query('vendor_pt'));
+        }
+
+        $pengiriman = $query->orderBy('vendor_sent_at', 'desc')
             ->orderBy('created_at', 'desc')
             ->get();
 
