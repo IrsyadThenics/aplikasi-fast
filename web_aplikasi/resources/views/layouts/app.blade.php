@@ -140,7 +140,7 @@
                 'konstruksi' => ['dashboard','data_pbpd','perluasan_jtm', 'perluasan_jtr','tanpa_perluasan','checklist', 'pencarian', 'laporan', 'notifikasi'],
                 'pelayanan' => ['dashboard','data_pbpd', 'perluasan_jtm', 'perluasan_jtr', 'tanpa_perluasan', 'restitusi', 'upload_data','laporan', 'notifikasi'],
                 'perencanaan' => ['dashboard','data_pbpd', 'perluasan_jtm', 'perluasan_jtr', 'tanpa_perluasan','survey','pencarian', 'laporan', 'notifikasi'],
-                'transaksi' => ['dashboard','data_pbpd', 'perluasan_jtm', 'perluasan_jtr', 'tanpa_perluasan', 'ba_operasi', 'pencarian', 'laporan', 'notifikasi'],
+                'transaksi' => ['dashboard','data_pbpd', 'perluasan_jtm', 'perluasan_jtr', 'tanpa_perluasan', 'cek_Kwh', 'pencarian', 'laporan', 'notifikasi'],
             ];
             
             $activeRoleMenus = $roleMenus[$role] ?? [];

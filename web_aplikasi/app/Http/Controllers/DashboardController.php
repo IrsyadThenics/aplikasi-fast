@@ -218,6 +218,11 @@ class DashboardController extends Controller
         $data = $this->getFilteredData();
         return view('dashboard.' . $this->getViewFolder() . '.uploadData_excel', compact('data'));
     }
+    public function cekKwh()
+    {
+        $data = $this->getFilteredData();
+        return view('dashboard.' . $this->getViewFolder() . '.cek_kwh', compact('data'));
+    }
 
     public function storeUploadData(Request $request)
     {

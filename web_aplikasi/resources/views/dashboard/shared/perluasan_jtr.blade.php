@@ -372,10 +372,10 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                     <div class="flex items-center gap-2 flex-wrap">
                         <label class="cursor-pointer flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm transition">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                            Pilih File Excel
-                            <input type="file" id="jtr-mdl-excel-input" class="hidden" accept=".xlsx,.xls,.csv" onchange="handleExcelUpload_jtr(this)" />
+                            Pilih Dokumen
+                            <input type="file" id="jtr-mdl-excel-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="handleExcelUpload_jtr(this)" />
                         </label>
-                        <span class="text-[11px] text-emerald-700 italic">XLS / XLSX / CSV</span>
+                        <span class="text-[11px] text-emerald-700 italic">PDF / JPG / JPEG / PNG</span>
                     </div>
                     <ul id="jtr-mdl-excel-list" class="flex flex-col gap-1 mt-1"></ul>
                 </div>
@@ -388,11 +388,12 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                     </div>
                     <div class="flex items-center gap-2 bg-white px-3 py-2 border border-amber-200 rounded-lg shadow-sm">
                         <input type="checkbox" id="excel-check-status_jtr" disabled class="w-4 h-4 accent-emerald-600 rounded border-slate-300">
-                        <label class="text-xs font-bold text-slate-700 cursor-default">File Excel Tersedia <span class="text-slate-400 font-normal">(dari Transaksi)</span></label>
+                        <label class="text-xs font-bold text-slate-700 cursor-default">Dokumen Tersedia <span class="text-slate-400 font-normal">(dari Transaksi)</span></label>
                     </div>
                 </div>
             </div>
 
+            @if ((Auth::user()->role ?? '') !== 'transaksi')
             {{-- Tujuan PT & Kelayakan --}}
             <div id="vendor-section_jtr" class="bg-slate-50 border border-slate-200 rounded-lg p-4 flex flex-col gap-4">
                 @if ((Auth::user()->role ?? '') !== 'konstruksi')
@@ -448,6 +449,8 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                     </button>
                 </div>
             </div>
+
+            @endif
 
             <hr class="border-slate-200 mb-2">
 
@@ -699,7 +702,7 @@ function renderWoList_jtr(agendaKey) {
                 if (ctrlWo)  { ctrlWo.style.display  = "none"; }
                 if (ctrlXls) { ctrlXls.style.display = "flex"; ctrlXls.classList.remove("hidden"); }
                 if (ctrlChk) { ctrlChk.style.display = "none"; }
-                if (titleEl) titleEl.textContent = "Upload File Excel";
+                if (titleEl) titleEl.textContent = "Upload Dokumen";
                 // render excel list
                 renderExcelList_jtr(agendaKey);
             } else {
@@ -782,6 +785,11 @@ function handleExcelUpload_jtr(input) {
     var agendaKey = window.currentItem_jtr.no_agenda || "default";
     var files = Array.from(input.files);
     if (!files.length) return;
+    if (files.some(function(file) { return !/\.(pdf|jpe?g|png)$/i.test(file.name); })) {
+        alert('Hanya dokumen PDF, JPG, JPEG, atau PNG yang dapat diunggah.');
+        input.value = '';
+        return;
+    }
     var readers = files.map(function(file) {
         return new Promise(function(resolve) {
             var reader = new FileReader();
@@ -823,7 +831,7 @@ function renderExcelList_jtr(agendaKey) {
             if (!list) return;
             list.innerHTML = "";
             if (!d || !d.excel || !d.excel.length) {
-                list.innerHTML = '<li class="text-[11px] text-emerald-600 italic">Belum ada file Excel</li>';
+                list.innerHTML = '<li class="text-[11px] text-emerald-600 italic">Belum ada dokumen</li>';
                 return;
             }
             d.excel.forEach(function(f, idx) {

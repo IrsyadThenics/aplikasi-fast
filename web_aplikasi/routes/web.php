@@ -75,6 +75,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/checklist', [DashboardController::class, 'checklist'])->name('checklist');
             Route::get('/upload-data', [DashboardController::class, 'uploadData'])->name('upload_data');
             Route::post('/upload-data', [DashboardController::class, 'storeUploadData'])->name('upload_data.store');
+            Route::get('cek_Kwh', [DashboardController::class, 'cekKwh'])->name('cek_kwh');
 
             // API untuk kirim data & simpan berkas
             Route::post('/api/kirim-data', [DashboardController::class, 'apiKirimData']);
