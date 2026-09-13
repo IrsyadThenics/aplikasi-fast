@@ -1052,16 +1052,31 @@ function confirmKirim(dest) {
             transaksi   : item.transaksi   || '-',
             status      : item.status      || '-',
             tarif_lama  : item.tarif_lama  || '-',
-            daya_lama   : item.daya_lama   || '-',
+            daya_lama   : item.daya_lama   || 0,
             tarif_baru  : item.tarif_baru  || '-',
-            daya_baru   : item.daya_baru   || '-',
+            daya_baru   : item.daya_baru   || 0,
             total_biaya : item.total_biaya || 0,
             ulp         : item.ulp || '-',
             sentAt      : new Date().toISOString(),
             ktpCount    : docs.ktp ? docs.ktp.length : 0,
             ittCount    : docs.itt ? docs.itt.length : 0
         };
-        return saveSentItem(record).then(function() {
+        var rolePrefix = window.location.pathname.split('/')[1] || 'ulp_sumberejo';
+
+        return fetch('/' + rolePrefix + '/api/kirim-data', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify(record)
+        }).then(function(res) {
+            if (!res.ok) throw new Error('Pengiriman data gagal.');
+            return res.json();
+        }).then(function(res) {
+            if (!res.success) throw new Error('Pengiriman data gagal.');
+            return saveSentItem(record);
+        }).then(function() {
             _checkedRows[agendaKey] = true;
             var row = document.getElementById('row-' + agendaKey);
             if (row) { row.style.display = 'none'; }

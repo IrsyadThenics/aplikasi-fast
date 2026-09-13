@@ -255,6 +255,10 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
     document.addEventListener('DOMContentLoaded', function() {
         loadSentItems('tanpa_perluasan').then(function(items) {
             allItems = items;
+            var tableArea = document.getElementById('tableArea');
+            if (tableArea && !tableArea.classList.contains('hidden')) {
+                filterData();
+            }
         }).catch(function(e) {
             console.warn('Error loading Tanpa Perluasan data:', e);
         });
@@ -343,16 +347,18 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="text-slate-600 font-bold text-sm">Rp.</span>
-                    <input type="number" id="tp-mdl-rab-input" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-[#2B73FE] transition bg-white" placeholder="0" />
+                    <input type="number" id="tp-mdl-rab-input" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-[#2B73FE] transition bg-white" placeholder="0" @if (!str_starts_with(Auth::user()->role ?? '', 'managerULP') && (Auth::user()->role ?? '') !== 'perencanaan') readonly @endif />
+                    @if (str_starts_with(Auth::user()->role ?? '', 'managerULP') || (Auth::user()->role ?? '') === 'perencanaan')
                     <button onclick="saveRabField_tp()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-1.5 rounded-lg shadow-sm text-[13.5px] font-bold transition flex items-center gap-1">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
                         Simpan
                     </button>
+                    @endif
                     <span id="tp-mdl-rab-indicator" class="text-emerald-600 text-[12.5px] font-bold opacity-0 transition-opacity flex items-center gap-1 ml-1">Tersimpan!</span>
                 </div>
             </div>
 
-            {{-- Berkas WO / Excel Section --}}
+            {{-- Berkas WO / Dokumen Transaksi --}}
             <div id="wo-section_tp" class="bg-amber-50/60 border border-amber-200 rounded-lg p-3 flex flex-col gap-2">
                 <div class="font-bold text-amber-800 uppercase tracking-wider flex items-center gap-1.5 text-[13px]">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
@@ -374,10 +380,10 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                         <ul id="tp-mdl-wo-list" class="flex flex-col gap-1 mt-1"></ul>
                     </div>
 
-                    {{-- Dokumen Excel --}}
+                    {{-- Dokumen Transaksi --}}
                     <div id="excel-controls_tp" class="flex flex-col gap-1.5 bg-white p-2.5 rounded-lg border border-emerald-200">
                         <div class="flex items-center justify-between">
-                            <label class="text-[11px] font-bold text-emerald-900 uppercase tracking-wider">Dokumen Excel</label>
+                            <label class="text-[11px] font-bold text-emerald-900 uppercase tracking-wider">Dokumen Transaksi</label>
                             @if ((Auth::user()->role ?? '') === 'transaksi')
                             <label class="cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white text-[10.5px] font-bold px-2 py-1 rounded shadow-sm transition">
                                 Upload Dokumen
@@ -516,7 +522,7 @@ function showBerkasModal(agendaKey) {
                 (d.ktp || []).forEach(function(f) { allFiles.push({ label: 'BP/KTP', file: f }); });
                 (d.itt || []).forEach(function(f) { allFiles.push({ label: 'ITT',    file: f }); });
                 (d.wo || []).forEach(function(f) { allFiles.push({ label: 'WO',     file: f }); });
-                (d.excel || []).forEach(function(f) { allFiles.push({ label: 'EXCEL', file: f }); });
+                (d.excel || []).forEach(function(f) { allFiles.push({ label: 'DOKUMEN', file: f }); });
             }
             if (itemData && itemData.berkas && itemData.berkas.length) {
                 itemData.berkas.forEach(function(b) {
@@ -836,7 +842,7 @@ function handleExcelUpload_tp(input) {
     }
 
     files.forEach(function(file) {
-        uploadServerBerkas(window.currentItem_tp.no_agenda, agendaKey, 'excel', file);
+        uploadServerBerkas(window.currentItem_tp.no_agenda, agendaKey, 'dokumen', file);
     });
 
     var readers = files.map(function(file) {
@@ -1018,14 +1024,16 @@ function renderExcelList_tp(agendaKey) {
                         window.open(URL.createObjectURL(new Blob([ab], {type: mime})), "_blank");
                     } catch(e) { alert("Gagal preview: " + e); }
                 }; })(f);
+                div.appendChild(viewBtn);
+                @if ((Auth::user()->role ?? '') !== 'konstruksi')
                 var delBtn = document.createElement("button");
                 delBtn.className = "text-red-500 hover:text-red-700 font-bold text-xs";
                 delBtn.textContent = "Hapus";
                 delBtn.onclick = (function(keyRef, idxRef) { return function() {
                     deleteExcelFile_tp(keyRef, idxRef);
                 }; })(agendaKey, idx);
-                div.appendChild(viewBtn);
                 div.appendChild(delBtn);
+                @endif
                 li.appendChild(span);
                 li.appendChild(div);
                 list.appendChild(li);

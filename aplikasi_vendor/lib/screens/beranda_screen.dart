@@ -504,11 +504,16 @@ class _BerandaScreenState extends State<BerandaScreen> {
     );
   }
 
-  void _openFilePreviewDialog(String namaFile, String jenis, String path) {
+  Future<void> _openFilePreviewDialog(String namaFile, String jenis, String path) async {
     final fileUrl = 'http://127.0.0.1:8000/storage/$path';
     final isImage = path.toLowerCase().endsWith('.png') ||
         path.toLowerCase().endsWith('.jpg') ||
         path.toLowerCase().endsWith('.jpeg');
+
+    if (!isImage) {
+      await _openDocumentExternally(fileUrl);
+      return;
+    }
 
     showDialog(
       context: context,
@@ -569,7 +574,7 @@ class _BerandaScreenState extends State<BerandaScreen> {
                             child: Image.network(
                               fileUrl,
                               fit: BoxFit.contain,
-                              errorBuilder: (_, __, ___) => _buildDocPreviewFallback(namaFile, jenis),
+                              errorBuilder: (_, __, ___) => _buildDocPreviewFallback(namaFile, jenis, fileUrl),
                             ),
                           )
                         : Container(
@@ -598,23 +603,13 @@ class _BerandaScreenState extends State<BerandaScreen> {
                                   textAlign: TextAlign.center,
                                 ),
                                 const SizedBox(height: 16),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.08),
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: Colors.white12),
-                                  ),
-                                  child: const Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.check_circle_outline, color: Colors.greenAccent, size: 16),
-                                      SizedBox(width: 6),
-                                      Text(
-                                        'Terverifikasi dari Perencanaan',
-                                        style: TextStyle(color: Colors.greenAccent, fontSize: 11, fontWeight: FontWeight.w600),
-                                      ),
-                                    ],
+                                ElevatedButton.icon(
+                                  onPressed: () => _openDocumentExternally(fileUrl),
+                                  icon: const Icon(Icons.open_in_new_rounded, size: 16),
+                                  label: const Text('Buka dokumen'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.lightBlueAccent,
+                                    foregroundColor: Colors.black,
                                   ),
                                 ),
                               ],
@@ -827,9 +822,9 @@ class _BerandaScreenState extends State<BerandaScreen> {
                                         ? Image.network(
                                             fileUrl,
                                             fit: BoxFit.cover,
-                                            errorBuilder: (_, __, ___) => _buildDocPreviewFallback(namaFile, jenis),
+                                            errorBuilder: (_, __, ___) => _buildDocPreviewFallback(namaFile, jenis, fileUrl),
                                           )
-                                        : _buildDocPreviewFallback(namaFile, jenis),
+                                        : _buildDocPreviewFallback(namaFile, jenis, fileUrl),
                                   ),
                               ],
                             ),
@@ -864,7 +859,17 @@ class _BerandaScreenState extends State<BerandaScreen> {
     );
   }
 
-  Widget _buildDocPreviewFallback(String namaFile, String jenis) {
+  Future<void> _openDocumentExternally(String fileUrl) async {
+    final opened = await launchUrl(
+      Uri.parse(fileUrl),
+      mode: LaunchMode.externalApplication,
+    );
+    if (!opened && mounted) {
+      _showSnack('Dokumen tidak dapat dibuka. Pastikan server aplikasi sedang aktif.', isError: true);
+    }
+  }
+
+  Widget _buildDocPreviewFallback(String namaFile, String jenis, String fileUrl) {
     return Container(
       color: Colors.white.withOpacity(0.04),
       child: Center(
@@ -874,7 +879,7 @@ class _BerandaScreenState extends State<BerandaScreen> {
             const Icon(Icons.picture_as_pdf_rounded, color: Colors.redAccent, size: 36),
             const SizedBox(height: 6),
             Text(
-              'Pratinjau Berkas Dokumen [$jenis]',
+              'Berkas $jenis',
               style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 2),
@@ -883,6 +888,13 @@ class _BerandaScreenState extends State<BerandaScreen> {
               style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 10),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 10),
+            TextButton.icon(
+              onPressed: () => _openDocumentExternally(fileUrl),
+              icon: const Icon(Icons.open_in_new_rounded, size: 15),
+              label: const Text('Buka dokumen'),
+              style: TextButton.styleFrom(foregroundColor: Colors.lightBlueAccent),
             ),
           ],
         ),

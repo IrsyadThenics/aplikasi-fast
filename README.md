@@ -1,4 +1,4 @@
-﻿# ⚡ Fast-On — Sistem Manajemen Pelayanan Pelanggan PLN
+# ⚡ Fast-On — Sistem Manajemen Pelayanan Pelanggan PLN
 
 **Fast-On** adalah sistem manajemen pelayanan pelanggan PLN yang terdiri dari dua komponen utama:
 
@@ -255,7 +255,9 @@ Sistem mendukung import data pelanggan secara massal melalui:
 
 - **Format yang didukung:** `.csv`, `.xlsx`, `.xls`
 - **Kolom yang dikenali:** `NOAGENDA`, `NAMA`, `ALAMAT`, `TARIF`, `DAYA`, `STATUS`, `ULP`, dll.
-- Setiap kali data baru diupload, data lama akan diganti dengan data terbaru.
+- Setiap kali data baru diupload, hanya data ULP yang ada di file tersebut yang diganti — data ULP lain tetap aman.
+- Jika file berisi semua ULP (data UP3 lengkap), maka semua data ULP akan ter-replace dengan data terbaru.
+- Data yang sudah dikirim ke Perluasan JTM/JTR/Tanpa Perluasan tidak tampil lagi di Data PB/PD.
 
 ---
 

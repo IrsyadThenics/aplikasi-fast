@@ -25,4 +25,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::post('/vendor/laporan', [VendorReportController::class, 'store']);
+    Route::get('/vendor/laporan', [VendorReportController::class, 'index']);
+    Route::post('/vendor/laporan/{report}/update', [VendorReportController::class, 'update']);
+    Route::delete('/vendor/laporan/{report}', [VendorReportController::class, 'destroy']);
 });

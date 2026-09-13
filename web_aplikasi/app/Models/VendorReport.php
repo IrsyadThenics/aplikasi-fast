@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class VendorReport extends Model
 {
-    protected $fillable = ['no_agenda', 'vendor_name', 'checklist', 'catatan'];
+    protected $fillable = ['no_agenda', 'vendor_name', 'vendor_user_id', 'checklist', 'catatan'];
 
     protected $casts = ['checklist' => 'array'];
 

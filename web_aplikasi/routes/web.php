@@ -9,8 +9,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/storage/{path}', function ($path) {
     $fullPath = storage_path('app/public/' . $path);
     if (!file_exists($fullPath)) {
-        return response('Pratinjau Berkas: ' . basename($path) . "\n(File simulasi dari Perencanaan)", 200)
-            ->header('Content-Type', 'text/plain');
+        abort(404, 'Berkas tidak ditemukan.');
     }
     return response()->file($fullPath);
 })->where('path', '.*');
