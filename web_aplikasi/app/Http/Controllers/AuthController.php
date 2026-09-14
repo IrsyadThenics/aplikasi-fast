@@ -40,6 +40,8 @@ class AuthController extends Controller
                 'jaringan'           => 'jaringan',
                 'perencanaan'        => 'perencanaan',
                 'transaksi'          => 'transaksi',
+                'vendor'             => 'vendor_tiang',
+                'vendor_konstruksi'  => 'vendor_konstruksi',
             ];
 
             if (array_key_exists($role, $routePrefixes)) {

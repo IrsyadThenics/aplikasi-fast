@@ -12,7 +12,10 @@ class FileController extends Controller
     // Mengambil data pengiriman dari Perencanaan beserta berkas pendukungnya
     public function getFiles(Request $request)
     {
-        $query = PengirimanData::with('berkas')
+        // Aplikasi vendor hanya memerlukan WO Tiang untuk menjalankan pekerjaan.
+        $query = PengirimanData::with(['berkas' => function ($query) {
+            $query->where('jenis_berkas', 'wo_tiang');
+        }])
             ->where('vendor_sent', true);
 
         if ($request->filled('vendor_pt')) {

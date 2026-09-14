@@ -3,6 +3,8 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController; 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\VendorTiangController;
+use App\Http\Controllers\VendorKonstruksiController;
 use Illuminate\Support\Facades\Route;
 
 // Public Storage Route for Mobile App / Shared Preview
@@ -34,6 +36,21 @@ Route::middleware(['auth'])->group(function () {
     // Rute Profile (Tersedia untuk semua role)
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    Route::middleware(['role:vendor'])->prefix('vendor-tiang')->name('vendor_tiang.')->group(function () {
+        Route::get('/dashboard', [VendorTiangController::class, 'dashboard'])->name('dashboard');
+        Route::post('/laporan', [VendorTiangController::class, 'storeReport'])->name('report.store');
+        Route::get('/riwayat', [VendorTiangController::class, 'history'])->name('history');
+        Route::put('/riwayat/{report}', [VendorTiangController::class, 'update'])->name('history.update');
+        Route::delete('/riwayat/{report}', [VendorTiangController::class, 'destroy'])->name('history.destroy');
+    });
+    Route::middleware(['role:vendor_konstruksi'])->prefix('vendor-konstruksi')->name('vendor_konstruksi.')->group(function () {
+        Route::get('/dashboard', [VendorKonstruksiController::class, 'dashboard'])->name('dashboard');
+        Route::post('/laporan', [VendorKonstruksiController::class, 'storeReport'])->name('report.store');
+        Route::get('/riwayat', [VendorKonstruksiController::class, 'history'])->name('history');
+        Route::put('/riwayat/{report}', [VendorKonstruksiController::class, 'update'])->name('history.update');
+        Route::delete('/riwayat/{report}', [VendorKonstruksiController::class, 'destroy'])->name('history.destroy');
+    });
 
     // ------------------------------------------
     // RUTE DINAMIS BERDASARKAN ROLE
@@ -86,6 +103,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/api/simpan-rab', [DashboardController::class, 'apiSimpanRab']);
             Route::post('/api/kirim-vendor', [DashboardController::class, 'apiKirimVendor']);
             Route::post('/api/upload-berkas', [DashboardController::class, 'apiUploadBerkas']);
+            Route::delete('/api/berkas/{berkas}/ba-cek', [DashboardController::class, 'apiHapusBaCek']);
         });
     }
 });

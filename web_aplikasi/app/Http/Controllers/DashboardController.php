@@ -132,7 +132,7 @@ class DashboardController extends Controller
     {
         $data = $this->getFilteredData();
         $agendas = \App\Models\PengirimanData::where('dest', 'tanpa_perluasan')->pluck('no_agenda');
-        $vendorReports = \App\Models\VendorReport::with('files')->whereIn('no_agenda', $agendas)->latest()->get();
+        $vendorReports = $this->getVendorReportsForCurrentRole($agendas);
         return view('dashboard.shared.tanpa_perluasan', compact('data', 'vendorReports'));
     }
 
@@ -140,7 +140,7 @@ class DashboardController extends Controller
     {
         $data = $this->getFilteredData();
         $agendas = \App\Models\PengirimanData::where('dest', 'jtm')->pluck('no_agenda');
-        $vendorReports = \App\Models\VendorReport::with('files')->whereIn('no_agenda', $agendas)->latest()->get();
+        $vendorReports = $this->getVendorReportsForCurrentRole($agendas);
         return view('dashboard.shared.perluasan_jtm', compact('data', 'vendorReports'));
     }
 
@@ -148,7 +148,7 @@ class DashboardController extends Controller
     {
         $data = $this->getFilteredData();
         $agendas = \App\Models\PengirimanData::where('dest', 'jtr')->pluck('no_agenda');
-        $vendorReports = \App\Models\VendorReport::with('files')->whereIn('no_agenda', $agendas)->latest()->get();
+        $vendorReports = $this->getVendorReportsForCurrentRole($agendas);
         return view('dashboard.shared.perluasan_jtr', compact('data', 'vendorReports'));
     }
 
@@ -634,6 +634,19 @@ class DashboardController extends Controller
         return response()->json($query->get());
     }
 
+    private function getVendorReportsForCurrentRole($agendas)
+    {
+        $query = \App\Models\VendorReport::with('files')->whereIn('no_agenda', $agendas);
+        if (Auth::user()->role === 'konstruksi') {
+            $query->where('recipient_role', 'konstruksi');
+        } else {
+            $query->where(function ($reportQuery) {
+                $reportQuery->where('recipient_role', 'perencanaan')->orWhereNull('recipient_role');
+            });
+        }
+        return $query->latest()->get();
+    }
+
     public function apiSimpanRab(Request $request)
     {
         $role = Auth::user()->role;
@@ -682,10 +695,10 @@ class DashboardController extends Controller
             return response()->json(['success' => false, 'message' => 'Data pengiriman tidak ditemukan.'], 404);
         }
 
-        $updateData = [
-            'vendor_sent' => true,
-            'vendor_sent_at' => now(),
-        ];
+        $isKonstruksi = Auth::user()->role === 'konstruksi';
+        $updateData = $isKonstruksi
+            ? ['konstruksi_vendor_sent' => true, 'konstruksi_vendor_sent_at' => now()]
+            : ['vendor_sent' => true, 'vendor_sent_at' => now()];
         if ($request->filled('vendor_pt')) {
             $updateData['vendor_pt'] = $request->vendor_pt;
         }
@@ -750,8 +763,31 @@ class DashboardController extends Controller
 
         $file = $request->file('file');
         $fileName = $file->getClientOriginalName();
-        $path = $file->store('uploads', 'public');
         $jenis = $request->input('jenis_berkas', 'dokumen');
+
+        if ($jenis === 'ba_cek' && Auth::user()->role !== 'konstruksi') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Berkas BA Cek hanya dapat diunggah oleh role Konstruksi.',
+            ], 403);
+        }
+
+        if ($jenis === 'wo_perencanaan' && Auth::user()->role !== 'perencanaan') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Berkas WO hanya dapat diunggah oleh role Perencanaan.',
+            ], 403);
+        }
+
+        if (in_array($jenis, ['wo', 'wo_perencanaan', 'dokumen'], true)
+            && !\App\Models\VendorReport::where('no_agenda', $pengiriman->no_agenda)->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unggah WO atau dokumen hanya dapat dilakukan setelah laporan vendor masuk.',
+            ], 422);
+        }
+
+        $path = $file->store('uploads', 'public');
 
         $berkas = \App\Models\BerkasDokumen::create([
             'pengiriman_id' => $pengiriman->id,
@@ -765,5 +801,15 @@ class DashboardController extends Controller
             'message' => 'Berkas berhasil diunggah ke server.',
             'data' => $berkas
         ]);
+    }
+
+    public function apiHapusBaCek(\App\Models\BerkasDokumen $berkas)
+    {
+        abort_unless(Auth::user()->role === 'konstruksi' && $berkas->jenis_berkas === 'ba_cek', 403);
+
+        \Illuminate\Support\Facades\Storage::disk('public')->delete($berkas->path_file);
+        $berkas->delete();
+
+        return response()->json(['success' => true, 'message' => 'Berkas BA Cek berhasil dihapus.']);
     }
 }

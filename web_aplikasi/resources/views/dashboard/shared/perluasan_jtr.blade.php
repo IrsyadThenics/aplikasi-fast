@@ -370,7 +370,7 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                         <div class="flex items-center justify-between">
                             <label class="text-[11px] font-bold text-amber-900 uppercase tracking-wider">Berkas WO</label>
                             @if ((Auth::user()->role ?? '') === 'perencanaan')
-                            <label class="cursor-pointer bg-amber-600 hover:bg-amber-700 text-white text-[10.5px] font-bold px-2 py-1 rounded shadow-sm transition">
+                            <label id="jtr-mdl-wo-upload" class="cursor-pointer bg-amber-600 hover:bg-amber-700 text-white text-[10.5px] font-bold px-2 py-1 rounded shadow-sm transition">
                                 Upload WO
                                 <input type="file" id="jtr-mdl-wo-input" accept=".pdf,.jpg,.jpeg,.png" class="hidden" onchange="handleWoUpload_jtr(this)" />
                             </label>
@@ -382,9 +382,9 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                     {{-- Dokumen Transaksi --}}
                     <div id="excel-controls_jtr" class="flex flex-col gap-1.5 bg-white p-2.5 rounded-lg border border-emerald-200">
                         <div class="flex items-center justify-between">
-                            <label class="text-[11px] font-bold text-emerald-900 uppercase tracking-wider">Dokumen Transaksi</label>
+                            <label class="text-[11px] font-bold text-emerald-900 uppercase tracking-wider">BA Acara</label>
                             @if ((Auth::user()->role ?? '') === 'transaksi')
-                            <label class="cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white text-[10.5px] font-bold px-2 py-1 rounded shadow-sm transition">
+                            <label id="jtr-mdl-dokumen-upload" class="cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white text-[10.5px] font-bold px-2 py-1 rounded shadow-sm transition">
                                 Upload Dokumen
                                 <input type="file" id="jtr-mdl-excel-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="handleExcelUpload_jtr(this)" />
                             </label>
@@ -392,7 +392,20 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                         </div>
                         <ul id="jtr-mdl-excel-list" class="flex flex-col gap-1 mt-1"></ul>
                     </div>
+                    <div class="flex flex-col gap-1.5 bg-white p-2.5 rounded-lg border border-blue-200">
+                        <div class="flex items-center justify-between">
+                            <label class="text-[11px] font-bold text-blue-900 uppercase tracking-wider">Berkas BA Cek</label>
+                            @if ((Auth::user()->role ?? '') === 'konstruksi')
+                            <label class="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white text-[10.5px] font-bold px-2 py-1 rounded shadow-sm transition">
+                                Upload BA Cek
+                                <input type="file" id="jtr-mdl-ba-cek-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="handleBaCekUpload_jtr(this)" />
+                            </label>
+                            @endif
+                        </div>
+                        <ul id="jtr-mdl-ba-cek-list" class="flex flex-col gap-1 mt-1"></ul>
+                    </div>
                 </div>
+                <p id="jtr-vendor-report-upload-note" class="hidden text-[11px] font-semibold text-amber-700">Unggah WO atau dokumen tersedia setelah laporan vendor masuk.</p>
             </div>
 
             @if (!str_starts_with(Auth::user()->role ?? '', 'managerULP') && (Auth::user()->role ?? '') !== 'transaksi')
@@ -428,6 +441,7 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                 @endif
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @if ((Auth::user()->role ?? '') !== 'perencanaan')
                     {{-- Upload Berkas Kelayakan / WO --}}
                     <div>
                         <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">{{ (Auth::user()->role ?? '') === 'konstruksi' ? 'Upload Berkas WO' : 'Upload Berkas Kelayakan' }}</label>
@@ -435,6 +449,8 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                             <input type="file" id="jtr-mdl-file-kelayakan" accept=".pdf,.jpg,.jpeg,.png" class="text-xs border border-slate-300 rounded-lg p-1.5 w-full bg-white">
                         </div>
                     </div>
+                    @endif
+                    @if ((Auth::user()->role ?? '') !== 'konstruksi')
                     {{-- Upload Berkas WO Tiang --}}
                     <div>
                         <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Upload Berkas WO Tiang</label>
@@ -442,6 +458,7 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                             <input type="file" id="jtr-mdl-file-wo-tiang" accept=".pdf,.jpg,.jpeg,.png" class="text-xs border border-slate-300 rounded-lg p-1.5 w-full bg-white">
                         </div>
                     </div>
+                    @endif
                 </div>
 
                 <div class="flex justify-end">
@@ -476,6 +493,22 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                         </tr>
                     </tbody>
                 </table>
+                <div class="mt-2 flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[11.5px] font-bold">
+                    <span class="text-slate-600">Status Pengiriman ULP</span>
+                    <span id="jtr-mdl-status-ulp-kirim" class="text-red-600">✕ Belum dikirim ULP</span>
+                </div>
+                <div class="mt-2 flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[11.5px] font-bold">
+                    <span class="text-slate-600">Status Upload Berkas WO Perencanaan</span>
+                    <span id="jtr-mdl-status-wo-perencanaan" class="text-red-600">✕ Berkas WO belum diunggah</span>
+                </div>
+                <div class="mt-2 flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[11.5px] font-bold">
+                    <span class="text-slate-600">Status Upload BA Cek Konstruksi</span>
+                    <span id="jtr-mdl-status-ba-cek" class="text-red-600">✕ BA Cek belum diunggah</span>
+                </div>
+                <div class="mt-2 flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[11.5px] font-bold">
+                    <span class="text-slate-600">Status Upload BA Acara Transaksi</span>
+                    <span id="jtr-mdl-status-ba-acara" class="text-red-600">✕ BA Acara belum diunggah</span>
+                </div>
             </div>
 
             <div class="mt-2 flex justify-end">
@@ -602,6 +635,13 @@ function openDetailModal_jtr(item) {
         var d2 = new Date(item.sentAt);
         document.getElementById('jtr-mdl-tgl-kirim').textContent = d2.toLocaleDateString('id-ID');
     }
+    var ulpStatus = document.getElementById('jtr-mdl-status-ulp-kirim');
+    if (ulpStatus) {
+        var sudahDikirimUlp = !!item.sentAt;
+        ulpStatus.textContent = sudahDikirimUlp ? '✓ Sudah dikirim ULP' : '✕ Belum dikirim ULP';
+        ulpStatus.className = sudahDikirimUlp ? 'text-emerald-600' : 'text-red-600';
+    }
+    updateUploadStatus_jtr(item);
 
     // RAB
     var agendaKey = item.no_agenda || 'default';
@@ -619,6 +659,7 @@ function openDetailModal_jtr(item) {
     };
 
     window.currentItem_jtr = item; // Penting untuk inisialisasi
+    updateVendorReportUploadState_jtr(item.no_agenda);
     var ptEl = document.getElementById('jtr-mdl-pt');
     if (ptEl) ptEl.value = item.vendor_pt || '';
     var layakRadios = document.querySelectorAll('input[name="jtr_status_layak"]');
@@ -628,6 +669,7 @@ function openDetailModal_jtr(item) {
 
     renderWoList_jtr(agendaKey);
     renderExcelList_jtr(agendaKey);
+    renderBaCekList_jtr(agendaKey);
     if (typeof renderVendorReportsForAgenda === 'function') {
         renderVendorReportsForAgenda(item.no_agenda);
     }
@@ -635,6 +677,35 @@ function openDetailModal_jtr(item) {
     var m = document.getElementById('detailModal_jtr');
     if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
 }
+function hasVendorReport_jtr(noAgenda) {
+    return (window._vendorReports || []).some(function(report) {
+        return String(report.no_agenda || '') === String(noAgenda || '');
+    });
+}
+
+function updateVendorReportUploadState_jtr(noAgenda) {
+    var enabled = hasVendorReport_jtr(noAgenda);
+    var controls = ['jtr-mdl-wo-upload', 'jtr-mdl-dokumen-upload'];
+    var canUpload = controls.some(function(id) { return document.getElementById(id); });
+    controls.forEach(function(id) {
+        var control = document.getElementById(id);
+        if (control) control.classList.toggle('hidden', !enabled);
+    });
+    var note = document.getElementById('jtr-vendor-report-upload-note');
+    if (note) note.classList.toggle('hidden', enabled || !canUpload);
+}
+
+function updateUploadStatus_jtr(item) {
+    var berkas = (item && item.berkas) || [];
+    [['jtr-mdl-status-wo-perencanaan', 'wo_perencanaan', 'Berkas WO'], ['jtr-mdl-status-ba-cek', 'ba_cek', 'BA Cek'], ['jtr-mdl-status-ba-acara', 'dokumen', 'BA Acara']].forEach(function(config) {
+        var status = document.getElementById(config[0]);
+        if (!status) return;
+        var sudahAda = berkas.some(function(file) { return file.jenis_berkas === config[1]; });
+        status.textContent = sudahAda ? '✓ ' + config[2] + ' sudah diunggah' : '✕ ' + config[2] + ' belum diunggah';
+        status.className = sudahAda ? 'text-emerald-600' : 'text-red-600';
+    });
+}
+
 function uploadServerBerkas_jtr(noAgenda, agendaKey, jenis, file) {
     var formData = new FormData();
     formData.append('no_agenda', noAgenda || '');
@@ -654,6 +725,8 @@ function uploadServerBerkas_jtr(noAgenda, agendaKey, jenis, file) {
         if (res.success && window.currentItem_jtr) {
             if (!window.currentItem_jtr.berkas) window.currentItem_jtr.berkas = [];
             window.currentItem_jtr.berkas.push(res.data);
+            if (jenis === 'wo_perencanaan' || jenis === 'ba_cek' || jenis === 'dokumen') updateUploadStatus_jtr(window.currentItem_jtr);
+            if (jenis === 'ba_cek') renderBaCekList_jtr(agendaKey);
         }
     })
     .catch(function(err) { console.error('Upload server berkas error:', err); });
@@ -792,12 +865,17 @@ function saveRabField_jtr() {
 // ===== WO UPLOAD =====
 function handleWoUpload_jtr(input) {
     if (!window.currentItem_jtr) return;
+    if (!hasVendorReport_jtr(window.currentItem_jtr.no_agenda)) {
+        alert('Unggah WO tersedia setelah laporan vendor masuk.');
+        input.value = '';
+        return;
+    }
     var agendaKey = window.currentItem_jtr.no_agenda || 'default';
     var files = Array.from(input.files);
     if (!files.length) return;
     
     files.forEach(function(file) {
-        uploadServerBerkas_jtr(window.currentItem_jtr.no_agenda, agendaKey, 'wo', file);
+        uploadServerBerkas_jtr(window.currentItem_jtr.no_agenda, agendaKey, 'wo_perencanaan', file);
     });
 
     var readers = files.map(function(file) {
@@ -905,8 +983,62 @@ function deleteWoFile_jtr(agendaKey, idx) {
     };
 }
 
+function handleBaCekUpload_jtr(input) {
+    if (!window.currentItem_jtr) return;
+    var files = Array.from(input.files);
+    if (!files.length) return;
+    if (files.some(function(file) { return !/\.(pdf|jpe?g|png)$/i.test(file.name); })) {
+        alert('BA Cek harus berupa PDF, JPG, JPEG, atau PNG.'); input.value = ''; return;
+    }
+    var agendaKey = window.currentItem_jtr.no_agenda || 'default';
+    files.forEach(function(file) { uploadServerBerkas_jtr(window.currentItem_jtr.no_agenda, agendaKey, 'ba_cek', file); });
+    Promise.all(files.map(function(file) { return new Promise(function(resolve) {
+        var reader = new FileReader(); reader.onload = function(e) { resolve({ name: file.name, url: e.target.result }); }; reader.readAsDataURL(file);
+    }); })).then(function(newFiles) {
+        var req = indexedDB.open('FastOnDocs', 2); req.onsuccess = function(e) {
+            var tx = e.target.result.transaction('uploadedDocs', 'readwrite'), store = tx.objectStore('uploadedDocs'), gr = store.get(agendaKey);
+            gr.onsuccess = function() { var d = gr.result || {}; d.agendaKey = agendaKey; d.ba_cek = (d.ba_cek || []).concat(newFiles); store.put(d); tx.oncomplete = function() { renderBaCekList_jtr(agendaKey); }; };
+        };
+    });
+    input.value = '';
+}
+
+function renderBaCekList_jtr(agendaKey) {
+    var req = indexedDB.open('FastOnDocs', 2); req.onsuccess = function(e) {
+        var tx = e.target.result.transaction('uploadedDocs', 'readonly'), gr = tx.objectStore('uploadedDocs').get(agendaKey);
+        gr.onsuccess = function() {
+            var list = document.getElementById('jtr-mdl-ba-cek-list'), localFiles = (gr.result && gr.result.ba_cek) || [];
+            var files = ((window.currentItem_jtr && window.currentItem_jtr.berkas) || []).filter(function(file) { return file.jenis_berkas === 'ba_cek'; }).map(function(file) { return { id: file.id, name: file.nama_file, path: file.path_file }; });
+            localFiles.forEach(function(file) { if (!files.some(function(serverFile) { return serverFile.name === file.name; })) files.push(file); });
+            if (!list) return; list.innerHTML = '';
+            if (!files.length) { list.innerHTML = '<li class="text-[11px] text-slate-400 italic">Belum ada BA Cek</li>'; return; }
+            files.forEach(function(file) { var li = document.createElement('li'); li.className = 'flex items-center justify-between text-[11.5px] text-slate-700'; var name = document.createElement('span'); name.className = 'truncate'; name.textContent = file.name; var actions = document.createElement('div'); var view = document.createElement('button'); view.className = 'text-blue-600 font-bold hover:underline ml-2'; view.textContent = 'Lihat'; view.onclick = function() { window.open(file.url || '/storage/' + file.path, '_blank'); }; actions.appendChild(view); @if ((Auth::user()->role ?? '') === 'konstruksi') if (file.id) { var del = document.createElement('button'); del.className = 'text-red-500 font-bold hover:underline ml-2'; del.textContent = 'Hapus'; del.onclick = function() { deleteBaCek_jtr(file.id, file.name, agendaKey); }; actions.appendChild(del); } @endif li.appendChild(name); li.appendChild(actions); list.appendChild(li); });
+        };
+    };
+}
+
+function deleteBaCek_jtr(id, fileName, agendaKey) {
+    if (!confirm('Hapus berkas BA Cek ini?')) return;
+    fetch('/' + _currentRole + '/api/berkas/' + id + '/ba-cek', { method: 'DELETE', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } })
+        .then(function(r) { return r.json(); }).then(function(res) { if (!res.success) throw new Error(res.message); window.currentItem_jtr.berkas = (window.currentItem_jtr.berkas || []).filter(function(file) { return file.id !== id; }); removeLocalBaCek_jtr(agendaKey, fileName); })
+        .catch(function(err) { alert(err.message || 'Gagal menghapus BA Cek.'); });
+}
+
+function removeLocalBaCek_jtr(agendaKey, fileName) {
+    var req = indexedDB.open('FastOnDocs', 2); req.onsuccess = function(e) {
+        var db = e.target.result; if (!db.objectStoreNames.contains('uploadedDocs')) { renderBaCekList_jtr(agendaKey); return; }
+        var tx = db.transaction('uploadedDocs', 'readwrite'), store = tx.objectStore('uploadedDocs'), gr = store.get(agendaKey);
+        gr.onsuccess = function() { var d = gr.result; if (d && d.ba_cek) { d.ba_cek = d.ba_cek.filter(function(file) { return file.name !== fileName; }); store.put(d); } tx.oncomplete = function() { renderBaCekList_jtr(agendaKey); }; };
+    };
+}
+
 function handleExcelUpload_jtr(input) {
     if (!window.currentItem_jtr) return;
+    if (!hasVendorReport_jtr(window.currentItem_jtr.no_agenda)) {
+        alert('Unggah dokumen tersedia setelah laporan vendor masuk.');
+        input.value = '';
+        return;
+    }
     var agendaKey = window.currentItem_jtr.no_agenda || "default";
     var files = Array.from(input.files);
     if (!files.length) return;

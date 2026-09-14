@@ -1,6 +1,9 @@
-@if ((Auth::user()->role ?? '') === 'perencanaan')
+<script>
+    window._vendorReports = @json($vendorReports ?? []);
+</script>
+
+@if (in_array((Auth::user()->role ?? ''), ['perencanaan', 'konstruksi']))
     <script>
-        window._vendorReports = @json($vendorReports ?? []);
 
         if (typeof window.renderVendorReportsForAgenda !== 'function') {
             window.renderVendorReportsForAgenda = function(noAgenda) {
@@ -50,7 +53,7 @@
 
     <div class="bg-slate-50/60 border border-slate-200 rounded-lg p-3 flex flex-col gap-2">
         <div class="font-bold text-slate-800 uppercase tracking-wider text-[13px] flex items-center justify-between">
-            <span>Laporan Vendor</span>
+            <span>{{ (Auth::user()->role ?? '') === 'konstruksi' ? 'Laporan Vendor Konstruksi' : 'Laporan Vendor' }}</span>
             <span class="text-[10px] text-slate-400 font-normal normal-case">(Tampil sesuai agenda yang dipilih)</span>
         </div>
         <div id="vendor-reports-detail-list" class="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1">

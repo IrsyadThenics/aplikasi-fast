@@ -24,6 +24,7 @@ class VendorReportController extends Controller
             'no_agenda' => $validated['no_agenda'],
             'vendor_name' => $request->user()?->name ?? 'Vendor',
             'vendor_user_id' => $request->user()?->id,
+            'recipient_role' => 'perencanaan',
             'checklist' => $validated['checklist'] ?? [],
             'catatan' => $validated['catatan'] ?? null,
         ]);

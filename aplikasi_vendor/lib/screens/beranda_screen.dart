@@ -652,7 +652,9 @@ class _BerandaScreenState extends State<BerandaScreen> {
     final dayaBaru = item['daya_baru']?.toString() ?? '0';
     final totalBiaya = item['total_biaya']?.toString() ?? '0';
     final dateRaw = (item['created_at'] ?? item['sentAt'] ?? '').toString();
-    final List<dynamic> berkas = item['berkas'] ?? [];
+    final List<dynamic> berkas = (item['berkas'] as List<dynamic>? ?? [])
+        .where((berkas) => (berkas['jenis_berkas'] ?? '').toString().toLowerCase() == 'wo_tiang')
+        .toList();
 
     String formattedDate = dateRaw;
     try {
@@ -740,7 +742,7 @@ class _BerandaScreenState extends State<BerandaScreen> {
 
                       // Berkas Section
                       const Text(
-                        'Daftar Berkas Terlampir:',
+                        'Berkas WO Tiang:',
                         style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
@@ -928,7 +930,9 @@ class _BerandaScreenState extends State<BerandaScreen> {
     final status = item['status'] ?? '-';
     final ulp = item['ulp'] ?? '-';
     final dateRaw = (item['created_at'] ?? item['sentAt'] ?? '').toString();
-    final List<dynamic> berkas = item['berkas'] ?? [];
+    final List<dynamic> berkas = (item['berkas'] as List<dynamic>? ?? [])
+        .where((berkas) => (berkas['jenis_berkas'] ?? '').toString().toLowerCase() == 'wo_tiang')
+        .toList();
 
     String formattedDate = dateRaw;
     try {
@@ -994,7 +998,7 @@ class _BerandaScreenState extends State<BerandaScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Berkas Lampiran (${berkas.length}):', style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
+                        Text('Berkas WO Tiang (${berkas.length}):', style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
                         const Text('Ketuk untuk detail >', style: TextStyle(color: Colors.lightBlueAccent, fontSize: 10)),
                       ],
                     ),
