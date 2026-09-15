@@ -133,7 +133,8 @@ class DashboardController extends Controller
         $data = $this->getFilteredData();
         $agendas = \App\Models\PengirimanData::where('dest', 'tanpa_perluasan')->pluck('no_agenda');
         $vendorReports = $this->getVendorReportsForCurrentRole($agendas);
-        return view('dashboard.shared.tanpa_perluasan', compact('data', 'vendorReports'));
+        $vendorKonstruksiUsers = \App\Models\User::where('role', 'vendor_konstruksi')->orderBy('name')->get(['id', 'name', 'user_id']);
+        return view('dashboard.shared.tanpa_perluasan', compact('data', 'vendorReports', 'vendorKonstruksiUsers'));
     }
 
     public function perluasanJtm()
@@ -141,7 +142,8 @@ class DashboardController extends Controller
         $data = $this->getFilteredData();
         $agendas = \App\Models\PengirimanData::where('dest', 'jtm')->pluck('no_agenda');
         $vendorReports = $this->getVendorReportsForCurrentRole($agendas);
-        return view('dashboard.shared.perluasan_jtm', compact('data', 'vendorReports'));
+        $vendorKonstruksiUsers = \App\Models\User::where('role', 'vendor_konstruksi')->orderBy('name')->get(['id', 'name', 'user_id']);
+        return view('dashboard.shared.perluasan_jtm', compact('data', 'vendorReports', 'vendorKonstruksiUsers'));
     }
 
     public function perluasanJtr()
@@ -149,7 +151,8 @@ class DashboardController extends Controller
         $data = $this->getFilteredData();
         $agendas = \App\Models\PengirimanData::where('dest', 'jtr')->pluck('no_agenda');
         $vendorReports = $this->getVendorReportsForCurrentRole($agendas);
-        return view('dashboard.shared.perluasan_jtr', compact('data', 'vendorReports'));
+        $vendorKonstruksiUsers = \App\Models\User::where('role', 'vendor_konstruksi')->orderBy('name')->get(['id', 'name', 'user_id']);
+        return view('dashboard.shared.perluasan_jtr', compact('data', 'vendorReports', 'vendorKonstruksiUsers'));
     }
 
     public function pengoperasian()
@@ -679,6 +682,7 @@ class DashboardController extends Controller
             'vendor_status_layak' => 'nullable|string',
             'file_kelayakan' => 'nullable|file',
             'file_wo_tiang' => 'nullable|file',
+            'vendor_konstruksi_user_id' => 'nullable|integer',
         ]);
 
         $query = \App\Models\PengirimanData::query();
@@ -696,8 +700,12 @@ class DashboardController extends Controller
         }
 
         $isKonstruksi = Auth::user()->role === 'konstruksi';
+        if ($isKonstruksi) {
+            $request->validate(['vendor_konstruksi_user_id' => ['required', 'exists:users,id']]);
+            abort_unless(\App\Models\User::whereKey($request->vendor_konstruksi_user_id)->where('role', 'vendor_konstruksi')->exists(), 422);
+        }
         $updateData = $isKonstruksi
-            ? ['konstruksi_vendor_sent' => true, 'konstruksi_vendor_sent_at' => now()]
+            ? ['konstruksi_vendor_sent' => true, 'konstruksi_vendor_sent_at' => now(), 'konstruksi_vendor_user_id' => $request->vendor_konstruksi_user_id]
             : ['vendor_sent' => true, 'vendor_sent_at' => now()];
         if ($request->filled('vendor_pt')) {
             $updateData['vendor_pt'] = $request->vendor_pt;
@@ -772,6 +780,20 @@ class DashboardController extends Controller
             ], 403);
         }
 
+        if ($jenis === 'ba_operasi' && Auth::user()->role !== 'jaringan') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Berkas BA Operasi hanya dapat diunggah oleh role Jaringan.',
+            ], 403);
+        }
+
+        if ($jenis === 'dokumen' && Auth::user()->role !== 'transaksi') {
+            return response()->json([
+                'success' => false,
+                'message' => 'BA Acara hanya dapat diunggah oleh role Transaksi.',
+            ], 403);
+        }
+
         if ($jenis === 'wo_perencanaan' && Auth::user()->role !== 'perencanaan') {
             return response()->json([
                 'success' => false,
@@ -811,5 +833,15 @@ class DashboardController extends Controller
         $berkas->delete();
 
         return response()->json(['success' => true, 'message' => 'Berkas BA Cek berhasil dihapus.']);
+    }
+
+    public function apiHapusBaOperasi(\App\Models\BerkasDokumen $berkas)
+    {
+        abort_unless(Auth::user()->role === 'jaringan' && $berkas->jenis_berkas === 'ba_operasi', 403);
+
+        \Illuminate\Support\Facades\Storage::disk('public')->delete($berkas->path_file);
+        $berkas->delete();
+
+        return response()->json(['success' => true, 'message' => 'Berkas BA Operasi berhasil dihapus.']);
     }
 }

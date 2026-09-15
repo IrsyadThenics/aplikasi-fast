@@ -21,6 +21,7 @@ class VendorTiangController extends Controller
     {
         $agendas = PengirimanData::with(['berkas' => fn ($query) => $query->whereIn('jenis_berkas', ['wo_tiang', 'ba_cek'])])
             ->where($this->sentColumn(), true)
+            ->when($this->assignedUserColumn(), fn ($query, $column) => $query->where($column, Auth::id()))
             ->latest($this->sentAtColumn())
             ->latest()
             ->get();
@@ -120,4 +121,5 @@ class VendorTiangController extends Controller
     protected function sentColumn(): string { return 'vendor_sent'; }
     protected function sentAtColumn(): string { return 'vendor_sent_at'; }
     protected function pageTitle(): string { return 'Vendor Tiang'; }
+    protected function assignedUserColumn(): ?string { return null; }
 }

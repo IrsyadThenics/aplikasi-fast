@@ -22,6 +22,9 @@ Route::get('/storage/{path}', function ($path) {
 Route::get('/', [AuthController::class, 'showLogin'])->name('auth.login')->middleware('guest');
 Route::post('/login', [AuthController::class, 'login'])->name('auth.authenticate');
 
+// Modul latihan TOEFL mandiri (public, tidak mengganggu dashboard FASTON360)
+Route::view('/toefl', 'toefl.index')->name('toefl');
+
 // ==========================================
 // RUTE TERPROTEKSI (Wajib Login)
 // ==========================================
@@ -104,6 +107,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/api/kirim-vendor', [DashboardController::class, 'apiKirimVendor']);
             Route::post('/api/upload-berkas', [DashboardController::class, 'apiUploadBerkas']);
             Route::delete('/api/berkas/{berkas}/ba-cek', [DashboardController::class, 'apiHapusBaCek']);
+            Route::delete('/api/berkas/{berkas}/ba-operasi', [DashboardController::class, 'apiHapusBaOperasi']);
         });
     }
 });

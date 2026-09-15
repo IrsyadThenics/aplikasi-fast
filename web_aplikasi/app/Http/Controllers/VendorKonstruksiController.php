@@ -9,4 +9,5 @@ class VendorKonstruksiController extends VendorTiangController
     protected function sentColumn(): string { return 'konstruksi_vendor_sent'; }
     protected function sentAtColumn(): string { return 'konstruksi_vendor_sent_at'; }
     protected function pageTitle(): string { return 'Vendor Konstruksi'; }
+    protected function assignedUserColumn(): ?string { return 'konstruksi_vendor_user_id'; }
 }

@@ -39,6 +39,14 @@ class VendorUserSeeder extends Seeder
                 'lokasi_UP3' => 'UP3 Bojonegoro',
                 'lokasi_ULP' => 'Bojonegoro',
             ],
+            [
+                'name' => 'Vendor Konstruksi 2',
+                'user_id' => 'VENDOR_KONSTRUKSI_2',
+                'password' => Hash::make('password'),
+                'role' => 'vendor_konstruksi',
+                'lokasi_UP3' => 'UP3 Bojonegoro',
+                'lokasi_ULP' => 'Bojonegoro',
+            ],
         ];
 
         foreach ($vendors as $v) {

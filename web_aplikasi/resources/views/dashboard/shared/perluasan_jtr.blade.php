@@ -287,8 +287,8 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
 </div>
 
 <!-- Detail Modal -->
-<div id="detailModal_jtr" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
-    <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl relative overflow-hidden flex flex-col border border-slate-200">
+<div id="detailModal_jtr" class="fixed inset-0 z-[100] hidden items-start justify-center bg-black/50 backdrop-blur-sm p-4 py-6 overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[calc(100vh-3rem)] relative overflow-hidden flex flex-col border border-slate-200">
         <!-- Title Bar -->
         <div class="bg-gradient-to-r from-[#0D1B8C] to-[#2B73FE] px-5 py-3 flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -303,7 +303,7 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
         </div>
 
         <!-- Content -->
-        <div class="p-6 text-[13.5px] text-slate-800 font-mono flex flex-col gap-4">
+        <div class="min-h-0 overflow-y-auto p-6 text-[13.5px] text-slate-800 font-mono flex flex-col gap-4">
 
             <div class="grid grid-cols-[150px_1fr] gap-2 items-center">
                 <div class="font-bold text-slate-700 uppercase tracking-wider">ULP</div>
@@ -404,11 +404,12 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                         </div>
                         <ul id="jtr-mdl-ba-cek-list" class="flex flex-col gap-1 mt-1"></ul>
                     </div>
+                    <div class="flex flex-col gap-1.5 bg-white p-2.5 rounded-lg border border-violet-200"><div class="flex items-center justify-between"><label class="text-[11px] font-bold text-violet-900 uppercase tracking-wider">Berkas BA Operasi</label>@if ((Auth::user()->role ?? '') === 'jaringan')<label class="cursor-pointer bg-violet-600 hover:bg-violet-700 text-white text-[10.5px] font-bold px-2 py-1 rounded shadow-sm transition">Upload BA Operasi<input type="file" id="jtr-mdl-ba-operasi-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="handleBaOperasiUpload_jtr(this)" /></label>@endif</div><ul id="jtr-mdl-ba-operasi-list" class="flex flex-col gap-1 mt-1"></ul></div>
                 </div>
                 <p id="jtr-vendor-report-upload-note" class="hidden text-[11px] font-semibold text-amber-700">Unggah WO atau dokumen tersedia setelah laporan vendor masuk.</p>
             </div>
 
-            @if (!str_starts_with(Auth::user()->role ?? '', 'managerULP') && (Auth::user()->role ?? '') !== 'transaksi')
+            @if (!str_starts_with(Auth::user()->role ?? '', 'managerULP') && !in_array((Auth::user()->role ?? ''), ['transaksi', 'jaringan']))
             {{-- Tujuan PT & Kelayakan --}}
             <div id="vendor-section_jtr" class="bg-slate-50 border border-slate-200 rounded-lg p-4 flex flex-col gap-4">
                 @if ((Auth::user()->role ?? '') !== 'konstruksi')
@@ -437,6 +438,18 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                             </label>
                         </div>
                     </div>
+                </div>
+                @endif
+
+                @if ((Auth::user()->role ?? '') === 'konstruksi')
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Tujuan Kirim Vendor Konstruksi</label>
+                    <select id="jtr-mdl-vendor-konstruksi" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white">
+                        <option value="">-- Pilih Vendor Konstruksi --</option>
+                        @foreach($vendorKonstruksiUsers as $vendor)
+                        <option value="{{ $vendor->id }}">{{ $vendor->name }} ({{ $vendor->user_id }})</option>
+                        @endforeach
+                    </select>
                 </div>
                 @endif
 
@@ -493,22 +506,7 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                         </tr>
                     </tbody>
                 </table>
-                <div class="mt-2 flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[11.5px] font-bold">
-                    <span class="text-slate-600">Status Pengiriman ULP</span>
-                    <span id="jtr-mdl-status-ulp-kirim" class="text-red-600">✕ Belum dikirim ULP</span>
-                </div>
-                <div class="mt-2 flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[11.5px] font-bold">
-                    <span class="text-slate-600">Status Upload Berkas WO Perencanaan</span>
-                    <span id="jtr-mdl-status-wo-perencanaan" class="text-red-600">✕ Berkas WO belum diunggah</span>
-                </div>
-                <div class="mt-2 flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[11.5px] font-bold">
-                    <span class="text-slate-600">Status Upload BA Cek Konstruksi</span>
-                    <span id="jtr-mdl-status-ba-cek" class="text-red-600">✕ BA Cek belum diunggah</span>
-                </div>
-                <div class="mt-2 flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[11.5px] font-bold">
-                    <span class="text-slate-600">Status Upload BA Acara Transaksi</span>
-                    <span id="jtr-mdl-status-ba-acara" class="text-red-600">✕ BA Acara belum diunggah</span>
-                </div>
+                <div class="mt-2 overflow-hidden rounded-lg border border-slate-200 text-[11.5px]"><table class="w-full border-collapse"><thead class="bg-slate-100 text-slate-600"><tr><th class="border-b border-slate-200 px-3 py-2 text-left">Proses</th><th class="border-b border-slate-200 px-3 py-2 text-left">Status</th><th class="border-b border-slate-200 px-3 py-2 text-center">Tanggal Lengkap</th></tr></thead><tbody class="bg-white"><tr><td class="border-b border-slate-100 px-3 py-2 font-medium text-slate-600">Pengiriman ULP</td><td id="jtr-mdl-status-ulp-kirim" class="border-b border-slate-100 px-3 py-2 font-bold text-red-600">✕ Belum dikirim</td><td id="jtr-mdl-tgl-ulp-kirim" class="border-b border-slate-100 px-3 py-2 text-center">-</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 font-medium text-slate-600">Berkas WO Perencanaan</td><td id="jtr-mdl-status-wo-perencanaan" class="border-b border-slate-100 px-3 py-2 font-bold text-red-600">✕ Belum diunggah</td><td id="jtr-mdl-tgl-wo-perencanaan" class="border-b border-slate-100 px-3 py-2 text-center">-</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 font-medium text-slate-600">Berkas WO Konstruksi</td><td id="jtr-mdl-status-wo-konstruksi" class="border-b border-slate-100 px-3 py-2 font-bold text-red-600">✕ Belum diunggah</td><td id="jtr-mdl-tgl-wo-konstruksi" class="border-b border-slate-100 px-3 py-2 text-center">-</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 font-medium text-slate-600">BA Cek Konstruksi</td><td id="jtr-mdl-status-ba-cek" class="border-b border-slate-100 px-3 py-2 font-bold text-red-600">✕ Belum diunggah</td><td id="jtr-mdl-tgl-ba-cek" class="border-b border-slate-100 px-3 py-2 text-center">-</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 font-medium text-slate-600">BA Acara Transaksi</td><td id="jtr-mdl-status-ba-acara" class="border-b border-slate-100 px-3 py-2 font-bold text-red-600">✕ Belum diunggah</td><td id="jtr-mdl-tgl-ba-acara" class="border-b border-slate-100 px-3 py-2 text-center">-</td></tr><tr><td class="px-3 py-2 font-medium text-slate-600">BA Operasi Jaringan</td><td id="jtr-mdl-status-ba-operasi" class="px-3 py-2 font-bold text-red-600">✕ Belum diunggah</td><td id="jtr-mdl-tgl-ba-operasi" class="px-3 py-2 text-center">-</td></tr></tbody></table></div>
             </div>
 
             <div class="mt-2 flex justify-end">
@@ -640,6 +638,7 @@ function openDetailModal_jtr(item) {
         var sudahDikirimUlp = !!item.sentAt;
         ulpStatus.textContent = sudahDikirimUlp ? '✓ Sudah dikirim ULP' : '✕ Belum dikirim ULP';
         ulpStatus.className = sudahDikirimUlp ? 'text-emerald-600' : 'text-red-600';
+        document.getElementById('jtr-mdl-tgl-ulp-kirim').textContent = sudahDikirimUlp ? formatStatusDate_jtr(item.sentAt) : '-';
     }
     updateUploadStatus_jtr(item);
 
@@ -662,6 +661,8 @@ function openDetailModal_jtr(item) {
     updateVendorReportUploadState_jtr(item.no_agenda);
     var ptEl = document.getElementById('jtr-mdl-pt');
     if (ptEl) ptEl.value = item.vendor_pt || '';
+    var vendorKonstruksiEl = document.getElementById('jtr-mdl-vendor-konstruksi');
+    if (vendorKonstruksiEl) vendorKonstruksiEl.value = item.konstruksi_vendor_user_id || '';
     var layakRadios = document.querySelectorAll('input[name="jtr_status_layak"]');
     layakRadios.forEach(function(r) {
         r.checked = (item.vendor_status_layak && r.value === item.vendor_status_layak);
@@ -670,6 +671,7 @@ function openDetailModal_jtr(item) {
     renderWoList_jtr(agendaKey);
     renderExcelList_jtr(agendaKey);
     renderBaCekList_jtr(agendaKey);
+    renderBaOperasiList_jtr(agendaKey);
     if (typeof renderVendorReportsForAgenda === 'function') {
         renderVendorReportsForAgenda(item.no_agenda);
     }
@@ -697,14 +699,18 @@ function updateVendorReportUploadState_jtr(noAgenda) {
 
 function updateUploadStatus_jtr(item) {
     var berkas = (item && item.berkas) || [];
-    [['jtr-mdl-status-wo-perencanaan', 'wo_perencanaan', 'Berkas WO'], ['jtr-mdl-status-ba-cek', 'ba_cek', 'BA Cek'], ['jtr-mdl-status-ba-acara', 'dokumen', 'BA Acara']].forEach(function(config) {
+    var konstruksiRow = document.getElementById('jtr-mdl-status-wo-konstruksi'); if (konstruksiRow) konstruksiRow.closest('tr').remove();
+    [['jtr-mdl-status-wo-perencanaan', 'jtr-mdl-tgl-wo-perencanaan', 'wo_perencanaan'], ['jtr-mdl-status-ba-cek', 'jtr-mdl-tgl-ba-cek', 'ba_cek'], ['jtr-mdl-status-ba-acara', 'jtr-mdl-tgl-ba-acara', 'dokumen'], ['jtr-mdl-status-ba-operasi', 'jtr-mdl-tgl-ba-operasi', 'ba_operasi']].forEach(function(config) {
         var status = document.getElementById(config[0]);
         if (!status) return;
-        var sudahAda = berkas.some(function(file) { return file.jenis_berkas === config[1]; });
-        status.textContent = sudahAda ? '✓ ' + config[2] + ' sudah diunggah' : '✕ ' + config[2] + ' belum diunggah';
+        var file = berkas.find(function(file) { return file.jenis_berkas === config[2]; }); var sudahAda = !!file;
+        status.textContent = sudahAda ? '✓ Sudah diunggah' : '✕ Belum diunggah';
         status.className = sudahAda ? 'text-emerald-600' : 'text-red-600';
+        document.getElementById(config[1]).textContent = sudahAda ? formatStatusDate_jtr(file.created_at) : '-';
     });
 }
+
+function formatStatusDate_jtr(value) { if (!value) return '-'; var date = new Date(value); return isNaN(date) ? '-' : date.toLocaleDateString('id-ID'); }
 
 function uploadServerBerkas_jtr(noAgenda, agendaKey, jenis, file) {
     var formData = new FormData();
@@ -726,7 +732,9 @@ function uploadServerBerkas_jtr(noAgenda, agendaKey, jenis, file) {
             if (!window.currentItem_jtr.berkas) window.currentItem_jtr.berkas = [];
             window.currentItem_jtr.berkas.push(res.data);
             if (jenis === 'wo_perencanaan' || jenis === 'ba_cek' || jenis === 'dokumen') updateUploadStatus_jtr(window.currentItem_jtr);
+            if (jenis === 'dokumen') renderExcelList_jtr(agendaKey);
             if (jenis === 'ba_cek') renderBaCekList_jtr(agendaKey);
+            if (jenis === 'ba_operasi') renderBaOperasiList_jtr(agendaKey);
         }
     })
     .catch(function(err) { console.error('Upload server berkas error:', err); });
@@ -784,6 +792,8 @@ function kirimVendor_jtr() {
 
     var ptVal = pt ? pt.value : '';
     var layakVal = layak ? layak.value : '';
+    var vendorKonstruksi = document.getElementById('jtr-mdl-vendor-konstruksi');
+    if (isKonstruksi && (!vendorKonstruksi || !vendorKonstruksi.value)) { alert('Pilih tujuan Vendor Konstruksi terlebih dahulu.'); return; }
 
     syncIndexedDBFilesToServer_jtr(item.agendaKey || item.no_agenda, item.no_agenda);
 
@@ -792,6 +802,7 @@ function kirimVendor_jtr() {
     formData.append('no_agenda', item.no_agenda || '');
     formData.append('vendor_pt', ptVal);
     formData.append('vendor_status_layak', layakVal);
+    if (vendorKonstruksi) formData.append('vendor_konstruksi_user_id', vendorKonstruksi.value);
 
     var fileKelayakan = document.getElementById('jtr-mdl-file-kelayakan');
     if (fileKelayakan && fileKelayakan.files && fileKelayakan.files[0]) {
@@ -1017,6 +1028,10 @@ function renderBaCekList_jtr(agendaKey) {
     };
 }
 
+function handleBaOperasiUpload_jtr(input) { if (!window.currentItem_jtr) return; var files = Array.from(input.files); if (!files.length) return; if (files.some(function(file) { return !/\.(pdf|jpe?g|png)$/i.test(file.name); })) { alert('BA Operasi harus berupa PDF, JPG, JPEG, atau PNG.'); input.value = ''; return; } var key = window.currentItem_jtr.no_agenda || 'default'; files.forEach(function(file) { uploadServerBerkas_jtr(window.currentItem_jtr.no_agenda, key, 'ba_operasi', file); }); input.value = ''; }
+function renderBaOperasiList_jtr(agendaKey) { var list = document.getElementById('jtr-mdl-ba-operasi-list'); if (!list) return; var files = ((window.currentItem_jtr && window.currentItem_jtr.berkas) || []).filter(function(file) { return file.jenis_berkas === 'ba_operasi'; }); list.innerHTML = files.length ? '' : '<li class="text-[11px] text-slate-400 italic">Belum ada BA Operasi</li>'; files.forEach(function(file) { var li = document.createElement('li'); var name = document.createElement('span'); var actions = document.createElement('span'); var view = document.createElement('a'); var remove = document.createElement('button'); li.className = 'flex justify-between text-[11.5px]'; name.className = 'truncate'; name.textContent = file.nama_file; view.className = 'ml-2 text-blue-600 font-bold'; view.href = '/storage/' + file.path_file; view.target = '_blank'; view.textContent = 'Lihat'; remove.type = 'button'; remove.className = 'ml-2 text-red-500 font-bold'; remove.textContent = 'Hapus'; remove.addEventListener('click', function() { deleteBaOperasi_jtr(file.id, agendaKey); }); actions.appendChild(view); actions.appendChild(remove); li.appendChild(name); li.appendChild(actions); list.appendChild(li); }); }
+function deleteBaOperasi_jtr(id, agendaKey) { if (!confirm('Hapus BA Operasi ini?')) return; fetch('/' + _currentRole + '/api/berkas/' + id + '/ba-operasi', {method:'DELETE', headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}'}}).then(function(r){return r.json();}).then(function(res){if(!res.success)throw new Error(res.message); window.currentItem_jtr.berkas=window.currentItem_jtr.berkas.filter(function(file){return file.id!==id;});renderBaOperasiList_jtr(agendaKey);}).catch(function(error){alert(error.message||'Gagal menghapus BA Operasi.');}); }
+
 function deleteBaCek_jtr(id, fileName, agendaKey) {
     if (!confirm('Hapus berkas BA Cek ini?')) return;
     fetch('/' + _currentRole + '/api/berkas/' + id + '/ba-cek', { method: 'DELETE', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } })
@@ -1078,59 +1093,24 @@ function handleExcelUpload_jtr(input) {
 }
 
 function renderExcelList_jtr(agendaKey) {
-    var req = indexedDB.open('FastOnDocs', 2);
-    req.onsuccess = function(e) {
-        var db = e.target.result;
-        if (!db.objectStoreNames.contains('uploadedDocs')) return;
-        var tx = db.transaction('uploadedDocs', 'readonly');
-        var store = tx.objectStore('uploadedDocs');
-        var gr = store.get(agendaKey);
-        gr.onsuccess = function() {
-            var d = gr.result;
-            var list = document.getElementById("jtr-mdl-excel-list");
-            if (!list) return;
-            list.innerHTML = "";
-            if (!d || !d.excel || !d.excel.length) {
-                list.innerHTML = '<li class="text-[11px] text-emerald-600 italic">Belum ada dokumen</li>';
-                return;
-            }
-            d.excel.forEach(function(f, idx) {
-                var li = document.createElement("li");
-                li.className = "flex items-center justify-between bg-white border border-emerald-100 rounded px-2 py-1 text-[11.5px]";
-                var span = document.createElement("span");
-                span.className = "truncate max-w-[220px] text-slate-700";
-                span.textContent = f.name;
-                var div = document.createElement("div");
-                div.className = "flex items-center gap-2 ml-2 flex-shrink-0";
-                var viewBtn = document.createElement("button");
-                viewBtn.className = "text-blue-600 font-bold hover:underline";
-                viewBtn.textContent = "Lihat";
-                viewBtn.onclick = (function(fRef) { return function() {
-                    try {
-                        var bs = atob(fRef.url.split(",")[1]);
-                        var mime = fRef.url.split(",")[0].split(":")[1].split(";")[0];
-                        var ab = new ArrayBuffer(bs.length);
-                        var ia = new Uint8Array(ab);
-                        for (var i = 0; i < bs.length; i++) ia[i] = bs.charCodeAt(i);
-                        window.open(URL.createObjectURL(new Blob([ab], {type: mime})), "_blank");
-                    } catch(e) { alert("Gagal preview: " + e); }
-                }; })(f);
-                div.appendChild(viewBtn);
-                @if ((Auth::user()->role ?? '') !== 'konstruksi')
-                var delBtn = document.createElement("button");
-                delBtn.className = "text-red-500 hover:text-red-700 font-bold text-xs";
-                delBtn.textContent = "Hapus";
-                delBtn.onclick = (function(keyRef, idxRef) { return function() {
-                    deleteExcelFile_jtr(keyRef, idxRef);
-                }; })(agendaKey, idx);
-                div.appendChild(delBtn);
-                @endif
-                li.appendChild(span);
-                li.appendChild(div);
-                list.appendChild(li);
-            });
-        };
+    var list = document.getElementById('jtr-mdl-excel-list');
+    if (!list) return;
+    var render = function(files) {
+        list.innerHTML = files.length ? '' : '<li class="text-[11px] text-emerald-600 italic">Belum ada dokumen</li>';
+        files.forEach(function(file) {
+        var li = document.createElement('li'); var name = document.createElement('span'); var view = document.createElement('a');
+        li.className = 'flex items-center justify-between bg-white border border-emerald-100 rounded px-2 py-1 text-[11.5px]';
+        name.className = 'truncate max-w-[220px] text-slate-700'; name.textContent = file.nama_file;
+        view.className = 'ml-2 text-blue-600 font-bold hover:underline'; view.href = '/storage/' + file.path_file; view.target = '_blank'; view.textContent = 'Lihat';
+        li.appendChild(name); li.appendChild(view); list.appendChild(li);
+        });
     };
+    render(((window.currentItem_jtr && window.currentItem_jtr.berkas) || []).filter(function(file) { return file.jenis_berkas === 'dokumen'; }));
+    fetch('/' + _currentRole + '/api/get-pengiriman?dest=jtr').then(function(response) { return response.json(); }).then(function(items) {
+        var item = items.find(function(row) { return String(row.no_agenda || '') === String(agendaKey || ''); });
+        if (!item) return; window.currentItem_jtr.berkas = item.berkas || [];
+        render(window.currentItem_jtr.berkas.filter(function(file) { return file.jenis_berkas === 'dokumen'; }));
+    });
 }
 
 function deleteExcelFile_jtr(agendaKey, idx) {
