@@ -13,7 +13,7 @@
             </svg>
             <div>
                 <p class="text-white font-bold text-sm tracking-wide">QUICK ACCESS</p>
-                <p class="text-blue-100 text-xs">Full Acceleration & Service Tracking ON 360Â°</p>
+                <p class="text-blue-100 text-xs">Full Acceleration & Service Tracking ON 360°</p>
             </div>
         </div>
 

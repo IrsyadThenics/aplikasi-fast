@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $title ?? ($pageTitle ?? 'Vendor FAST') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    @include('layouts.theme')
 </head>
-<body class="min-h-screen bg-gradient-to-br from-[#0a1a6b] via-[#0d3b8e] to-[#0a8fd1] text-white">
+<body class="min-h-screen bg-gradient-to-br from-[#091267] via-[#0D1B8C] to-[#0D1B8C] text-white">
     <header class="border-b border-white/20 bg-[#08185e]/60 backdrop-blur px-5 py-4">
         <div class="mx-auto flex max-w-6xl items-center justify-between gap-4">
             <a href="{{ route($routePrefix.'.dashboard') }}" class="font-bold tracking-wide">FAST · {{ strtoupper($pageTitle) }}</a>

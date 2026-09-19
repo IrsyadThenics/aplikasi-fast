@@ -1,4 +1,4 @@
-# ⚡ Fast-On — Sistem Manajemen Pelayanan Pelanggan PLN
+﻿# ⚡ Fast-On — Sistem Manajemen Pelayanan Pelanggan PLN
 
 **Fast-On** adalah sistem manajemen pelayanan pelanggan PLN yang terdiri dari dua komponen utama:
 
@@ -116,21 +116,6 @@ cp .env.example .env
 
 # 5. Generate application key
 php artisan key:generate
-```
-
-#### Konfigurasi Database (`.env`)
-
-```env
-DB_CONNECTION=pgsql
-DB_HOST=127.0.0.1
-DB_PORT=5432
-DB_DATABASE=isi dengan konfigurasi anda
-DB_USERNAME=isi sesuaikan dengan konfigurasi kalian
-DB_PASSWORD=isi dengan konfigurasi anda
-
-APP_URL=http://localhost:8000
-APP_ENV=local
-APP_DEBUG=true
 ```
 
 #### Migrasi & Jalankan

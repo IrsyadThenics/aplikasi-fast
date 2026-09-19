@@ -11,8 +11,8 @@
     
     <style>
         :root {
-            --primary-blue: #0073cc;
-            --primary-blue-hover: #005fa3;
+            --primary-blue: #0D1B8C;
+            --primary-blue-hover: #091267;
             --card-bg: rgba(255, 255, 255, 0.18);
             --input-bg: #94a3b8;
             --input-placeholder: #f8fafc;
@@ -32,7 +32,7 @@
             justify-content: center;
             overflow: hidden;
             position: relative;
-            background: linear-gradient(135deg, #0d1b4b 0%, #0a3272 40%, #1565C0 100%);
+            background: linear-gradient(135deg, #091267 0%, #0D1B8C 55%, #0D1B8C 100%);
         }
 
         /* ── BACKGROUND LOGO ── */

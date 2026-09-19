@@ -71,7 +71,7 @@
             {{-- Table header bar --}}
             <div class="bg-gradient-to-r from-[#0D1B8C] to-[#0D1B8C] px-5 py-2.5 flex items-center justify-between flex-shrink-0">
                 <div class="flex items-center gap-2">
-                    <span class="text-white font-bold text-sm tracking-wide">RECORD, JUMLAH TRANSAKSI TANPA PERLUASAN</span>
+                    <span class="text-white font-bold text-sm tracking-wide">DATA TRANSAKSI TANPA PERLUASAN</span>
                     <span class="bg-white/20 text-white text-xs px-2 py-0.5 rounded-full font-mono" id="recordCount">0 data</span>
                 </div>
             </div>
@@ -118,7 +118,7 @@
 
             {{-- Footer --}}
             <div class="border-t border-slate-100 px-5 py-2 bg-slate-50 flex-shrink-0">
-                <span class="text-xs text-slate-400 font-mono" id="footerCount">Records 0 to 0 of 0</span>
+                <span class="text-xs text-slate-400 font-mono" id="footerCount">Data 0 dari 0</span>
             </div>
 
         </div>
@@ -185,13 +185,13 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
         if (!items || items.length === 0) {
             if (emptyRow) emptyRow.style.display = '';
             if (countEl)  countEl.textContent = '0 data';
-            if (footerEl) footerEl.textContent = 'Records 0 to 0 of 0';
+            if (footerEl) footerEl.textContent = 'Data 0 dari 0';
             return;
         }
 
         if (emptyRow) emptyRow.style.display = 'none';
         if (countEl)  countEl.textContent = items.length + ' data';
-        if (footerEl) footerEl.textContent = 'Records 1 to ' + items.length + ' of ' + items.length;
+        if (footerEl) footerEl.textContent = 'Data 1–' + items.length + ' dari ' + items.length;
 
         items.forEach(function(item, i) {
             var tr = document.createElement('tr');

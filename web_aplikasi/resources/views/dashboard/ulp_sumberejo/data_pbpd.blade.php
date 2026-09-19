@@ -99,7 +99,7 @@
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NO.</th>
                             <th class="border border-blue-700 px-2 py-2 text-center" rowspan="2" title="Checklist pengiriman">
                             <div class="flex items-center justify-center flex-col gap-1">
-                                <span>âœ“</span>
+                                <span class="text-[10px] font-bold tracking-wide">PILIH</span>
                                 <input type="checkbox" id="checkAllKirim" class="cursor-pointer" onclick="toggleCheckAll()" />
                             </div>
                         </th>
