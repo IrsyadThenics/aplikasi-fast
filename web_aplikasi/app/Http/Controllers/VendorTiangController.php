@@ -22,6 +22,17 @@ class VendorTiangController extends Controller
         $agendas = PengirimanData::with(['berkas' => fn ($query) => $query->whereIn('jenis_berkas', ['wo_tiang', 'ba_cek'])])
             ->where($this->sentColumn(), true)
             ->when($this->assignedUserColumn(), fn ($query, $column) => $query->where($column, Auth::id()))
+            ->whereNotExists(function ($reportQuery) {
+                $reportQuery->selectRaw('1')
+                    ->from('vendor_reports')
+                    ->whereColumn('vendor_reports.no_agenda', 'pengiriman_data.no_agenda')
+                    ->where(function ($recipientQuery) {
+                        $recipientQuery->where('vendor_reports.recipient_role', $this->recipientRole());
+                        if ($this->recipientRole() === 'perencanaan') {
+                            $recipientQuery->orWhereNull('vendor_reports.recipient_role');
+                        }
+                    });
+            })
             ->latest($this->sentAtColumn())
             ->latest()
             ->get();

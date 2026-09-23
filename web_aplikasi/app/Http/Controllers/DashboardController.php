@@ -199,13 +199,42 @@ class DashboardController extends Controller
             $query->whereRaw('LOWER(ulp) LIKE ?', ['%' . strtolower($ulpMap[$role]) . '%']);
         }
 
-        $query->where(function ($q) {
-            $q->whereRaw('LOWER(status) LIKE ?', ['%peremajaan%'])
-              ->orWhereRaw('LOWER(status) LIKE ?', ['%bayar%']);
+        // Laporan hanya berisi data yang sudah dikirim/diproses oleh ULP.
+        // Role ULP tetap dibatasi ke ULP-nya sendiri, sedangkan role UP3
+        // tidak diberi filter ULP sehingga dapat melihat seluruh ULP.
+        $query->whereExists(function ($processed) {
+            $processed->selectRaw('1')
+                ->from('pengiriman_data')
+                ->whereNotNull('pengiriman_data.sentAt')
+                ->whereColumn('pengiriman_data.no_agenda', 'data.no_agenda')
+                ->where(function ($hasFiles) {
+                    $hasFiles->where('pengiriman_data.ktpCount', '>', 0)
+                        ->orWhere('pengiriman_data.ittCount', '>', 0)
+                        ->orWhereExists(function ($uploadedFile) {
+                            $uploadedFile->selectRaw('1')
+                                ->from('berkas_dokumen')
+                                ->whereColumn('berkas_dokumen.pengiriman_id', 'pengiriman_data.id');
+                        });
+                });
+        });
+
+        $query->where(function ($statusQuery) {
+            $statusQuery->whereRaw('LOWER(status) LIKE ?', ['%cetak pk%'])
+                ->orWhereRaw('LOWER(status) LIKE ?', ['%bayar%'])
+                ->orWhereRaw('LOWER(status) LIKE ?', ['%pengesahan pdl%'])
+                ->orWhereRaw('LOWER(status) LIKE ?', ['%peremajaan%'])
+                ->orWhereRaw('LOWER(status) LIKE ?', ['%perluasan%']);
         });
 
         $data = $query->get();
-        return view('dashboard.' . $this->getViewFolder() . '.laporan', compact('data'));
+        $laporanView = 'dashboard.' . $this->getViewFolder() . '.laporan';
+        // Folder ULP per wilayah hanya menyimpan data_pbpd saat ini.
+        // Gunakan template laporan ULP utama agar semua ULP memiliki menu laporan.
+        if (!view()->exists($laporanView)) {
+            $laporanView = 'dashboard.ulp.laporan';
+        }
+
+        return view($laporanView, compact('data'));
     }
 
     public function notifikasi()
@@ -597,6 +626,12 @@ class DashboardController extends Controller
             'ulp' => 'nullable|string',
             'ktpCount' => 'nullable|integer',
             'ittCount' => 'nullable|integer',
+            'detail_perluasan' => 'nullable|array',
+            'detail_perluasan.combo_tiang' => 'nullable|string|max:50',
+            'detail_perluasan.jumlah_tiang' => 'nullable|string|max:255',
+            'detail_perluasan.jumlah_konduktor' => 'nullable|string|max:255',
+            'detail_perluasan.combo_trafo' => 'nullable|string|max:50',
+            'detail_perluasan.jumlah_trafo' => 'nullable|string|max:255',
         ]);
 
         $validated['sentAt'] = now();
@@ -671,6 +706,35 @@ class DashboardController extends Controller
         }
 
         return response()->json(['success' => false, 'message' => 'Data tidak ditemukan'], 404);
+    }
+
+    public function apiSimpanDetailPerluasan(Request $request)
+    {
+        $role = Auth::user()->role;
+        abort_unless(str_starts_with($role, 'managerULP'), 403);
+
+        $validated = $request->validate([
+            'agendaKey' => 'required|string',
+            'dest' => 'required|in:jtm,jtr',
+            'detail_perluasan' => 'required|array',
+            'detail_perluasan.combo_tiang' => 'nullable|string|max:50',
+            'detail_perluasan.jumlah_tiang' => 'nullable|string|max:255',
+            'detail_perluasan.jumlah_konduktor' => 'nullable|string|max:255',
+            'detail_perluasan.combo_trafo' => 'nullable|string|max:50',
+            'detail_perluasan.jumlah_trafo' => 'nullable|string|max:255',
+        ]);
+
+        $pengiriman = $this->getUlpPengirimanQuery()
+            ->where('agendaKey', $validated['agendaKey'])
+            ->where('dest', $validated['dest'])
+            ->first();
+
+        if (!$pengiriman) {
+            return response()->json(['success' => false, 'message' => 'Data tidak ditemukan atau bukan kiriman ULP ini.'], 404);
+        }
+
+        $pengiriman->update(['detail_perluasan' => $validated['detail_perluasan']]);
+        return response()->json(['success' => true, 'detail_perluasan' => $pengiriman->detail_perluasan]);
     }
 
     public function apiKirimVendor(Request $request)

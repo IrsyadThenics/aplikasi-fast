@@ -20,12 +20,6 @@
         {{-- Filter Fields --}}
         <div class="px-6 py-4">
             <div class="grid grid-cols-3 gap-4 mb-4">
-                {{-- No Agenda --}}
-                <div>
-                    <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-widest">No Agenda</label>
-                    <input type="text" placeholder="Cari no. agenda..."
-                        class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-slate-50 text-slate-700 transition" />
-                </div>
                 {{-- Transaksi --}}
                 <div>
                     <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-widest">Transaksi</label>
@@ -35,13 +29,26 @@
                         <option>Perubahan daya</option>
                     </select>
                 </div>
-                {{-- Status Mohon --}}
+                {{-- Jenis Data --}}
                 <div>
-                    <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-widest">Status Mohon</label>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-widest">Jenis Data</label>
                     <select class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-slate-50 text-slate-700 transition">
                         <option>--- semua ---</option>
-                        <option>Mohon</option>
+                        <option>Perluasan JTM</option>
+                        <option>Perluasan JTR</option>
+                        <option>Tanpa Perluasan</option>
+                    </select>
+                </div>
+                {{-- Status --}}
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-widest">Status</label>
+                    <select class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-slate-50 text-slate-700 transition">
+                        <option>--- semua ---</option>
                         <option>Bayar</option>
+                        <option>Cetak PK</option>
+                        <option>Pengesahan PDL</option>
+                        <option>Peremajaan</option>
+                        <option>Perluasan</option>
                     </select>
                 </div>
             </div>
@@ -101,7 +108,6 @@
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">DTL</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" colspan="2">SYARAT</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">TANGGAL<br>MOHON</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NO AGENDA</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NAMA<br>PELANGGAN</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">ALAMAT</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">JENIS<br>TRANSAKSI</th>
@@ -147,7 +153,7 @@
                             {{-- BERKAS PENDUKUNG --}}
                             <td class="border border-slate-200 px-2 py-2 text-center">
                                 <div class="flex flex-col items-center gap-1">
-                                    <button onclick="openSyaratModal({{ json_encode($item) }}, 'ktp')" class="text-slate-400 hover:text-emerald-600 transition" title="Upload Berkas Pendukung">
+                                    <button onclick="openSyaratModal({{ json_encode($item) }}, 'ktp')" class="text-slate-400 hover:text-emerald-600 transition" title="Lihat Berkas Pendukung">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
                                         </svg>
@@ -160,7 +166,7 @@
                             {{-- IJIN TANAM TIANG --}}
                             <td class="border border-slate-200 px-2 py-2 text-center">
                                 <div class="flex flex-col items-center gap-1">
-                                    <button onclick="openSyaratModal({{ json_encode($item) }}, 'ijin')" class="text-slate-400 hover:text-amber-600 transition" title="Upload Ijin Tanam Tiang">
+                                    <button onclick="openSyaratModal({{ json_encode($item) }}, 'ijin')" class="text-slate-400 hover:text-amber-600 transition" title="Lihat Ijin Tanam Tiang">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                         </svg>
@@ -171,7 +177,6 @@
                                 </div>
                             </td>
                             <td class="border border-slate-200 px-2 py-2 text-center text-xs text-slate-500 whitespace-nowrap">{{ $item->tanggal_ulp ? \Carbon\Carbon::parse($item->tanggal_ulp)->format('d/m/Y') : '-' }}</td>
-                            <td class="border border-slate-200 px-3 py-2 text-center font-medium text-slate-700">{{ $item->no_agenda ?? '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-left">{{ $item->nama ?? '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-left max-w-xs truncate" title="{{ $item->alamat }}">{{ $item->alamat }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-left whitespace-nowrap">
@@ -199,7 +204,7 @@
                         </tr>
                         @empty
                         <tr id="emptyRow">
-                            <td colspan="15" class="text-center py-12 text-slate-400 italic text-xs">
+                            <td colspan="14" class="text-center py-12 text-slate-400 italic text-xs">
                                 <div class="flex flex-col items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke-width="1.2" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
@@ -809,9 +814,19 @@ function openSyaratModal(item, tipe) {
     }
 
     renderPreviews(agendaKey);
+    enforceReportReadOnly();
     updateRowChecklist(agendaKey);
     var m = document.getElementById('syaratModal');
     if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
+}
+
+function enforceReportReadOnly() {
+    var rabInput = document.getElementById('syr-rab-input');
+    if (rabInput) rabInput.readOnly = true;
+    var rabSave = document.querySelector('#syaratModal button[onclick="saveRabField()"]');
+    if (rabSave) rabSave.remove();
+    document.querySelectorAll('#syaratModal input[type="file"]').forEach(function(input) { var label = input.closest('label'); if (label) label.remove(); });
+    document.querySelectorAll('#syaratModal button[onclick^="uploadSyarat"], #syaratModal button[onclick^="removeSyarat"]').forEach(function(button) { button.remove(); });
 }
 
 function closeSyaratModal() {

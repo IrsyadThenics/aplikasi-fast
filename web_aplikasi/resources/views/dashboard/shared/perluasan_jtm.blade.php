@@ -357,6 +357,19 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                 </div>
             </div>
 
+            {{-- Detail Perluasan --}}
+            <div id="expansion-detail-section_jtm" class="bg-orange-50/60 border border-orange-200 rounded-lg p-3">
+                <div class="font-bold text-orange-800 uppercase tracking-wider text-[13px] mb-2">Detail Perluasan JTM</div>
+                <div class="overflow-hidden rounded-lg border border-slate-300 bg-white">
+                    <table class="w-full border-collapse text-[11px]"><thead class="bg-slate-100 text-slate-600"><tr><th class="border-b border-slate-300 px-2 py-2 text-left">KETERANGAN</th><th class="border-b border-l border-slate-300 px-2 py-2 text-left">DROPDOWN</th><th class="border-b border-l border-slate-300 px-2 py-2 text-left">JUMLAH</th><th class="border-b border-l border-slate-300 px-2 py-2 text-left">SATUAN</th></tr></thead><tbody>
+                        <tr><td class="border-b border-slate-200 px-2 py-2 font-bold">JUMLAH TIANG</td><td class="border-b border-l border-slate-200 px-2 py-2"><select id="jtm-mdl-combo-tiang" class="w-full border border-slate-300 rounded px-2 py-1.5 bg-orange-50" @if (!str_starts_with(Auth::user()->role ?? '', 'managerULP')) disabled @endif><option value="">Pilih</option><option value="9">9</option><option value="11">11</option><option value="13">13</option></select></td><td class="border-b border-l border-slate-200 px-2 py-2"><input id="jtm-mdl-jumlah-tiang" type="text" class="w-full border border-slate-300 rounded px-2 py-1.5 bg-orange-50" @if (!str_starts_with(Auth::user()->role ?? '', 'managerULP')) readonly @endif></td><td class="border-b border-l border-slate-200 px-2 py-2">BUAH</td></tr>
+                        <tr><td class="border-b border-slate-200 px-2 py-2 font-bold">JUMLAH KONDUKTOR</td><td class="border-b border-l border-slate-200 px-2 py-2"></td><td class="border-b border-l border-slate-200 px-2 py-2"><input id="jtm-mdl-jumlah-konduktor" type="text" class="w-full border border-slate-300 rounded px-2 py-1.5 bg-orange-50" @if (!str_starts_with(Auth::user()->role ?? '', 'managerULP')) readonly @endif></td><td class="border-b border-l border-slate-200 px-2 py-2">METER</td></tr>
+                        <tr><td class="px-2 py-2 font-bold">JUMLAH TRAFO</td><td class="border-l border-slate-200 px-2 py-2"><select id="jtm-mdl-combo-trafo" class="w-full border border-slate-300 rounded px-2 py-1.5 bg-orange-50" @if (!str_starts_with(Auth::user()->role ?? '', 'managerULP')) disabled @endif><option value="">Pilih</option><option value="100">100</option><option value="160">160</option><option value="200">200</option></select></td><td class="border-l border-slate-200 px-2 py-2"><input id="jtm-mdl-jumlah-trafo" type="text" class="w-full border border-slate-300 rounded px-2 py-1.5 bg-orange-50" @if (!str_starts_with(Auth::user()->role ?? '', 'managerULP')) readonly @endif></td><td class="border-l border-slate-200 px-2 py-2">BUAH</td></tr>
+                    </tbody></table>
+                </div>
+                @if (str_starts_with(Auth::user()->role ?? '', 'managerULP'))<div class="mt-2 flex items-center gap-2"><button onclick="saveExpansionDetail_jtm()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-[12px] font-bold">Simpan</button><span id="jtm-mdl-expansion-indicator" class="text-emerald-600 text-[12px] font-bold opacity-0">Tersimpan!</span></div>@endif
+            </div>
+
             {{-- Berkas WO / Dokumen Transaksi --}}
             <div id="wo-section_jtm" class="bg-amber-50/60 border border-amber-200 rounded-lg p-3 flex flex-col gap-2">
                 <div class="font-bold text-amber-800 uppercase tracking-wider flex items-center gap-1.5 text-[13px]">
@@ -382,7 +395,7 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                     {{-- Dokumen Transaksi --}}
                     <div id="excel-controls_jtm" class="flex flex-col gap-1.5 bg-white p-2.5 rounded-lg border border-emerald-200">
                         <div class="flex items-center justify-between">
-                            <label class="text-[11px] font-bold text-emerald-900 uppercase tracking-wider">BA Acara</label>
+                            <label class="text-[11px] font-bold text-emerald-900 uppercase tracking-wider">berkas BA cek KWH meter</label>
                             @if ((Auth::user()->role ?? '') === 'transaksi')
                             <label id="jtm-mdl-dokumen-upload" class="cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white text-[10.5px] font-bold px-2 py-1 rounded shadow-sm transition">
                                 Upload Dokumen
@@ -394,10 +407,10 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                     </div>
                     <div class="flex flex-col gap-1.5 bg-white p-2.5 rounded-lg border border-blue-200">
                         <div class="flex items-center justify-between">
-                            <label class="text-[11px] font-bold text-blue-900 uppercase tracking-wider">Berkas BA Cek</label>
+                            <label class="text-[11px] font-bold text-blue-900 uppercase tracking-wider">Berkas BA Checklist</label>
                             @if ((Auth::user()->role ?? '') === 'konstruksi')
                             <label class="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white text-[10.5px] font-bold px-2 py-1 rounded shadow-sm transition">
-                                Upload BA Cek
+                                Upload BA Checklist
                                 <input type="file" id="jtm-mdl-ba-cek-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="handleBaCekUpload_jtm(this)" />
                             </label>
                             @endif
@@ -608,6 +621,7 @@ function showBerkasModal(agendaKey) {
             });
         }
     };
+
 }
 function closeFileModal() {
     var modal = document.getElementById('fileModal');
@@ -662,6 +676,7 @@ function openDetailModal_jtm(item) {
     };
 
     window.currentItem_jtm = item; // Penting untuk inisialisasi
+    renderExpansionDetail_jtm(item);
     updateVendorReportUploadState_jtm(item.no_agenda);
     var ptEl = document.getElementById('jtm-mdl-pt');
     if (ptEl) ptEl.value = item.vendor_pt || '';
@@ -682,6 +697,30 @@ function openDetailModal_jtm(item) {
 
     var m = document.getElementById('detailModal_jtm');
     if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
+}
+
+function renderExpansionDetail_jtm(item) {
+    var detail = (item && item.detail_perluasan) || {};
+    document.getElementById('jtm-mdl-combo-tiang').value = detail.combo_tiang || '';
+    document.getElementById('jtm-mdl-jumlah-tiang').value = detail.jumlah_tiang || '';
+    document.getElementById('jtm-mdl-jumlah-konduktor').value = detail.jumlah_konduktor || '';
+    document.getElementById('jtm-mdl-combo-trafo').value = detail.combo_trafo || '';
+    document.getElementById('jtm-mdl-jumlah-trafo').value = detail.jumlah_trafo || '';
+}
+
+function saveExpansionDetail_jtm() {
+    if (!window.currentItem_jtm) return;
+    var detail = {
+        combo_tiang: document.getElementById('jtm-mdl-combo-tiang').value,
+        jumlah_tiang: document.getElementById('jtm-mdl-jumlah-tiang').value.trim(),
+        jumlah_konduktor: document.getElementById('jtm-mdl-jumlah-konduktor').value.trim(),
+        combo_trafo: document.getElementById('jtm-mdl-combo-trafo').value,
+        jumlah_trafo: document.getElementById('jtm-mdl-jumlah-trafo').value.trim()
+    };
+    fetch('/' + _currentRole + '/api/simpan-detail-perluasan', {method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}'}, body:JSON.stringify({agendaKey: window.currentItem_jtm.agendaKey || window.currentItem_jtm.no_agenda, dest:'jtm', detail_perluasan:detail})})
+        .then(function(response){ return response.json().then(function(data){ if(!response.ok || !data.success) throw new Error(data.message || 'Gagal menyimpan detail perluasan.'); return data; }); })
+        .then(function(data){ window.currentItem_jtm.detail_perluasan = data.detail_perluasan || detail; var indicator = document.getElementById('jtm-mdl-expansion-indicator'); indicator.style.opacity = '1'; setTimeout(function(){indicator.style.opacity = '0';}, 2000); })
+        .catch(function(error){ alert(error.message || 'Gagal menyimpan detail perluasan.'); });
 }
 function hasVendorReport_jtm(noAgenda) {
     return (window._vendorReports || []).some(function(report) {

@@ -104,6 +104,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/api/kirim-data', [DashboardController::class, 'apiKirimData']);
             Route::get('/api/get-pengiriman', [DashboardController::class, 'apiGetPengiriman']);
             Route::post('/api/simpan-rab', [DashboardController::class, 'apiSimpanRab']);
+            Route::post('/api/simpan-detail-perluasan', [DashboardController::class, 'apiSimpanDetailPerluasan']);
             Route::post('/api/kirim-vendor', [DashboardController::class, 'apiKirimVendor']);
             Route::post('/api/upload-berkas', [DashboardController::class, 'apiUploadBerkas']);
             Route::delete('/api/berkas/{berkas}/ba-cek', [DashboardController::class, 'apiHapusBaCek']);

@@ -383,7 +383,7 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                     {{-- Dokumen Transaksi --}}
                     <div id="excel-controls_tp" class="flex flex-col gap-1.5 bg-white p-2.5 rounded-lg border border-emerald-200">
                         <div class="flex items-center justify-between">
-                            <label class="text-[11px] font-bold text-emerald-900 uppercase tracking-wider">BA Acara</label>
+                            <label class="text-[11px] font-bold text-emerald-900 uppercase tracking-wider">berkas BA cek KWH meter</label>
                             @if ((Auth::user()->role ?? '') === 'transaksi')
                             <label id="tp-mdl-dokumen-upload" class="cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white text-[10.5px] font-bold px-2 py-1 rounded shadow-sm transition">
                                 Upload Dokumen
@@ -395,10 +395,10 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                     </div>
                     <div class="flex flex-col gap-1.5 bg-white p-2.5 rounded-lg border border-blue-200">
                         <div class="flex items-center justify-between">
-                            <label class="text-[11px] font-bold text-blue-900 uppercase tracking-wider">Berkas BA Cek</label>
+                            <label class="text-[11px] font-bold text-blue-900 uppercase tracking-wider">Berkas BA Checklist</label>
                             @if ((Auth::user()->role ?? '') === 'konstruksi')
                             <label class="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white text-[10.5px] font-bold px-2 py-1 rounded shadow-sm transition">
-                                Upload BA Cek
+                                Upload BA Checklist
                                 <input type="file" id="tp-mdl-ba-cek-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="handleBaCekUpload_tp(this)" />
                             </label>
                             @endif
