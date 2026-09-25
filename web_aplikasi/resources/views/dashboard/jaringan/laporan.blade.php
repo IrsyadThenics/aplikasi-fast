@@ -98,7 +98,6 @@
                             </div>
                         </th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">DTL</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center" colspan="2">SYARAT</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">TANGGAL<br>MOHON</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NAMA<br>PELANGGAN</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">ALAMAT</th>
@@ -112,8 +111,6 @@
                             
                         </tr>
                         <tr class="bg-[#0D1B8C] text-white">
-                            <th class="border border-blue-600 px-3 py-1.5 text-center font-medium">BERKAS PENDUKUNG</th>
-                            <th class="border border-blue-600 px-3 py-1.5 text-center font-medium">IJIN TANAM TIANG</th>
                             <th class="border border-blue-600 px-3 py-1.5 text-center font-medium">TARIF</th>
                             <th class="border border-blue-600 px-3 py-1.5 text-center font-medium">DAYA</th>
                             <th class="border border-blue-600 px-3 py-1.5 text-center font-medium">TARIF</th>
@@ -136,37 +133,11 @@
                                     class="send-chk w-4 h-4 cursor-not-allowed opacity-40 mx-auto" />
                             </td>
                             <td class="border border-slate-200 px-3 py-2 text-center">
-                                <button onclick="openDetailModal({{ json_encode($item) }})" class="text-slate-500 hover:text-blue-600 transition" title="Lihat Detail">
+                                <button onclick="openSyaratModal({{ json_encode($item) }}, 'all')" class="text-slate-500 hover:text-blue-600 transition" title="Lihat Detail">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                                     </svg>
                                 </button>
-                            </td>
-                            {{-- BERKAS PENDUKUNG --}}
-                            <td class="border border-slate-200 px-2 py-2 text-center">
-                                <div class="flex flex-col items-center gap-1">
-                                    <button onclick="openSyaratModal({{ json_encode($item) }}, 'ktp')" class="text-slate-400 hover:text-emerald-600 transition" title="Lihat Berkas Pendukung">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
-                                        </svg>
-                                    </button>
-                                    <span id="chk-ktp-{{ $agendaKey }}" class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-100 text-slate-300 transition-all duration-300" title="Belum ada berkas pendukung">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                                    </span>
-                                </div>
-                            </td>
-                            {{-- IJIN TANAM TIANG --}}
-                            <td class="border border-slate-200 px-2 py-2 text-center">
-                                <div class="flex flex-col items-center gap-1">
-                                    <button onclick="openSyaratModal({{ json_encode($item) }}, 'ijin')" class="text-slate-400 hover:text-amber-600 transition" title="Lihat Ijin Tanam Tiang">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                        </svg>
-                                    </button>
-                                    <span id="chk-itt-{{ $agendaKey }}" class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-100 text-slate-300 transition-all duration-300" title="Belum ada ijin tanam tiang">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                                    </span>
-                                </div>
                             </td>
                             <td class="border border-slate-200 px-2 py-2 text-center text-xs text-slate-500 whitespace-nowrap">{{ $item->tanggal_ulp ? \Carbon\Carbon::parse($item->tanggal_ulp)->format('d/m/Y') : '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-left">{{ $item->nama ?? '-' }}</td>
@@ -196,7 +167,7 @@
                         </tr>
                         @empty
                         <tr id="emptyRow">
-                            <td colspan="14" class="text-center py-12 text-slate-400 italic text-xs">
+                            <td colspan="12" class="text-center py-12 text-slate-400 italic text-xs">
                                 <div class="flex flex-col items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke-width="1.2" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
@@ -817,7 +788,7 @@ function enforceReportReadOnly() {
     if (rabInput) rabInput.readOnly = true;
     var rabSave = document.querySelector('#syaratModal button[onclick="saveRabField()"]');
     if (rabSave) rabSave.remove();
-    document.querySelectorAll('#syaratModal input[type="file"]').forEach(function(input) { var label = input.closest('label'); if (label) label.remove(); });
+    document.querySelectorAll('#syaratModal input[type="file"]').forEach(function(input) { input.disabled = true; var label = input.closest('label'); if (label) label.style.display = 'none'; });
     document.querySelectorAll('#syaratModal button[onclick^="uploadSyarat"], #syaratModal button[onclick^="removeSyarat"]').forEach(function(button) { button.remove(); });
 }
 

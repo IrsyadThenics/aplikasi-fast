@@ -108,7 +108,7 @@
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">TANGGAL<br>MOHON</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NO AGENDA</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NAMA<br>PELANGGAN</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">ALAMAT</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">IDPEL</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">JENIS<br>TRANSAKSI</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" colspan="2">LAMA</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" colspan="2">BARU</th>
@@ -472,7 +472,7 @@ function openDetailModal(item) {
     document.getElementById('mdl-status').textContent = item.status || '-';
     document.getElementById('mdl-agenda').textContent = item.no_agenda || '-';
     document.getElementById('mdl-idpel').textContent = item.no_agenda || '-';
-    document.getElementById('mdl-nama').textContent = 'Pelanggan ' + (item.no_agenda || '');
+    document.getElementById('mdl-nama').textContent = item.nama || ('Pelanggan ' + (item.no_agenda || ''));
     document.getElementById('mdl-alamat').textContent = item.alamat || '-';
     document.getElementById('mdl-tbaru').textContent = item.tarif_baru || '-';
     document.getElementById('mdl-dbaru').textContent = item.daya_baru || '0';
@@ -1060,7 +1060,8 @@ function openExpansionForm(dest) {
             '<table class="w-full border-collapse text-[11px]"><thead><tr class="bg-slate-100 text-slate-600"><th class="border-b border-slate-300 px-2 py-2 text-left">KETERANGAN</th><th class="border-b border-l border-slate-300 px-2 py-2 text-left">JENIS</th><th class="border-b border-l border-slate-300 px-2 py-2 text-left">JUMLAH</th><th class="border-b border-l border-slate-300 px-2 py-2 text-left">SATUAN</th></tr></thead><tbody>' +
             '<tr><td class="border-b border-slate-200 px-2 py-2 font-bold">JUMLAH TIANG</td><td class="border-b border-l border-slate-200 px-2 py-2"><select data-field="combo_tiang" class="w-full border border-slate-300 rounded px-2 py-1.5 bg-orange-50"><option value="">Pilih</option><option value="9">9</option><option value="11">11</option><option value="13">13</option></select></td><td class="border-b border-l border-slate-200 px-2 py-2"><input data-field="jumlah_tiang" type="text" placeholder="Isi jumlah sendiri" class="w-full border border-slate-300 rounded px-2 py-1.5 bg-orange-50"></td><td class="border-b border-l border-slate-200 px-2 py-2">BUAH</td></tr>' +
             '<tr><td class="border-b border-slate-200 px-2 py-2 font-bold">JUMLAH KONDUKTOR</td><td class="border-b border-l border-slate-200 px-2 py-2"></td><td class="border-b border-l border-slate-200 px-2 py-2"><input data-field="jumlah_konduktor" type="text" placeholder="Isi jumlah meter" class="w-full border border-slate-300 rounded px-2 py-1.5 bg-orange-50"></td><td class="border-b border-l border-slate-200 px-2 py-2">METER</td></tr>' +
-            '<tr><td class="px-2 py-2 font-bold">JUMLAH TRAFO</td><td class="border-l border-slate-200 px-2 py-2"><select data-field="combo_trafo" class="w-full border border-slate-300 rounded px-2 py-1.5 bg-orange-50"><option value="">Pilih</option><option value="100">100</option><option value="160">160</option><option value="200">200</option></select></td><td class="border-l border-slate-200 px-2 py-2"><input data-field="jumlah_trafo" type="text" placeholder="Isi jumlah sendiri" class="w-full border border-slate-300 rounded px-2 py-1.5 bg-orange-50"></td><td class="border-l border-slate-200 px-2 py-2">BUAH</td></tr>' +
+            '<tr><td class="px-2 py-2 font-bold">JUMLAH TRAFO</td><td class="border-l border-slate-200 px-2 py-2"><select data-field="combo_trafo" class="w-full border border-slate-300 rounded px-2 py-1.5 bg-orange-50"><option value="">Pilih</option> <option value="0">0</option><option value="100">100</option><option value="160">160</option><option value="200">200</option> <option value="250">250</option></select></td><td class="border-l border-slate-200 px-2 py-2"><input data-field="jumlah_trafo" type="text" placeholder="Isi jumlah sendiri" class="w-full border border-slate-300 rounded px-2 py-1.5 bg-orange-50"></td><td class="border-l border-slate-200 px-2 py-2">BUAH</td></tr>' +
+            '<tr><td class="border-b border-slate-200 px-2 py-2 font-bold">JUMLAH KWH METER</td><td class="border-b border-l border-slate-200 px-2 py-2"></td><td class="border-b border-l border-slate-200 px-2 py-2"><input data-field="jumlah_kwh" type="text" placeholder="Isi jumlah meter" class="w-full border border-slate-300 rounded px-2 py-1.5 bg-orange-50"></td><td class="border-b border-l border-slate-200 px-2 py-2">METER</td></tr>' +
             '</tbody></table></div></div>';
     }).join('');
     var modal = document.getElementById('expansionFormModal');

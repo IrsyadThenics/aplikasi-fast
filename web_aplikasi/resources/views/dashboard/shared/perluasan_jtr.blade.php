@@ -128,6 +128,7 @@
 
 <script>
 var _currentRole = '{{ Auth::user()->role ?? '' }}';
+var _apiPrefix = window.location.pathname.split('/')[1] || 'ulp';
 var _ulpRoleMap = {
     'managerULP': 'LAMONGAN',
     'managerULP_babat': 'BABAT',
@@ -364,7 +365,8 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                     <table class="w-full border-collapse text-[11px]"><thead class="bg-slate-100 text-slate-600"><tr><th class="border-b border-slate-300 px-2 py-2 text-left">KETERANGAN</th><th class="border-b border-l border-slate-300 px-2 py-2 text-left">DROPDOWN</th><th class="border-b border-l border-slate-300 px-2 py-2 text-left">JUMLAH</th><th class="border-b border-l border-slate-300 px-2 py-2 text-left">SATUAN</th></tr></thead><tbody>
                         <tr><td class="border-b border-slate-200 px-2 py-2 font-bold">JUMLAH TIANG</td><td class="border-b border-l border-slate-200 px-2 py-2"><select id="jtr-mdl-combo-tiang" class="w-full border border-slate-300 rounded px-2 py-1.5 bg-orange-50" @if (!str_starts_with(Auth::user()->role ?? '', 'managerULP')) disabled @endif><option value="">Pilih</option><option value="9">9</option><option value="11">11</option><option value="13">13</option></select></td><td class="border-b border-l border-slate-200 px-2 py-2"><input id="jtr-mdl-jumlah-tiang" type="text" class="w-full border border-slate-300 rounded px-2 py-1.5 bg-orange-50" @if (!str_starts_with(Auth::user()->role ?? '', 'managerULP')) readonly @endif></td><td class="border-b border-l border-slate-200 px-2 py-2">BUAH</td></tr>
                         <tr><td class="border-b border-slate-200 px-2 py-2 font-bold">JUMLAH KONDUKTOR</td><td class="border-b border-l border-slate-200 px-2 py-2"></td><td class="border-b border-l border-slate-200 px-2 py-2"><input id="jtr-mdl-jumlah-konduktor" type="text" class="w-full border border-slate-300 rounded px-2 py-1.5 bg-orange-50" @if (!str_starts_with(Auth::user()->role ?? '', 'managerULP')) readonly @endif></td><td class="border-b border-l border-slate-200 px-2 py-2">METER</td></tr>
-                        <tr><td class="px-2 py-2 font-bold">JUMLAH TRAFO</td><td class="border-l border-slate-200 px-2 py-2"><select id="jtr-mdl-combo-trafo" class="w-full border border-slate-300 rounded px-2 py-1.5 bg-orange-50" @if (!str_starts_with(Auth::user()->role ?? '', 'managerULP')) disabled @endif><option value="">Pilih</option><option value="100">100</option><option value="160">160</option><option value="200">200</option></select></td><td class="border-l border-slate-200 px-2 py-2"><input id="jtr-mdl-jumlah-trafo" type="text" class="w-full border border-slate-300 rounded px-2 py-1.5 bg-orange-50" @if (!str_starts_with(Auth::user()->role ?? '', 'managerULP')) readonly @endif></td><td class="border-l border-slate-200 px-2 py-2">BUAH</td></tr>
+                        <tr><td class="border-b border-slate-200 px-2 py-2 font-bold">JUMLAH TRAFO</td><td class="border-b border-l border-slate-200 px-2 py-2"><select id="jtr-mdl-combo-trafo" class="w-full border border-slate-300 rounded px-2 py-1.5 bg-orange-50" @if (!str_starts_with(Auth::user()->role ?? '', 'managerULP')) disabled @endif><option value="">Pilih</option><option value="100">100</option><option value="160">160</option><option value="200">200</option></select></td><td class="border-b border-l border-slate-200 px-2 py-1.5"><input id="jtr-mdl-jumlah-trafo" type="text" class="w-full border border-slate-300 rounded px-2 py-1.5 bg-orange-50" @if (!str_starts_with(Auth::user()->role ?? '', 'managerULP')) readonly @endif></td><td class="border-b border-l border-slate-200 px-2 py-2">BUAH</td></tr>
+                        <tr><td class="px-2 py-2 font-bold">JUMLAH KWH METER</td><td class="border-l border-slate-200 px-2 py-2"></td><td class="border-l border-slate-200 px-2 py-2"><input id="jtr-mdl-jumlah-kwh" type="text" class="w-full border border-slate-300 rounded px-2 py-1.5 bg-orange-50" @if (!str_starts_with(Auth::user()->role ?? '', 'managerULP')) readonly @endif></td><td class="border-l border-slate-200 px-2 py-2">METER</td></tr>
                     </tbody></table>
                 </div>
                 @if (str_starts_with(Auth::user()->role ?? '', 'managerULP'))<div class="mt-2 flex items-center gap-2"><button onclick="saveExpansionDetail_jtr()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-[12px] font-bold">Simpan</button><span id="jtr-mdl-expansion-indicator" class="text-emerald-600 text-[12px] font-bold opacity-0">Tersimpan!</span></div>@endif
@@ -422,7 +424,7 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                 <p id="jtr-vendor-report-upload-note" class="hidden text-[11px] font-semibold text-amber-700">Unggah WO atau dokumen tersedia setelah laporan vendor masuk.</p>
             </div>
 
-            @if (!str_starts_with(Auth::user()->role ?? '', 'managerULP') && !in_array((Auth::user()->role ?? ''), ['transaksi', 'jaringan']))
+            @if (!str_starts_with(Auth::user()->role ?? '', 'managerULP') && !in_array((Auth::user()->role ?? ''), ['transaksi', 'jaringan', 'pelayanan']))
             {{-- Tujuan PT & Kelayakan --}}
             <div id="vendor-section_jtr" class="bg-slate-50 border border-slate-200 rounded-lg p-4 flex flex-col gap-4">
                 @if ((Auth::user()->role ?? '') !== 'konstruksi')
@@ -701,6 +703,7 @@ function renderExpansionDetail_jtr(item) {
     document.getElementById('jtr-mdl-jumlah-konduktor').value = detail.jumlah_konduktor || '';
     document.getElementById('jtr-mdl-combo-trafo').value = detail.combo_trafo || '';
     document.getElementById('jtr-mdl-jumlah-trafo').value = detail.jumlah_trafo || '';
+    document.getElementById('jtr-mdl-jumlah-kwh').value = detail.jumlah_kwh || '';
 }
 
 function saveExpansionDetail_jtr() {
@@ -710,9 +713,10 @@ function saveExpansionDetail_jtr() {
         jumlah_tiang: document.getElementById('jtr-mdl-jumlah-tiang').value.trim(),
         jumlah_konduktor: document.getElementById('jtr-mdl-jumlah-konduktor').value.trim(),
         combo_trafo: document.getElementById('jtr-mdl-combo-trafo').value,
-        jumlah_trafo: document.getElementById('jtr-mdl-jumlah-trafo').value.trim()
+        jumlah_trafo: document.getElementById('jtr-mdl-jumlah-trafo').value.trim(),
+        jumlah_kwh: document.getElementById('jtr-mdl-jumlah-kwh').value.trim()
     };
-    fetch('/' + _currentRole + '/api/simpan-detail-perluasan', {method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}'}, body:JSON.stringify({agendaKey: window.currentItem_jtr.agendaKey || window.currentItem_jtr.no_agenda, dest:'jtr', detail_perluasan:detail})})
+    fetch('/' + _apiPrefix + '/api/simpan-detail-perluasan', {method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}'}, body:JSON.stringify({agendaKey: window.currentItem_jtr.agendaKey || window.currentItem_jtr.no_agenda, dest:'jtr', detail_perluasan:detail})})
         .then(function(response){ return response.json().then(function(data){ if(!response.ok || !data.success) throw new Error(data.message || 'Gagal menyimpan detail perluasan.'); return data; }); })
         .then(function(data){ window.currentItem_jtr.detail_perluasan = data.detail_perluasan || detail; var indicator = document.getElementById('jtr-mdl-expansion-indicator'); indicator.style.opacity = '1'; setTimeout(function(){indicator.style.opacity = '0';}, 2000); })
         .catch(function(error){ alert(error.message || 'Gagal menyimpan detail perluasan.'); });

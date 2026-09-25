@@ -410,7 +410,7 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                 <p id="tp-vendor-report-upload-note" class="hidden text-[11px] font-semibold text-amber-700">Unggah WO atau dokumen tersedia setelah laporan vendor masuk.</p>
             </div>
 
-            @if (!str_starts_with(Auth::user()->role ?? '', 'managerULP') && !in_array((Auth::user()->role ?? ''), ['transaksi', 'jaringan']))
+            @if (!str_starts_with(Auth::user()->role ?? '', 'managerULP') && !in_array((Auth::user()->role ?? ''), ['transaksi', 'jaringan', 'pelayanan']))
             {{-- Tujuan PT & Kelayakan --}}
             <div id="vendor-section_tp" class="bg-slate-50 border border-slate-200 rounded-lg p-4 flex flex-col gap-4">
                 @if ((Auth::user()->role ?? '') !== 'konstruksi')

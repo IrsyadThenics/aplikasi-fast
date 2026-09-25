@@ -108,7 +108,7 @@
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">TANGGAL<br>MOHON</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NO AGENDA</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NAMA<br>PELANGGAN</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">ALAMAT</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">IDPEL</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">JENIS<br>TRANSAKSI</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" colspan="2">LAMA</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" colspan="2">BARU</th>
@@ -463,7 +463,7 @@ function openDetailModal(item) {
     document.getElementById('mdl-status').textContent = item.status || '-';
     document.getElementById('mdl-agenda').textContent = item.no_agenda || '-';
     document.getElementById('mdl-idpel').textContent = item.no_agenda || '-';
-    document.getElementById('mdl-nama').textContent = 'Pelanggan ' + (item.no_agenda || '');
+    document.getElementById('mdl-nama').textContent = item.nama || ('Pelanggan ' + (item.no_agenda || ''));
     document.getElementById('mdl-alamat').textContent = item.alamat || '-';
     document.getElementById('mdl-tbaru').textContent = item.tarif_baru || '-';
     document.getElementById('mdl-dbaru').textContent = item.daya_baru || '0';
@@ -1121,5 +1121,7 @@ function saveRabField() {
     });
 }
 </script>
+
+@include('dashboard.ulp._expansion_form')
 
 @endsection

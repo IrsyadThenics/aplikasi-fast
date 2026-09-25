@@ -159,10 +159,36 @@
         const rows = data.slice(1);
         const dataRows = rows.filter(r => r.some(cell => cell !== ''));
 
+        // Untuk preview, tampilkan IDPEL sebagai pengganti kolom ALAMAT.
+        // IDPEL tetap diambil dari file yang diunggah, bukan dari nomor urut preview.
+        const normalizeHeader = value => String(value ?? '')
+            .trim()
+            .toUpperCase()
+            .replace(/[ _-]/g, '');
+        const alamatIndex = headers.findIndex(h => {
+            const normalized = normalizeHeader(h);
+            return normalized === 'ALAMAT' || normalized === 'ALAMATPELANGGAN';
+        });
+        const idpelIndex = headers.findIndex(h => {
+            const normalized = normalizeHeader(h);
+            return normalized === 'IDPEL' || normalized === 'IDPELANGGAN';
+        });
+        const visibleColumns = headers
+            .map((header, index) => ({ header, index }))
+            .filter(column => column.index !== alamatIndex && column.index !== idpelIndex);
+
+        if (idpelIndex !== -1) {
+            const idpelColumn = { header: 'IDPEL', index: idpelIndex };
+            const replacementPosition = alamatIndex !== -1
+                ? headers.slice(0, alamatIndex).filter((_, index) => index !== idpelIndex).length
+                : visibleColumns.length;
+            visibleColumns.splice(replacementPosition, 0, idpelColumn);
+        }
+
         // Update info
         document.getElementById('previewFileName').textContent = fileName;
         document.getElementById('previewRowCount').textContent = dataRows.length + ' baris';
-        document.getElementById('previewFooter').textContent = 'Total ' + dataRows.length + ' baris data, ' + headers.length + ' kolom';
+        document.getElementById('previewFooter').textContent = 'Total ' + dataRows.length + ' baris data, ' + visibleColumns.length + ' kolom';
 
         // Bangun tabel HTML
         let html = '<table class="w-full border-collapse">';
@@ -170,20 +196,20 @@
 
         // Kolom nomor
         html += '<th class="border border-blue-700 px-3 py-2 text-center whitespace-nowrap">NO.</th>';
-        headers.forEach(function(h) {
-            html += '<th class="border border-blue-700 px-3 py-2 text-center whitespace-nowrap">' + escHtml(String(h)) + '</th>';
+        visibleColumns.forEach(function(column) {
+            html += '<th class="border border-blue-700 px-3 py-2 text-center whitespace-nowrap">' + escHtml(String(column.header)) + '</th>';
         });
         html += '</tr></thead><tbody>';
 
         if (dataRows.length === 0) {
-            html += '<tr><td colspan="' + (headers.length + 1) + '" class="text-center py-10 text-slate-400 italic">Tidak ada data baris</td></tr>';
+            html += '<tr><td colspan="' + (visibleColumns.length + 1) + '" class="text-center py-10 text-slate-400 italic">Tidak ada data baris</td></tr>';
         } else {
             dataRows.forEach(function(row, idx) {
                 const bg = idx % 2 === 0 ? 'bg-white' : 'bg-slate-50';
                 html += '<tr class="' + bg + ' hover:bg-blue-50 transition border-b border-slate-100">';
                 html += '<td class="border border-slate-200 px-3 py-2 text-center text-slate-500 font-mono">' + (idx + 1) + '</td>';
-                headers.forEach(function(_, colIdx) {
-                    const cell = row[colIdx] !== undefined ? row[colIdx] : '';
+                visibleColumns.forEach(function(column) {
+                    const cell = row[column.index] !== undefined ? row[column.index] : '';
                     html += '<td class="border border-slate-200 px-3 py-2 text-left whitespace-nowrap">' + escHtml(String(cell)) + '</td>';
                 });
                 html += '</tr>';

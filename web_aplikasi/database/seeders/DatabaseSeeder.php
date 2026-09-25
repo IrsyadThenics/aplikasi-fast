@@ -150,6 +150,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
+            ULPUsersSeeder::class,
             VendorUserSeeder::class,
         ]);
     }

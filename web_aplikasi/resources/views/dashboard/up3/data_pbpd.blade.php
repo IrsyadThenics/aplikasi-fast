@@ -95,7 +95,7 @@
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">STATUS</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NO AGENDA</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NAMA PELANGGAN</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">ALAMAT</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">IDPEL</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" colspan="2">LAMA</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" colspan="2">BARU</th>
                         </tr>
@@ -139,7 +139,7 @@
                                 @endif
                             </td>
                             <td class="border border-slate-200 px-3 py-2 text-center font-mono">{{ $item->no_agenda }}</td>
-                            <td class="border border-slate-200 px-3 py-2 text-left">Pelanggan {{ $item->no_agenda }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-left">{{ $item->nama ?: 'Pelanggan ' . $item->no_agenda }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-left max-w-xs truncate" title="{{ $item->alamat }}">{{ $item->alamat }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->tarif_lama ?? '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->daya_lama ?? 0 }} VA</td>
@@ -349,7 +349,7 @@ function openDetailModal(item) {
     document.getElementById('mdl-status').textContent = item.status || '-';
     document.getElementById('mdl-agenda').textContent = item.no_agenda || '-';
     document.getElementById('mdl-idpel').textContent = item.no_agenda || '-';
-    document.getElementById('mdl-nama').textContent = 'Pelanggan ' + (item.no_agenda || '');
+    document.getElementById('mdl-nama').textContent = item.nama || ('Pelanggan ' + (item.no_agenda || ''));
     document.getElementById('mdl-alamat').textContent = item.alamat || '-';
     document.getElementById('mdl-tbaru').textContent = item.tarif_baru || '-';
     document.getElementById('mdl-dbaru').textContent = item.daya_baru || '0';

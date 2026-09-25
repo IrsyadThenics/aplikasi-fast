@@ -89,11 +89,12 @@
                     <thead class="sticky top-0 z-10 font-bold">
                         <tr class="bg-[#0D1B8C] text-white">
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NO.</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">ASAL ULP</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">DTL</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">TANGGAL<br>MOHON</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NO AGENDA</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NAMA<br>PELANGGAN</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">ALAMAT</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">IDPEL</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">JENIS<br>TRANSAKSI</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" colspan="2">LAMA</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" colspan="2">BARU</th>
@@ -112,6 +113,7 @@
                         @forelse($data ?? [] as $index => $item)
                         <tr class="bg-white hover:bg-slate-50 transition border-b border-slate-100 text-slate-700">
                             <td class="border border-slate-200 px-3 py-2 text-center text-slate-500 text-[11px] font-mono">{{ $index + 1 }}.</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center text-[10px] font-bold whitespace-nowrap">{{ $item->ulp ?? '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-center">
                                 <button onclick="openDetailModal({{ json_encode($item) }})" class="text-slate-500 hover:text-blue-600 transition" title="Lihat Detail">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -144,7 +146,7 @@
                         </tr>
                         @empty
                         <tr id="emptyRow">
-                            <td colspan="13" class="text-center py-12 text-slate-400 italic text-xs">
+                            <td colspan="15" class="text-center py-12 text-slate-400 italic text-xs">
                                 <div class="flex flex-col items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke-width="1.2" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
@@ -344,7 +346,7 @@ function openDetailModal(item) {
     document.getElementById('mdl-status').textContent = item.status || '-';
     document.getElementById('mdl-agenda').textContent = item.no_agenda || '-';
     document.getElementById('mdl-idpel').textContent = item.no_agenda || '-';
-    document.getElementById('mdl-nama').textContent = 'Pelanggan ' + (item.no_agenda || '');
+    document.getElementById('mdl-nama').textContent = item.nama || ('Pelanggan ' + (item.no_agenda || ''));
     document.getElementById('mdl-alamat').textContent = item.alamat || '-';
     document.getElementById('mdl-tbaru').textContent = item.tarif_baru || '-';
     document.getElementById('mdl-dbaru').textContent = item.daya_baru || '0';

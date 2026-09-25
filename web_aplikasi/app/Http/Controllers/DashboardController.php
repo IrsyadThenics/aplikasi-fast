@@ -70,7 +70,7 @@ class DashboardController extends Controller
             'managerULP_brondong' => 'BRONDONG',
             'managerULP_padangan' => 'PADANGAN',
             'managerULP_bjn'      => 'BOJONEGORO',
-            'managerULP_sumberejo'=> 'SUMBEREJO',
+            'managerULP_sumberejo'=> 'SUMBERREJO',
             'managerULP_tuban'    => 'TUBAN',
             'managerULP_jatirogo' => 'JATIROGO',
         ];
@@ -121,6 +121,11 @@ class DashboardController extends Controller
 
         if (isset($ulpRoles[$role])) {
             return view($ulpRoles[$role], compact('data'));
+        }
+
+        // Role Pelayanan memiliki kolom tambahan untuk tanggal dan durasi kerja.
+        if ($role === 'pelayanan') {
+            return view('dashboard.pelayanan.data_pbpd', compact('data'));
         }
 
         // Semua role lain: pakai shared view yang otomatis menyembunyikan
@@ -190,7 +195,7 @@ class DashboardController extends Controller
             'managerULP_brondong' => 'BRONDONG',
             'managerULP_padangan' => 'PADANGAN',
             'managerULP_bjn'      => 'BOJONEGORO',
-            'managerULP_sumberejo'=> 'SUMBEREJO',
+            'managerULP_sumberejo'=> 'SUMBERREJO',
             'managerULP_tuban'    => 'TUBAN',
             'managerULP_jatirogo' => 'JATIROGO',
         ];
@@ -300,7 +305,7 @@ class DashboardController extends Controller
             'managerULP_brondong' => 'BRONDONG',
             'managerULP_padangan' => 'PADANGAN',
             'managerULP_bjn'      => 'BOJONEGORO',
-            'managerULP_sumberejo'=> 'SUMBEREJO',
+            'managerULP_sumberejo'=> 'SUMBERREJO',
             'managerULP_tuban'    => 'TUBAN',
             'managerULP_jatirogo' => 'JATIROGO',
         ];
@@ -377,7 +382,7 @@ class DashboardController extends Controller
             'managerULP_brondong' => 'BRONDONG',
             'managerULP_padangan' => 'PADANGAN',
             'managerULP_bjn'      => 'BOJONEGORO',
-            'managerULP_sumberejo'=> 'SUMBEREJO',
+            'managerULP_sumberejo'=> 'SUMBERREJO',
             'managerULP_tuban'    => 'TUBAN',
             'managerULP_jatirogo' => 'JATIROGO',
         ];
@@ -435,8 +440,9 @@ class DashboardController extends Controller
                     }
 
                     $idx_no_agenda      = $map['NOAGENDA'] ?? $map['NO AGENDA'] ?? $map['NOMOR AGENDA'] ?? null;
-                    $idx_nama           = $map['NAMA'] ?? $map['NAMA PELANGGAN'] ?? null;
-                    $idx_alamat         = $map['ALAMAT'] ?? $map['ALAMAT PELANGGAN'] ?? null;
+                    $idx_nama           = $map['NAMA'] ?? $map['NAMA PELANGGAN'] ?? $map['NAMA_PELANGGAN'] ?? null;
+                    $idx_idpel          = $map['IDPEL'] ?? $map['ID PELANGGAN'] ?? $map['ID_PELANGGAN'] ?? null;
+                    $idx_alamat         = $idx_idpel ?? $map['ALAMAT'] ?? $map['ALAMAT PELANGGAN'] ?? null;
                     $idx_tarif_lama     = $map['TARIF_LAMA'] ?? $map['TARIF LAMA'] ?? null;
                     $idx_daya_lama      = $map['DAYA_LAMA'] ?? $map['DAYA LAMA'] ?? null;
                     $idx_tarif_baru     = $map['TARIF'] ?? $map['TARIF_BARU'] ?? $map['TARIF BARU'] ?? null;
@@ -506,8 +512,9 @@ class DashboardController extends Controller
                     }
 
                     $idx_no_agenda      = $map['NOAGENDA'] ?? $map['NO AGENDA'] ?? $map['NOMOR AGENDA'] ?? null;
-                    $idx_nama           = $map['NAMA'] ?? $map['NAMA PELANGGAN'] ?? null;
-                    $idx_alamat         = $map['ALAMAT'] ?? $map['ALAMAT PELANGGAN'] ?? null;
+                    $idx_nama           = $map['NAMA'] ?? $map['NAMA PELANGGAN'] ?? $map['NAMA_PELANGGAN'] ?? null;
+                    $idx_idpel          = $map['IDPEL'] ?? $map['ID PELANGGAN'] ?? $map['ID_PELANGGAN'] ?? null;
+                    $idx_alamat         = $idx_idpel ?? $map['ALAMAT'] ?? $map['ALAMAT PELANGGAN'] ?? null;
                     $idx_tarif_lama     = $map['TARIF_LAMA'] ?? $map['TARIF LAMA'] ?? null;
                     $idx_daya_lama      = $map['DAYA_LAMA'] ?? $map['DAYA LAMA'] ?? null;
                     $idx_tarif_baru     = $map['TARIF'] ?? $map['TARIF_BARU'] ?? $map['TARIF BARU'] ?? null;
@@ -632,6 +639,7 @@ class DashboardController extends Controller
             'detail_perluasan.jumlah_konduktor' => 'nullable|string|max:255',
             'detail_perluasan.combo_trafo' => 'nullable|string|max:50',
             'detail_perluasan.jumlah_trafo' => 'nullable|string|max:255',
+            'detail_perluasan.jumlah_kwh' => 'nullable|string|max:255',
         ]);
 
         $validated['sentAt'] = now();
@@ -660,7 +668,7 @@ class DashboardController extends Controller
             'managerULP_brondong' => 'BRONDONG',
             'managerULP_padangan' => 'PADANGAN',
             'managerULP_bjn'      => 'BOJONEGORO',
-            'managerULP_sumberejo'=> 'SUMBEREJO',
+            'managerULP_sumberejo'=> 'SUMBERREJO',
             'managerULP_tuban'    => 'TUBAN',
             'managerULP_jatirogo' => 'JATIROGO',
         ];
@@ -722,6 +730,7 @@ class DashboardController extends Controller
             'detail_perluasan.jumlah_konduktor' => 'nullable|string|max:255',
             'detail_perluasan.combo_trafo' => 'nullable|string|max:50',
             'detail_perluasan.jumlah_trafo' => 'nullable|string|max:255',
+            'detail_perluasan.jumlah_kwh' => 'nullable|string|max:255',
         ]);
 
         $pengiriman = $this->getUlpPengirimanQuery()
@@ -739,6 +748,8 @@ class DashboardController extends Controller
 
     public function apiKirimVendor(Request $request)
     {
+        abort_unless(Auth::user()->role !== 'pelayanan', 403);
+
         $request->validate([
             'agendaKey' => 'nullable|string',
             'no_agenda' => 'nullable|string',
@@ -807,6 +818,8 @@ class DashboardController extends Controller
 
     public function apiUploadBerkas(Request $request)
     {
+        abort_unless(Auth::user()->role !== 'pelayanan', 403);
+
         $request->validate([
             'no_agenda' => 'nullable|string',
             'agendaKey' => 'nullable|string',

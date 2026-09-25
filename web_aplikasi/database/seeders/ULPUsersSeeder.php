@@ -10,13 +10,14 @@ class ULPUsersSeeder extends Seeder
     public function run(): void
     {
         $ulps = [
-            ['51803BAB', 'managerULP_babat',     'Babat'],
-            ['51803BRO', 'managerULP_brondong',  'Brondong'],
-            ['51803PAD', 'managerULP_padangan',  'Padangan'],
-            ['51803BJN', 'managerULP_bjn',       'Bojonegoro'],
-            ['51803SUM', 'managerULP_sumberejo', 'Sumberejo'],
-            ['51803TBN', 'managerULP_tuban',     'Tuban'],
-            ['51803JAT', 'managerULP_jatirogo',  'Jatirogo'],
+            ['51801', 'managerULP_bjn',        'Bojonegoro'],
+            ['51802', 'managerULP_tuban',      'Tuban'],
+            ['51803', 'managerULP',            'Lamongan'],
+            ['51804', 'managerULP_babat',      'Babat'],
+            ['51805', 'managerULP_padangan',   'Padangan'],
+            ['51806', 'managerULP_brondong',   'Brondong'],
+            ['51807', 'managerULP_jatirogo',   'Jatirogo'],
+            ['51808', 'managerULP_sumberejo',  'Sumberrejo'],
         ];
 
         foreach ($ulps as [$uid, $role, $ulp]) {
