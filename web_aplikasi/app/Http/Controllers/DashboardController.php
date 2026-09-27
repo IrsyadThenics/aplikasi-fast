@@ -265,14 +265,17 @@ class DashboardController extends Controller
             $laporanView = 'dashboard.ulp.laporan';
         }
 
-        return view($laporanView, compact('data'));
+        $exportRoute = $this->getViewFolder() . '.laporan.export';
+
+        return view($laporanView, compact('data', 'exportRoute'));
     }
 
     public function exportLaporan()
     {
-        abort_unless(Auth::user()->role === 'managerUP3', 403);
+        $role = Auth::user()->role;
+        abort_unless($role === 'managerUP3' || str_starts_with($role, 'managerULP'), 403);
 
-        $data = $this->getLaporanData(Auth::user()->role);
+        $data = $this->getLaporanData($role);
         $headers = [
             'No.', 'Tanggal Mohon', 'Nama Pelanggan', 'IDPEL', 'ULP Asal', 'Jenis Transaksi', 'Status',
             'Tarif Lama', 'Daya Lama', 'Tarif Baru', 'Daya Baru', 'Jumlah Tiang', 'Jumlah Konduktor',
@@ -337,7 +340,9 @@ class DashboardController extends Controller
         $workbook->addFromString('xl/worksheets/sheet1.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>' . $sheetRows . '</sheetData></worksheet>');
         $workbook->close();
 
-        return response()->download($temporaryFile, 'laporan-up3-' . now()->format('Y-m-d') . '.xlsx', [
+        $filename = 'laporan-' . strtolower($this->getViewFolder()) . '-' . now()->format('Y-m-d') . '.xlsx';
+
+        return response()->download($temporaryFile, $filename, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ])->deleteFileAfterSend(true);
     }
