@@ -184,9 +184,8 @@ class DashboardController extends Controller
         return view('dashboard.' . $this->getViewFolder() . '.restitusi', compact('data'));
     }
 
-    public function laporan()
+    private function getLaporanData(string $role)
     {
-        $role = Auth::user()->role;
         $query = \App\Models\data::query();
 
         $ulpMap = [
@@ -232,6 +231,33 @@ class DashboardController extends Controller
         });
 
         $data = $query->get();
+
+        $pengirimanByAgenda = \App\Models\PengirimanData::query()
+            ->whereIn('no_agenda', $data->pluck('no_agenda')->filter()->unique())
+            ->whereNotNull('sentAt')
+            ->orderByDesc('sentAt')
+            ->orderByDesc('id')
+            ->get(['id', 'no_agenda', 'detail_perluasan'])
+            ->unique('no_agenda')
+            ->keyBy('no_agenda');
+
+        foreach ($data as $item) {
+            $details = $pengirimanByAgenda->get($item->no_agenda)?->detail_perluasan ?? [];
+            $item->setAttribute('jumlah_tiang', $details['jumlah_tiang'] ?? null);
+            $item->setAttribute('jumlah_konduktor', $details['jumlah_konduktor'] ?? null);
+            $item->setAttribute('jumlah_trafo', $details['jumlah_trafo'] ?? null);
+            $item->setAttribute('jumlah_kwh', $details['jumlah_kwh'] ?? null);
+            // Data lama menyimpan nilai IDPEL di kolom alamat.
+            $item->setAttribute('idpel_laporan', $item->idpel ?: $item->alamat);
+        }
+
+        return $data;
+    }
+
+    public function laporan()
+    {
+        $role = Auth::user()->role;
+        $data = $this->getLaporanData($role);
         $laporanView = 'dashboard.' . $this->getViewFolder() . '.laporan';
         // Folder ULP per wilayah hanya menyimpan data_pbpd saat ini.
         // Gunakan template laporan ULP utama agar semua ULP memiliki menu laporan.
@@ -240,6 +266,80 @@ class DashboardController extends Controller
         }
 
         return view($laporanView, compact('data'));
+    }
+
+    public function exportLaporan()
+    {
+        abort_unless(Auth::user()->role === 'managerUP3', 403);
+
+        $data = $this->getLaporanData(Auth::user()->role);
+        $headers = [
+            'No.', 'Tanggal Mohon', 'Nama Pelanggan', 'IDPEL', 'ULP Asal', 'Jenis Transaksi', 'Status',
+            'Tarif Lama', 'Daya Lama', 'Tarif Baru', 'Daya Baru', 'Jumlah Tiang', 'Jumlah Konduktor',
+            'Jumlah Trafo', 'Jumlah kWh Meter', 'Total Biaya', 'Tanggal Bayar', 'Durasi Hari Kerja',
+        ];
+
+        $rows = [$headers];
+        foreach ($data as $index => $item) {
+            $rows[] = [
+                $index + 1,
+                $item->tanggal_ulp,
+                $item->nama,
+                $item->idpel_laporan,
+                $item->ulp,
+                $item->transaksi,
+                $item->status,
+                $item->tarif_lama,
+                $item->daya_lama,
+                $item->tarif_baru,
+                $item->daya_baru,
+                $item->jumlah_tiang,
+                $item->jumlah_konduktor,
+                $item->jumlah_trafo,
+                $item->jumlah_kwh,
+                $item->total_biaya,
+                $item->tanggal_bayar,
+                $item->durasi_hari_kerja,
+            ];
+        }
+
+        $columnName = static function (int $number): string {
+            $name = '';
+            while ($number > 0) {
+                $number--;
+                $name = chr(65 + ($number % 26)) . $name;
+                $number = intdiv($number, 26);
+            }
+            return $name;
+        };
+        $escapeXml = static fn ($value): string => htmlspecialchars((string) ($value ?? ''), ENT_XML1 | ENT_QUOTES, 'UTF-8');
+        $sheetRows = '';
+        foreach ($rows as $rowIndex => $row) {
+            $excelRow = $rowIndex + 1;
+            $cells = '';
+            foreach ($row as $columnIndex => $value) {
+                $reference = $columnName($columnIndex + 1) . $excelRow;
+                $cells .= '<c r="' . $reference . '" t="inlineStr"><is><t xml:space="preserve">' . $escapeXml($value) . '</t></is></c>';
+            }
+            $sheetRows .= '<row r="' . $excelRow . '">' . $cells . '</row>';
+        }
+
+        $temporaryFile = tempnam(sys_get_temp_dir(), 'up3-laporan-');
+        $workbook = new \ZipArchive();
+        if ($temporaryFile === false || $workbook->open($temporaryFile, \ZipArchive::OVERWRITE) !== true) {
+            abort(500, 'File Excel tidak dapat dibuat.');
+        }
+
+        $workbook->addFromString('[Content_Types].xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>');
+        $workbook->addFromString('_rels/.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>');
+        $workbook->addFromString('xl/workbook.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Laporan UP3" sheetId="1" r:id="rId1"/></sheets></workbook>');
+        $workbook->addFromString('xl/_rels/workbook.xml.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>');
+        $workbook->addFromString('xl/worksheets/sheet1.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>' . $sheetRows . '</sheetData></worksheet>');
+        $workbook->close();
+
+        return response()->download($temporaryFile, 'laporan-up3-' . now()->format('Y-m-d') . '.xlsx', [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ])->deleteFileAfterSend(true);
     }
 
     public function notifikasi()
@@ -442,7 +542,7 @@ class DashboardController extends Controller
                     $idx_no_agenda      = $map['NOAGENDA'] ?? $map['NO AGENDA'] ?? $map['NOMOR AGENDA'] ?? null;
                     $idx_nama           = $map['NAMA'] ?? $map['NAMA PELANGGAN'] ?? $map['NAMA_PELANGGAN'] ?? null;
                     $idx_idpel          = $map['IDPEL'] ?? $map['ID PELANGGAN'] ?? $map['ID_PELANGGAN'] ?? null;
-                    $idx_alamat         = $idx_idpel ?? $map['ALAMAT'] ?? $map['ALAMAT PELANGGAN'] ?? null;
+                    $idx_alamat         = $map['ALAMAT'] ?? $map['ALAMAT PELANGGAN'] ?? $idx_idpel;
                     $idx_tarif_lama     = $map['TARIF_LAMA'] ?? $map['TARIF LAMA'] ?? null;
                     $idx_daya_lama      = $map['DAYA_LAMA'] ?? $map['DAYA LAMA'] ?? null;
                     $idx_tarif_baru     = $map['TARIF'] ?? $map['TARIF_BARU'] ?? $map['TARIF BARU'] ?? null;
@@ -478,6 +578,7 @@ class DashboardController extends Controller
                                 'status'           => $row[$idx_status] ?? 'Mohon',
                                 'no_agenda'        => $agenda,
                                 'alamat'           => $row[$idx_alamat] ?? '',
+                                'idpel'            => $idx_idpel !== null ? ($row[$idx_idpel] ?? null) : null,
                                 'tarif_lama'       => $row[$idx_tarif_lama] ?? null,
                                 'daya_lama'        => isset($row[$idx_daya_lama]) && is_numeric($row[$idx_daya_lama]) ? intval($row[$idx_daya_lama]) : 0,
                                 'tarif_baru'       => $row[$idx_tarif_baru] ?? null,
@@ -514,7 +615,7 @@ class DashboardController extends Controller
                     $idx_no_agenda      = $map['NOAGENDA'] ?? $map['NO AGENDA'] ?? $map['NOMOR AGENDA'] ?? null;
                     $idx_nama           = $map['NAMA'] ?? $map['NAMA PELANGGAN'] ?? $map['NAMA_PELANGGAN'] ?? null;
                     $idx_idpel          = $map['IDPEL'] ?? $map['ID PELANGGAN'] ?? $map['ID_PELANGGAN'] ?? null;
-                    $idx_alamat         = $idx_idpel ?? $map['ALAMAT'] ?? $map['ALAMAT PELANGGAN'] ?? null;
+                    $idx_alamat         = $map['ALAMAT'] ?? $map['ALAMAT PELANGGAN'] ?? $idx_idpel;
                     $idx_tarif_lama     = $map['TARIF_LAMA'] ?? $map['TARIF LAMA'] ?? null;
                     $idx_daya_lama      = $map['DAYA_LAMA'] ?? $map['DAYA LAMA'] ?? null;
                     $idx_tarif_baru     = $map['TARIF'] ?? $map['TARIF_BARU'] ?? $map['TARIF BARU'] ?? null;
@@ -554,6 +655,7 @@ class DashboardController extends Controller
                                 'status'            => $row[$idx_status] ?? 'Mohon',
                                 'no_agenda'         => $agenda,
                                 'alamat'            => $row[$idx_alamat] ?? '',
+                                'idpel'             => $idx_idpel !== null ? ($row[$idx_idpel] ?? null) : null,
                                 'tarif_lama'        => $row[$idx_tarif_lama] ?? null,
                                 'daya_lama'         => isset($row[$idx_daya_lama]) && is_numeric($row[$idx_daya_lama]) ? intval($row[$idx_daya_lama]) : 0,
                                 'tarif_baru'        => $row[$idx_tarif_baru] ?? null,

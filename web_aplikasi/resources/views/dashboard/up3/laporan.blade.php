@@ -83,7 +83,9 @@
                     <span class="bg-white/20 text-white text-xs px-2 py-0.5 rounded-full font-mono" id="recordCount">{{ count($data ?? []) }} data</span>
                 </div>
                 <div class="flex items-center gap-4">
-                    
+                    <a href="{{ route('up3.laporan.export') }}" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold px-3 py-2 rounded-lg transition">
+                        Export Excel
+                    </a>
                     <button onclick="tutupTabel()" class="text-blue-200 hover:text-white text-xs transition flex items-center gap-1">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -108,11 +110,16 @@
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">DTL</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">TANGGAL<br>MOHON</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NAMA<br>PELANGGAN</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">ALAMAT</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">IDPEL</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">ULP ASAL</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">JENIS<br>TRANSAKSI</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">STATUS</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" colspan="2">LAMA</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" colspan="2">BARU</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">JUMLAH<br>TIANG</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">JUMLAH<br>KONDUKTOR</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">JUMLAH<br>TRAFO</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">JUMLAH<br>kWh METER</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">TOTAL<br>BIAYA</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">TANGGAL<br>BAYAR</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">DURASI<br>HARI KERJA</th>
@@ -149,7 +156,8 @@
                             </td>
                             <td class="border border-slate-200 px-2 py-2 text-center text-xs text-slate-500 whitespace-nowrap">{{ $item->tanggal_ulp ? \Carbon\Carbon::parse($item->tanggal_ulp)->format('d/m/Y') : '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-left">{{ $item->nama ?? '-' }}</td>
-                            <td class="border border-slate-200 px-3 py-2 text-left max-w-xs truncate" title="{{ $item->alamat }}">{{ $item->alamat }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-left max-w-xs truncate" title="{{ $item->idpel_laporan ?? '-' }}">{{ $item->idpel_laporan ?? '-' }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-left">{{ $item->ulp ?? '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-left whitespace-nowrap">
                                 @if(strtolower($item->transaksi) === 'pasang baru')
                                     <span class="px-2 py-1 rounded text-[10px] font-semibold bg-indigo-100 text-indigo-700">Pasang Baru</span>
@@ -161,13 +169,17 @@
                                     <span class="px-2 py-1 rounded text-[10px] font-semibold bg-slate-100 text-slate-700">{{ $item->transaksi }}</span>
                                 @endif
                             </td>
-                              <td class=\"border border-slate-200 px-3 py-2 text-center text-[10px] font-bold text-amber-700 bg-amber-50 uppercase\">
+                              <td class="border border-slate-200 px-3 py-2 text-center text-[10px] font-bold text-amber-700 bg-amber-50 uppercase">
                                   {{ $item->status ?? '-' }}
                               </td>
                             <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->tarif_lama ?? '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->daya_lama ? $item->daya_lama . ' VA' : '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-center font-semibold text-blue-900">{{ $item->tarif_baru ?? '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-center font-semibold text-blue-900">{{ $item->daya_baru ? $item->daya_baru . ' VA' : '-' }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->jumlah_tiang ?? '-' }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->jumlah_konduktor ?? '-' }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->jumlah_trafo ?? '-' }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->jumlah_kwh ?? '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->total_biaya ? 'Rp '.number_format($item->total_biaya, 0, ',', '.') : '-' }}</td>
                             <td class="border border-slate-200 px-2 py-2 text-center text-xs whitespace-nowrap">{{ $item->tanggal_bayar ? \Carbon\Carbon::parse($item->tanggal_bayar)->format('d/m/Y') : '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->durasi_hari_kerja ?? '-' }}</td>
@@ -175,7 +187,7 @@
                         </tr>
                         @empty
                         <tr id="emptyRow">
-                            <td colspan="12" class="text-center py-12 text-slate-400 italic text-xs">
+                            <td colspan="20" class="text-center py-12 text-slate-400 italic text-xs">
                                 <div class="flex flex-col items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke-width="1.2" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />

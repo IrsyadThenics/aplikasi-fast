@@ -20,6 +20,7 @@ class data extends Model
         'status',
         'no_agenda',
         'alamat',
+        'idpel',
         'tarif_lama',
         'daya_lama',
         'tarif_baru',
