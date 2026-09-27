@@ -243,12 +243,15 @@ class DashboardController extends Controller
 
         foreach ($data as $item) {
             $details = $pengirimanByAgenda->get($item->no_agenda)?->detail_perluasan ?? [];
+            $item->setAttribute('combo_tiang', $details['combo_tiang'] ?? null);
             $item->setAttribute('jumlah_tiang', $details['jumlah_tiang'] ?? null);
             $item->setAttribute('jumlah_konduktor', $details['jumlah_konduktor'] ?? null);
+            $item->setAttribute('combo_trafo', $details['combo_trafo'] ?? null);
             $item->setAttribute('jumlah_trafo', $details['jumlah_trafo'] ?? null);
             $item->setAttribute('jumlah_kwh', $details['jumlah_kwh'] ?? null);
             // Data lama menyimpan nilai IDPEL di kolom alamat.
             $item->setAttribute('idpel_laporan', $item->idpel ?: $item->alamat);
+            $item->setAttribute('ulp_asal', $item->ulp);
         }
 
         return $data;
@@ -278,8 +281,8 @@ class DashboardController extends Controller
         $data = $this->getLaporanData($role);
         $headers = [
             'No.', 'Tanggal Mohon', 'Nama Pelanggan', 'IDPEL', 'ULP Asal', 'Jenis Transaksi', 'Status',
-            'Tarif Lama', 'Daya Lama', 'Tarif Baru', 'Daya Baru', 'Jumlah Tiang', 'Jumlah Konduktor',
-            'Jumlah Trafo', 'Jumlah kWh Meter', 'Total Biaya', 'Tanggal Bayar', 'Durasi Hari Kerja',
+            'Tarif Lama', 'Daya Lama', 'Tarif Baru', 'Daya Baru', 'Jumlah Tiang - Combo', 'Jumlah Tiang - Buah', 'Jumlah Konduktor',
+            'Jumlah Trafo - Combo', 'Jumlah Trafo - Buah', 'Jumlah kWh Meter', 'Total Biaya', 'Tanggal Bayar', 'Durasi Hari Kerja',
         ];
 
         $rows = [$headers];
@@ -296,8 +299,10 @@ class DashboardController extends Controller
                 $item->daya_lama,
                 $item->tarif_baru,
                 $item->daya_baru,
+                $item->combo_tiang,
                 $item->jumlah_tiang,
                 $item->jumlah_konduktor,
+                $item->combo_trafo,
                 $item->jumlah_trafo,
                 $item->jumlah_kwh,
                 $item->total_biaya,
