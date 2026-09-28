@@ -20,14 +20,14 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l2.5 1.5M3.5 12a8.5 8.5 0 101.8-5.25M3.5 4.5v3.25h3.25" />
                 </svg>
                 @if ((Auth::user()->role ?? '') === 'perencanaan')
-                    History Pengiriman ke Mobile Vendor
+                    History Pengiriman ke Vendor
                 @else
                     History Pengiriman Data PB/PD
                 @endif
             </h1>
             <p class="text-sm text-slate-500 mt-1">
                 @if ((Auth::user()->role ?? '') === 'perencanaan')
-                    Daftar riwayat pengiriman data dari Tanpa Perluasan, Perluasan JTM, dan Perluasan JTR ke Aplikasi Mobile Vendor.
+                    Daftar riwayat pengiriman data dari Tanpa Perluasan, Perluasan JTM, dan Perluasan JTR ke Vendor.
                 @else
                     Daftar riwayat data yang telah dikirim ke Tanpa Perluasan, Perluasan JTM, atau Perluasan JTR.
                 @endif

@@ -6,13 +6,27 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VendorTiangController;
 use App\Http\Controllers\VendorKonstruksiController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
-// Public Storage Route for Mobile App / Shared Preview
+// Public Storage Route for shared file preview
 Route::get('/storage/{path}', function ($path) {
-    $fullPath = storage_path('app/public/' . $path);
-    if (!file_exists($fullPath)) {
+    $path = str_replace('\\', '/', $path);
+    $segments = explode('/', $path);
+    if ($path === '' || str_starts_with($path, '/') || in_array('..', $segments, true) || in_array('', $segments, true)) {
         abort(404, 'Berkas tidak ditemukan.');
     }
+
+    $disk = Storage::disk('public');
+    if (!$disk->exists($path)) {
+        abort(404, 'Berkas tidak ditemukan.');
+    }
+
+    $root = realpath($disk->path(''));
+    $fullPath = realpath($disk->path($path));
+    if (!$root || !$fullPath || !is_file($fullPath) || !str_starts_with($fullPath, $root . DIRECTORY_SEPARATOR)) {
+        abort(404, 'Berkas tidak ditemukan.');
+    }
+
     return response()->file($fullPath);
 })->where('path', '.*');
 
@@ -20,7 +34,7 @@ Route::get('/storage/{path}', function ($path) {
 // RUTE AUTENTIKASI
 // ==========================================
 Route::get('/', [AuthController::class, 'showLogin'])->name('auth.login')->middleware('guest');
-Route::post('/login', [AuthController::class, 'login'])->name('auth.authenticate');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1')->name('auth.authenticate');
 
 // Modul latihan TOEFL mandiri (public, tidak mengganggu dashboard FASTON360)
 Route::view('/toefl', 'toefl.index')->name('toefl');
