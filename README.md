@@ -1,266 +1,191 @@
-﻿# ⚡ Fast-On — Sistem Manajemen Pelayanan Pelanggan PLN
+# FAST-ON
 
-**Fast-On** adalah sistem manajemen pelayanan pelanggan PLN yang terdiri dari dua komponen utama:
+FAST-ON adalah aplikasi web internal untuk mengelola proses pelayanan pelanggan PLN, khususnya data **Pasang Baru (PB)** dan **Perubahan Daya (PD)**. Aplikasi ini mendukung alur kerja dari penerimaan data pelanggan, verifikasi dan perencanaan, perluasan jaringan, konstruksi, pengoperasian, sampai pelaporan serta pengiriman pekerjaan kepada vendor.
 
-- 🌐 **`web_aplikasi`** — Aplikasi web berbasis **Laravel 12** untuk admin, manajer, dan tim internal PLN
-- 📱 **`aplikasi_vendor`** — Aplikasi mobile berbasis **Flutter** untuk vendor/teknisi lapangan
+Repository ini berisi aplikasi web Laravel pada folder `web_aplikasi/`.
 
-Sistem ini digunakan untuk mengelola proses **Pasang Baru (PB)** dan **Perubahan Daya (PD)** pelanggan PLN, mulai dari pengajuan hingga pengoperasian di lapangan, mencakup seluruh wilayah kerja UP3 dan ULP.
+## Fitur utama
 
----
+- Autentikasi login dan pembatasan akses berdasarkan role.
+- Dashboard dan menu yang berbeda untuk UP3, ULP, pelayanan, perencanaan, konstruksi, jaringan, transaksi, administrator, dan vendor.
+- Pengelolaan data pelanggan PB/PD.
+- Pengelolaan pekerjaan tanpa perluasan, perluasan JTM, dan perluasan JTR.
+- Survey, checklist konstruksi, BA operasi, pengoperasian, dan pemeriksaan KWh.
+- Pengiriman agenda pekerjaan dari internal PLN kepada vendor.
+- Pelaporan pekerjaan vendor tiang dan vendor konstruksi, termasuk riwayat serta lampiran berkas.
+- Upload data pelanggan secara massal melalui `.csv`, `.xls`, atau `.xlsx`.
+- Upload dan pengelolaan dokumen pekerjaan seperti WO, BA Cek, BA Operasi, RAB, dan dokumen terkait.
+- Notifikasi, pencarian data, restitusi, dan ekspor laporan ke Excel.
+- Modul latihan TOEFL sederhana pada route publik `/toefl`.
 
-## 📁 Struktur Proyek
+## Teknologi
 
+- PHP 8.2 atau lebih baru
+- Laravel 12
+- Blade dan Vite
+- Tailwind CSS 4
+- Laravel Sanctum
+- Maatwebsite Excel, SimpleXLS, dan SimpleXLSX
+- PHPUnit untuk pengujian
+- Database relasional yang didukung Laravel; konfigurasi contoh proyek menggunakan SQLite
+
+## Struktur repository
+
+```text
+.
+├── README.md
+└── web_aplikasi/
+    ├── app/
+    │   ├── Http/Controllers/       # autentikasi, dashboard, vendor, profil
+    │   ├── Http/Middleware/        # middleware role dan autentikasi
+    │   └── Models/                 # model Eloquent
+    ├── config/                     # konfigurasi role dan navigasi
+    ├── database/
+    │   ├── migrations/             # struktur tabel aplikasi
+    │   ├── factories/              # factory untuk pengujian
+    │   └── seeders/                # akun dan data awal
+    ├── resources/
+    │   ├── js/                     # entry point Vite
+    │   ├── css/                    # stylesheet
+    │   └── views/                  # template Blade
+    ├── routes/web.php              # route web dan API internal
+    ├── public/                     # asset publik dan entry point Laravel
+    ├── tests/                      # unit test dan feature test
+    ├── composer.json
+    └── package.json
 ```
-Fast-On/
-├── web_aplikasi/       # Backend & Frontend Web (Laravel 12)
-└── aplikasi_vendor/    # Aplikasi Mobile Vendor (Flutter)
+
+## Role dan area akses
+
+| Role | Area atau fungsi |
+| --- | --- |
+| `administrator` | Administrasi sistem dan akses operasional umum |
+| `managerUP3` | Monitoring dan pengelolaan data tingkat UP3 |
+| `managerULP` | Manager ULP Lamongan |
+| `managerULP_babat` | Manager ULP Babat |
+| `managerULP_brondong` | Manager ULP Brondong |
+| `managerULP_padangan` | Manager ULP Padangan |
+| `managerULP_bjn` | Manager ULP Bojonegoro |
+| `managerULP_sumberejo` | Manager ULP Sumberejo |
+| `managerULP_tuban` | Manager ULP Tuban |
+| `managerULP_jatirogo` | Manager ULP Jatirogo |
+| `pelayanan` | Penerimaan, verifikasi, dan upload data PB/PD |
+| `perencanaan` | Perencanaan pekerjaan, survey, dan pengiriman agenda |
+| `konstruksi` | Proses konstruksi, checklist, dan BA Cek |
+| `jaringan` | Perluasan jaringan dan BA Operasi |
+| `transaksi` | Transaksi energi dan pemeriksaan KWh |
+| `vendor` | Laporan pekerjaan vendor tiang |
+| `vendor_konstruksi` | Laporan pekerjaan vendor konstruksi |
+
+Route utama dikelompokkan berdasarkan prefix role, antara lain `/up3`, `/ulp`, `/pelayanan`, `/perencanaan`, `/konstruksi`, `/jaringan`, `/transaksi`, `/admin`, `/vendor-tiang`, dan `/vendor-konstruksi`. Semua area internal memerlukan login.
+
+## Alur proses
+
+```text
+Data PB/PD
+   │
+   ├── Tanpa perluasan ───────────────┐
+   ├── Perluasan JTM ── Survey ───────┤
+   └── Perluasan JTR ── Survey ───────┤
+                                      ▼
+                         Perencanaan / Konstruksi
+                                      │
+                              Pengoperasian
+                                      │
+                         BA, laporan, dan restitusi
 ```
 
----
+Untuk pekerjaan yang melibatkan vendor, agenda dapat dikirim dari aplikasi kepada vendor yang sesuai. Vendor mengirim laporan beserta berkas pendukung, lalu tim internal melanjutkan pemeriksaan dan proses pekerjaan berikutnya.
 
-## 🌐 Web Aplikasi (Laravel 12)
+## Menjalankan aplikasi secara lokal
 
-### Tech Stack
+### Prasyarat
 
-| Komponen        | Detail                              |
-|-----------------|-------------------------------------|
-| Framework       | Laravel 12 (PHP ^8.2)               |
-| Database        | PostgreSQL                          |
-| Frontend Build  | Vite + Blade Templating             |
-| Auth            | Laravel Built-in Auth + Role-based  |
-| Excel/CSV       | SimpleXLSX, SimpleXLS               |
-| Package Manager | Composer + NPM                      |
-
-### Fitur Utama
-
-- 🔐 **Autentikasi berbasis Role** — Login dengan redirect otomatis sesuai peran pengguna
-- 📊 **Dashboard per Role** — Tampilan dashboard yang berbeda-beda sesuai jabatan
-- 📋 **Manajemen Data PB/PD** — Data Pasang Baru dan Perubahan Daya pelanggan
-- 🔌 **Alur Perluasan Jaringan**:
-  - Tanpa Perluasan
-  - Perluasan JTM (Jaringan Tegangan Menengah)
-  - Perluasan JTR (Jaringan Tegangan Rendah)
-- ⚙️ **Pengoperasian** — Pengelolaan proses pengoperasian di lapangan
-- 📝 **Survey & Checklist** — Form survey dan checklist teknis
-- 📑 **BA Operasi** — Berita Acara pengoperasian
-- 🔔 **Notifikasi** — Sistem notifikasi internal
-- 💰 **Restitusi** — Pengelolaan data restitusi pelanggan
-- 📈 **Laporan** — Laporan status peremajaan dan pembayaran
-- 📁 **Upload Data Excel/CSV** — Import massal data pelanggan dari file `.csv`, `.xlsx`, atau `.xls`
-
-### Sistem Role
-
-Sistem mendukung multi-role dengan kontrol akses penuh:
-
-| Role                    | Keterangan                              |
-|-------------------------|-----------------------------------------|
-| `administrator`         | Admin sistem dengan akses penuh         |
-| `managerUP3`            | Manager UP3 (Unit Pelaksana Pelanggan)  |
-| `managerULP_Lamongan`            | Manager ULP Lamongan                    |
-| `managerULP_babat`      | Manager ULP Babat                       |
-| `managerULP_brondong`   | Manager ULP Brondong                    |
-| `managerULP_padangan`   | Manager ULP Padangan                    |
-| `managerULP_bjn`        | Manager ULP Bojonegoro                  |
-| `managerULP_sumberejo`  | Manager ULP Sumberejo                   |
-| `managerULP_tuban`      | Manager ULP Tuban                       |
-| `managerULP_jatirogo`   | Manager ULP Jatirogo                    |
-| `pelayanan`             | Tim Pelayanan Pelanggan                 |
-| `konstruksi`            | Tim Konstruksi                          |
-| `jaringan`              | Tim Jaringan                            |
-| `perencanaan`           | Tim Perencanaan                         |
-| `transaksi`             | Tim Transaksi Energi                    |
-
-### Struktur Database (Tabel Utama)
-
-| Tabel                 | Deskripsi                                      |
-|-----------------------|------------------------------------------------|
-| `users`               | Data pengguna & autentikasi                    |
-| `data`                | Data utama PB/PD pelanggan                     |
-| `perluasan_j_t_m_s`   | Data perluasan Jaringan Tegangan Menengah       |
-| `perluasan_jtrs`      | Data perluasan Jaringan Tegangan Rendah         |
-| `tanpa_perluasans`    | Data permohonan tanpa perluasan                |
-| `pengoperasians`      | Data pengoperasian                             |
-| `proses_perluasans`   | Data proses perluasan                          |
-| `laporans`            | Data laporan                                   |
-| `restitusis`          | Data restitusi                                 |
-| `ba_operasis`         | Data Berita Acara Operasi                      |
-| `notifikasis`         | Data notifikasi                                |
-| `checklists`          | Data checklist teknis                          |
-| `surveys`             | Data hasil survey                              |
-| `upload_data`         | Metadata file yang diupload                    |
-
-### Cara Menjalankan Web Aplikasi
-
-#### Prasyarat
-
-- PHP >= 8.2
+- PHP 8.2+
 - Composer
-- Node.js & NPM
-- PostgreSQL
+- Node.js dan npm
+- Database yang telah dikonfigurasi untuk Laravel
 
-#### Langkah Instalasi
+### Instalasi
 
 ```bash
-# 1. Masuk ke folder web
 cd web_aplikasi
-
-# 2. Install dependensi PHP
 composer install
-
-# 3. Install dependensi Node
 npm install
-
-# 4. Salin file environment
-cp .env.example .env
-
-# 5. Generate application key
 php artisan key:generate
+php artisan migrate --seed
+php artisan storage:link
 ```
 
-#### Migrasi & Jalankan
+Seeder membuat akun pengembangan untuk role internal dan vendor. Semua akun hasil seeder menggunakan password awal `password`; ganti password tersebut sebelum aplikasi digunakan di lingkungan nyata.
+
+### Menjalankan server pengembangan
+
+Perintah berikut menjalankan server Laravel, worker queue, log viewer, dan Vite secara bersamaan:
 
 ```bash
-# 6. Jalankan migrasi database
-php artisan migrate
-
-# 7. Jalankan semua layanan sekaligus (server, queue, logs, vite)
 composer run dev
 ```
 
-> Aplikasi akan berjalan di `http://localhost:8000`
+Aplikasi dapat dibuka pada `http://localhost:8000`.
 
-#### Atau jalankan secara terpisah:
+Jika ingin menjalankan layanan secara terpisah:
 
 ```bash
-# Terminal 1: Laravel server
+# Terminal 1
 php artisan serve
 
-# Terminal 2: Vite build (frontend)
+# Terminal 2
 npm run dev
 ```
 
----
-
-## 📱 Aplikasi Vendor (Flutter)
-
-### Tech Stack
-
-| Komponen   | Detail             |
-|------------|--------------------|
-| Framework  | Flutter            |
-| Bahasa     | Dart               |
-| SDK        | Dart ^3.10.7       |
-| Versi App  | 1.0.0+1            |
-
-### Cara Menjalankan Aplikasi Flutter
-
-#### Prasyarat
-
-- Flutter SDK terinstal
-- Android Studio / VS Code dengan plugin Flutter
-- Emulator Android/iOS atau perangkat fisik
-
-#### Langkah Menjalankan
+Untuk membuat asset produksi:
 
 ```bash
-# 1. Masuk ke folder aplikasi vendor
-cd aplikasi_vendor
-
-# 2. Install dependensi Flutter
-flutter pub get
-
-# 3. Jalankan aplikasi
-flutter run
+npm run build
 ```
 
-#### Build APK (Android)
+## Akun pengembangan hasil seeder
+
+| User ID | Role |
+| --- | --- |
+| `5180` | Administrator |
+| `5180MAN` | Manager UP3 |
+| `51803` sampai `51808` | Manager ULP |
+| `5180PA` | Pelayanan |
+| `5180REN` | Perencanaan |
+| `5180KON` | Konstruksi |
+| `5180JAR` | Jaringan |
+| `5180TEL` | Transaksi |
+| `VENDOR_ALPHA`, `VENDOR_BRAVO` | Vendor tiang |
+| `VENDOR_KONSTRUKSI`, `VENDOR_KONSTRUKSI_2` | Vendor konstruksi |
+
+Password awal seluruh akun di atas adalah `password` pada data pengembangan yang dibuat oleh seeder.
+
+## Data dan dokumen
+
+Migrasi aplikasi mencakup tabel pengguna, data PB/PD, perluasan JTM/JTR, tanpa perluasan, pengoperasian, proses perluasan, laporan, restitusi, BA operasi, notifikasi, checklist, survey, upload data, pengiriman agenda, dokumen pekerjaan, dan laporan vendor.
+
+File yang diunggah disimpan melalui filesystem Laravel. Jalankan `php artisan storage:link` agar file pada disk publik dapat ditampilkan oleh aplikasi.
+
+## Pengujian
+
+Jalankan seluruh test dengan:
 
 ```bash
-flutter build apk --release
+php artisan test
 ```
 
----
+Test feature yang tersedia memeriksa keberadaan route dashboard untuk role yang terdaftar serta route dashboard vendor.
 
-## 🔄 Alur Sistem
+## Catatan pengembangan
 
-```
-Upload Data Excel/CSV
-        |
-        v
-   Data PB/PD Masuk ke Database
-        |
-        v
-   Tim Pelayanan Verifikasi
-        |
-        |---> Tanpa Perluasan ------------------------------------------------->|
-        |                                                                        |
-        |---> Perluasan JTM ---> Survey ---> Konstruksi ----------------------->|
-        |                                                                        |
-        `---> Perluasan JTR ---> Survey ---> Jaringan ------------------------->|
-                                                                                 v
-                                                                    Pengoperasian / BA Operasi
-                                                                                 |
-                                                                                 v
-                                                                         Laporan & Restitusi
-```
+- Role dan prefix route didefinisikan pada `web_aplikasi/config/roles.php`.
+- Menu per role didefinisikan pada `web_aplikasi/config/navigation.php`.
+- Route web dan endpoint internal didefinisikan pada `web_aplikasi/routes/web.php`.
+- Perubahan struktur database harus dibuat sebagai migration baru.
+- Aplikasi ini ditujukan untuk kebutuhan internal dan sebaiknya tidak menggunakan akun atau password seeder di lingkungan produksi.
 
----
+## Lisensi
 
-## 🗂️ Struktur Folder Web Aplikasi
-
-```
-web_aplikasi/
-├── app/
-│   ├── Http/
-│   │   ├── Controllers/
-│   │   │   ├── AuthController.php       # Login, logout
-│   │   │   ├── DashboardController.php  # Semua halaman dashboard & upload
-│   │   │   └── ProfileController.php    # Profil pengguna
-│   │   └── Middleware/
-│   └── Models/                          # Model Eloquent (data, User, dll.)
-├── database/
-│   └── migrations/                      # 17 file migrasi database
-├── resources/
-│   └── views/
-│       ├── auth/                        # Halaman login
-│       ├── dashboard/                   # View per-role & shared views
-│       ├── layouts/                     # Layout utama Blade
-│       └── profile/                     # Halaman profil
-├── routes/
-│   └── web.php                          # Definisi semua rute aplikasi
-└── public/                              # Asset publik
-```
-
----
-
-## 📦 Upload Data
-
-Sistem mendukung import data pelanggan secara massal melalui:
-
-- **Format yang didukung:** `.csv`, `.xlsx`, `.xls`
-- **Kolom yang dikenali:** `NOAGENDA`, `NAMA`, `ALAMAT`, `TARIF`, `DAYA`, `STATUS`, `ULP`, dll.
-- Setiap kali data baru diupload, hanya data ULP yang ada di file tersebut yang diganti — data ULP lain tetap aman.
-- Jika file berisi semua ULP (data UP3 lengkap), maka semua data ULP akan ter-replace dengan data terbaru.
-- Data yang sudah dikirim ke Perluasan JTM/JTR/Tanpa Perluasan tidak tampil lagi di Data PB/PD.
-
----
-
-## 🔐 Keamanan
-
-- Semua rute dilindungi middleware `auth`
-- Setiap role hanya dapat mengakses prefix route yang sesuai (middleware `role:`)
-- Sesi menggunakan driver `database` dengan masa aktif 120 menit
-- Password di-hash menggunakan BCrypt (12 rounds)
-
----
-
-## 👥 Tim Pengembang
-
-> Proyek ini dikembangkan sebagai bagian dari program **magang** di PLN UP3 wilayah Lamongan/Bojonegoro.
-
----
-
-## 📄 Lisensi
-
-Proyek ini bersifat **privat** dan dikembangkan untuk kebutuhan internal PLN.
+Proyek ini bersifat privat dan dikembangkan untuk kebutuhan internal PLN.
