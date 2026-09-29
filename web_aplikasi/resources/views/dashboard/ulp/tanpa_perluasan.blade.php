@@ -105,7 +105,7 @@
                             <th class="border-b border-slate-200 px-4 py-3 text-center whitespace-nowrap" rowspan="2">STATUS</th>
                             <th class="border-b border-slate-200 px-4 py-3 text-center whitespace-nowrap" rowspan="2">NO AGENDA</th>
                             <th class="border-b border-slate-200 px-4 py-3 text-left whitespace-nowrap" rowspan="2">NAMA PELANGGAN</th>
-                            <th class="border-b border-slate-200 px-4 py-3 text-left whitespace-nowrap" rowspan="2">ALAMAT</th>
+                            <th class="border-b border-slate-200 px-4 py-3 text-left whitespace-nowrap" rowspan="2">IDPEL</th>
                             <th class="border-b border-slate-200 px-4 py-2 text-center whitespace-nowrap" colspan="2">LAMA</th>
                             <th class="border-b border-slate-200 px-4 py-2 text-center whitespace-nowrap" colspan="2">BARU</th>
                             <th class="border-b border-slate-200 px-4 py-3 text-center whitespace-nowrap" rowspan="2">KET</th>

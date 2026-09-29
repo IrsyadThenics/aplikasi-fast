@@ -66,7 +66,7 @@
     </div>
 
     {{-- ===== TABLE AREA ===== --}}
-    <div id="tableArea" class="hidden mt-4 flex flex-col flex-1 min-h-0">
+    <div id="tableArea" class="mt-4 flex flex-col flex-1 min-h-0">
         <div class="bg-white rounded-2xl shadow-md border border-slate-200 flex flex-col flex-1 min-h-0 overflow-hidden">
 
             {{-- Table header bar --}}
@@ -124,7 +124,7 @@
                             <td class="border border-slate-200 px-2 py-2 text-center text-xs text-slate-500 whitespace-nowrap">{{ $item->tanggal_ulp ? \Carbon\Carbon::parse($item->tanggal_ulp)->format('d/m/Y') : '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-center font-medium text-slate-700">{{ $item->no_agenda ?? '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-left">{{ $item->nama ?? '-' }}</td>
-                            <td class="border border-slate-200 px-3 py-2 text-left max-w-xs truncate" title="{{ $item->alamat }}">{{ $item->alamat }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-left max-w-xs truncate" title="{{ $item->idpel ?? '-' }}">{{ $item->idpel ?? '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-left whitespace-nowrap">
                                 @if(strtolower($item->transaksi) === 'pasang baru')
                                     <span class="px-2 py-1 rounded text-[10px] font-semibold bg-indigo-100 text-indigo-700">Pasang Baru</span>

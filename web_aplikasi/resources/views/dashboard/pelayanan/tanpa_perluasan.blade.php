@@ -65,7 +65,7 @@
     </div>
 
     {{-- ===== TABLE AREA ===== --}}
-    <div id="tableArea" class="hidden mt-4 flex flex-col flex-1 min-h-0">
+    <div id="tableArea" class="mt-4 flex flex-col flex-1 min-h-0">
         <div class="bg-white rounded-2xl shadow-md border border-slate-200 flex flex-col flex-1 min-h-0 overflow-hidden">
 
             {{-- Table header bar --}}
@@ -84,7 +84,7 @@
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold" rowspan="2">NO.</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold" rowspan="2">NO AGENDA</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold" rowspan="2">NAMA PELANGGAN</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center font-semibold" rowspan="2">ALAMAT</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center font-semibold" rowspan="2">IDPEL</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold" rowspan="2">TRANSAKSI</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold" rowspan="2">STATUS</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold" colspan="2">LAMA</th>

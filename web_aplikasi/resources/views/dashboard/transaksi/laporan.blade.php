@@ -65,7 +65,7 @@
     </div>
 
     {{-- ===== TABLE AREA ===== --}}
-    <div id="tableArea" class="hidden mt-4 flex flex-col flex-1 min-h-0">
+    <div id="tableArea" class="mt-4 flex flex-col flex-1 min-h-0">
         <div class="bg-white rounded-2xl shadow-md border border-slate-200 flex flex-col flex-1 min-h-0 overflow-hidden">
 
             {{-- Table header bar --}}
@@ -136,7 +136,7 @@
                             </td>
                             <td class="border border-slate-200 px-2 py-2 text-center text-xs text-slate-500 whitespace-nowrap">{{ $item->tanggal_ulp ? \Carbon\Carbon::parse($item->tanggal_ulp)->format('d/m/Y') : '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-left">{{ $item->nama ?? '-' }}</td>
-                            <td class="border border-slate-200 px-3 py-2 text-left max-w-xs truncate" title="{{ $item->idpel_laporan ?? $item->alamat }}">{{ $item->idpel_laporan ?? $item->alamat ?? '-' }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-left max-w-xs truncate" title="{{ $item->idpel_laporan ?? '-' }}">{{ $item->idpel_laporan ?? '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-left">{{ $item->ulp ?: ($item->ulp_asal ?? '-') }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-left whitespace-nowrap">
                                 @if(strtolower($item->transaksi) === 'pasang baru')

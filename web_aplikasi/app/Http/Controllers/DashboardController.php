@@ -266,8 +266,7 @@ class DashboardController extends Controller
             $item->setAttribute('checklist_ba_cek', $berkas->firstWhere('jenis_berkas', 'ba_cek'));
             $item->setAttribute('checklist_ba_acara', $berkas->firstWhere('jenis_berkas', 'dokumen'));
             $item->setAttribute('checklist_ba_operasi', $berkas->firstWhere('jenis_berkas', 'ba_operasi'));
-            // Data lama menyimpan nilai IDPEL di kolom alamat.
-            $item->setAttribute('idpel_laporan', $item->idpel ?: $item->alamat);
+            $item->setAttribute('idpel_laporan', $item->idpel);
             $item->setAttribute('ulp_asal', $item->ulp);
         }
 
@@ -801,7 +800,21 @@ class DashboardController extends Controller
             $query->whereRaw('LOWER(ulp) LIKE ?', ['%' . strtolower($ulpMap[$role]) . '%']);
         }
 
-        return response()->json($query->get());
+        $items = $query->get();
+
+        // Pengiriman lama belum memiliki kolom idpel. Ambil IDPEL dari data
+        // sumber berdasarkan identitas pelanggan dan ULP yang sama.
+        foreach ($items as $item) {
+            $source = \App\Models\data::query()
+                ->where('no_agenda', $item->no_agenda)
+                ->where('nama', $item->nama)
+                ->where('alamat', $item->alamat)
+                ->where('ulp', $item->ulp)
+                ->first(['idpel']);
+            $item->setAttribute('idpel', $source?->idpel);
+        }
+
+        return response()->json($items);
     }
 
     private function getVendorReportsForCurrentRole($agendas)

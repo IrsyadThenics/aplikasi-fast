@@ -64,7 +64,7 @@
     </div>
 
     {{-- ===== TABLE AREA ===== --}}
-    <div id="tableArea" class="hidden mt-2 flex flex-col flex-1 min-h-0">
+    <div id="tableArea" class="mt-2 flex flex-col flex-1 min-h-0">
         <div class="glass-card flex flex-col flex-1 min-h-0 overflow-hidden border-0 shadow-[0_4px_20px_rgba(0,0,0,0.08)]">
 
             {{-- Table header bar matching image "Recent Visitor" --}}
@@ -105,7 +105,7 @@
                             <th class="border-b border-slate-200 px-4 py-3 text-center whitespace-nowrap" rowspan="2">STATUS</th>
                             <th class="border-b border-slate-200 px-4 py-3 text-center whitespace-nowrap" rowspan="2">NO AGENDA</th>
                             <th class="border-b border-slate-200 px-4 py-3 text-left whitespace-nowrap" rowspan="2">NAMA PELANGGAN</th>
-                            <th class="border-b border-slate-200 px-4 py-3 text-left whitespace-nowrap" rowspan="2">ALAMAT</th>
+                            <th class="border-b border-slate-200 px-4 py-3 text-left whitespace-nowrap" rowspan="2">IDPEL</th>
                             <th class="border-b border-slate-200 px-4 py-2 text-center whitespace-nowrap" colspan="2">LAMA</th>
                             <th class="border-b border-slate-200 px-4 py-2 text-center whitespace-nowrap" colspan="2">BARU</th>
                             <th class="border-b border-slate-200 px-4 py-3 text-center whitespace-nowrap" rowspan="2">KET</th>
@@ -174,7 +174,7 @@
                             </td>
                             <td class="border border-slate-200 px-3 py-2 text-center font-mono">{{ $item->no_agenda }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-left">Pelanggan {{ $item->no_agenda }}</td>
-                            <td class="border border-slate-200 px-3 py-2 text-left max-w-xs truncate" title="{{ $item->alamat }}">{{ $item->alamat }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-left max-w-xs truncate" title="{{ $item->idpel ?? '-' }}">{{ $item->idpel ?? '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->tarif_lama ?? '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-center">{{ $item->daya_lama ?? 0 }} VA</td>
                             <td class="border border-slate-200 px-3 py-2 text-center font-semibold text-blue-900">{{ $item->tarif_baru ?? '-' }}</td>

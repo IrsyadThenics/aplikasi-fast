@@ -66,7 +66,7 @@
     </div>
 
     {{-- ===== TABLE AREA ===== --}}
-    <div id="tableArea" class="hidden mt-4 flex flex-col flex-1 min-h-0">
+    <div id="tableArea" class="mt-4 flex flex-col flex-1 min-h-0">
         <div class="bg-white rounded-2xl shadow-md border border-slate-200 flex flex-col flex-1 min-h-0 overflow-hidden">
 
             {{-- Table header bar --}}

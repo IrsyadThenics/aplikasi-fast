@@ -65,7 +65,7 @@
     </div>
 
     {{-- ===== TABLE AREA ===== --}}
-    <div id="tableArea" class="hidden mt-4 flex flex-col flex-1 min-h-0">
+    <div id="tableArea" class="mt-4 flex flex-col flex-1 min-h-0">
         <div class="bg-white rounded-2xl shadow-md border border-slate-200 flex flex-col flex-1 min-h-0 overflow-hidden">
 
             {{-- Scrollable Table --}}
@@ -76,7 +76,7 @@
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold" rowspan="2">NO.</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold" rowspan="2">NO AGENDA</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold" rowspan="2">NAMA PELANGGAN</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center font-semibold" rowspan="2">ALAMAT</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center font-semibold" rowspan="2">IDPEL</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold" rowspan="2">TRANSAKSI</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold" rowspan="2">STATUS</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold" colspan="2">LAMA</th>
@@ -185,7 +185,7 @@
                 '<td class="border border-slate-200 px-3 py-2 text-center text-slate-400 font-mono">' + (i+1) + '.</td>' +
                 '<td class="border border-slate-200 px-3 py-2 text-center font-medium font-mono text-[11px]">' + (item.no_agenda || '-') + '</td>' +
                 '<td class="border border-slate-200 px-3 py-2 text-left">' + (item.nama || '-') + '</td>' +
-                '<td class="border border-slate-200 px-3 py-2 text-left max-w-xs truncate" title="' + (item.alamat || '') + '">' + (item.alamat || '-') + '</td>' +
+                '<td class="border border-slate-200 px-3 py-2 text-left max-w-xs truncate" title="' + (item.idpel || '') + '">' + (item.idpel || '-') + '</td>' +
                 '<td class="border border-slate-200 px-3 py-2 text-center">' + (item.transaksi || '-') + '</td>' +
                 '<td class="border border-slate-200 px-3 py-2 text-center">' + (item.status || '-') + '</td>' +
                 '<td class="border border-slate-200 px-3 py-2 text-center">' + (item.tarif_lama || '-') + '</td>' +

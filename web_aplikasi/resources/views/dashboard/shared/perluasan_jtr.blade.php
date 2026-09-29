@@ -65,7 +65,7 @@
     </div>
 
     {{-- ===== TABLE AREA ===== --}}
-    <div id="tableArea" class="hidden mt-4 flex flex-col flex-1 min-h-0">
+    <div id="tableArea" class="mt-4 flex flex-col flex-1 min-h-0">
         <div class="bg-white rounded-2xl shadow-md border border-slate-200 flex flex-col flex-1 min-h-0 overflow-hidden">
 
             {{-- Table header bar --}}
@@ -85,7 +85,7 @@
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold" rowspan="2">NO AGENDA</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold" rowspan="2">DETAIL</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold" rowspan="2">NAMA PELANGGAN</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center font-semibold" rowspan="2">ALAMAT</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center font-semibold" rowspan="2">IDPEL</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold" rowspan="2">TRANSAKSI</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold" rowspan="2">STATUS</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold" colspan="2">LAMA</th>
@@ -206,7 +206,7 @@ var _ulpRoleFilter = _ulpRoleMap[_currentRole] || null;
                     '<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>' +
                     '</button></td>' +
                 '<td class="border border-slate-200 px-3 py-2 text-left">' + (item.nama || '-') + '</td>' +
-                '<td class="border border-slate-200 px-3 py-2 text-left max-w-xs truncate" title="' + (item.alamat || '') + '">' + (item.alamat || '-') + '</td>' +
+                '<td class="border border-slate-200 px-3 py-2 text-left max-w-xs truncate" title="' + (item.idpel || '') + '">' + (item.idpel || '-') + '</td>' +
                 '<td class="border border-slate-200 px-3 py-2 text-center">' + (item.transaksi || '-') + '</td>' +
                 '<td class="border border-slate-200 px-3 py-2 text-center">' + (item.status || '-') + '</td>' +
                 '<td class="border border-slate-200 px-3 py-2 text-center">' + (item.tarif_lama || '-') + '</td>' +
