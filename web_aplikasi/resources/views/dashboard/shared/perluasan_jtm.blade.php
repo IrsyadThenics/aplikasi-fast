@@ -780,7 +780,7 @@ function uploadServerBerkas_jtm(noAgenda, agendaKey, jenis, file) {
         if (res.success && window.currentItem_jtm) {
             if (!window.currentItem_jtm.berkas) window.currentItem_jtm.berkas = [];
             window.currentItem_jtm.berkas.push(res.data);
-            if (jenis === 'wo_perencanaan' || jenis === 'ba_cek' || jenis === 'dokumen') updateUploadStatus_jtm(window.currentItem_jtm);
+            if (jenis === 'wo_perencanaan' || jenis === 'ba_cek' || jenis === 'dokumen' || jenis === 'ba_operasi') updateUploadStatus_jtm(window.currentItem_jtm);
             if (jenis === 'dokumen') renderExcelList_jtm(agendaKey);
             if (jenis === 'ba_cek') renderBaCekList_jtm(agendaKey);
             if (jenis === 'ba_operasi') renderBaOperasiList_jtm(agendaKey);
