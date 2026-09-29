@@ -49,10 +49,10 @@
             {{-- Date Row --}}
             <div class="flex items-center gap-3 flex-wrap">
                 <span class="text-sm font-medium text-slate-600">Tanggal Bayar : Dari</span>
-                <input type="date" value="2026-08-07"
+                <input type="date" value=""
                     class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-slate-50 text-slate-700 transition" />
                 <span class="text-sm text-slate-500 font-medium">s/d</span>
-                <input type="date" value="2026-08-07"
+                <input type="date" value=""
                     class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-slate-50 text-slate-700 transition" />
                 <button onclick="tampilkanTabel()"
                     class="ml-2 bg-[#0D1B8C] hover:bg-[#FACC15] text-white text-sm font-semibold px-6 py-2 rounded-lg shadow-sm transition-all active:scale-95 flex items-center gap-2">
@@ -103,7 +103,7 @@
                                 <input type="checkbox" id="checkAllKirim" class="cursor-pointer" onclick="toggleCheckAll()" />
                             </div>
                         </th>
-                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">DTL</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">Detail</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" colspan="2">SYARAT</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">TANGGAL<br>MOHON</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NO AGENDA</th>
@@ -177,7 +177,7 @@
                             <td class="border border-slate-200 px-2 py-2 text-center text-xs text-slate-500 whitespace-nowrap">{{ $item->tanggal_ulp ? \Carbon\Carbon::parse($item->tanggal_ulp)->format('d/m/Y') : '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-center font-medium text-slate-700">{{ $item->no_agenda ?? '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-left">{{ $item->nama ?? '-' }}</td>
-                            <td class="border border-slate-200 px-3 py-2 text-left max-w-xs truncate" title="{{ $item->alamat }}">{{ $item->alamat }}</td>
+                            <td class="border border-slate-200 px-3 py-2 text-left max-w-xs truncate" title="{{ $item->idpel ?? '-' }}">{{ $item->idpel ?? '-' }}</td>
                             <td class="border border-slate-200 px-3 py-2 text-left whitespace-nowrap">
                                 @if(strtolower($item->transaksi) === 'pasang baru')
                                     <span class="px-2 py-1 rounded text-[10px] font-semibold bg-indigo-100 text-indigo-700">Pasang Baru</span>
@@ -272,6 +272,8 @@
     </div>
 </div>
 
+@include('dashboard.shared.ulp_expansion_form')
+
 <script>
     function reIndexTable() {
         var tbody = document.getElementById('tableBody');
@@ -327,11 +329,6 @@
         
         rows.forEach(function(row) {
             var agendaKey = row.id.replace('row-', '');
-            if (_checkedRows[agendaKey]) {
-                row.style.display = 'none';
-                return;
-            }
-
             var rowText = row.innerText.toLowerCase();
             var matchesAll = true;
             
@@ -419,11 +416,9 @@
             
             <hr class="border-slate-200">
             
-            <div class="grid grid-cols-[150px_1fr] gap-2 items-center">
-                <div class="font-bold text-slate-700 uppercase tracking-wider">RAB (BP)</div>
-                <div class="font-bold text-black flex items-center gap-2">
-                    : Rp. <span id="mdl-rab-text">0</span>,-
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div class="rounded-lg border border-slate-200 bg-slate-50 p-3"><div class="text-xs font-bold uppercase tracking-wider text-slate-500">BP</div><div class="mt-1 text-base font-bold text-slate-800">Rp. <span id="mdl-bp-text">0</span>,-</div></div>
+                <div class="rounded-lg border border-amber-200 bg-amber-50/50 p-3"><div class="mb-2 text-xs font-bold uppercase tracking-wider text-amber-800">RAB</div><div class="flex items-center gap-2"><span class="text-sm font-bold text-slate-600">Rp.</span><input type="number" id="mdl-rab-value-input" class="min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" placeholder="0" /><button onclick="saveRabField()" class="shrink-0 rounded-lg bg-[#0D1B8C] px-3 py-1.5 text-xs font-bold text-white transition hover:bg-[#1828b8]">Simpan</button></div><span id="mdl-rab-indicator" class="mt-1 block text-right text-[11px] font-bold text-emerald-600 opacity-0 transition-opacity">RAB tersimpan</span></div>
             </div>
             
             <hr class="border-slate-200 mb-2">
@@ -462,7 +457,7 @@ function openDetailModal(item) {
     document.getElementById('mdl-transaksi').textContent = item.transaksi || '-';
     document.getElementById('mdl-status').textContent = item.status || '-';
     document.getElementById('mdl-agenda').textContent = item.no_agenda || '-';
-    document.getElementById('mdl-idpel').textContent = item.no_agenda || '-';
+    document.getElementById('mdl-idpel').textContent = item.idpel || '-';
     document.getElementById('mdl-nama').textContent = item.nama || ('Pelanggan ' + (item.no_agenda || ''));
     document.getElementById('mdl-alamat').textContent = item.alamat || '-';
     document.getElementById('mdl-tbaru').textContent = item.tarif_baru || '-';
@@ -472,11 +467,11 @@ function openDetailModal(item) {
     
     var agendaKey = item.no_agenda || 'default';
     var fmt = new Intl.NumberFormat('id-ID');
-    var rabVal = item.total_biaya || 0;
-    if (typeof uploadedDocs !== 'undefined' && uploadedDocs[agendaKey] && uploadedDocs[agendaKey].rab) {
-        rabVal = uploadedDocs[agendaKey].rab;
-    }
-    document.getElementById('mdl-rab-text').textContent = fmt.format(rabVal);
+    var bpVal = item.total_biaya || 0;
+    var rabVal = item.rab || 0;
+    document.getElementById('mdl-bp-text').textContent = fmt.format(bpVal);
+    document.getElementById('mdl-rab-value-input').value = rabVal;
+    window.currentItem = item;
     
     if(item.created_at) {
         let d = new Date(item.created_at);
@@ -558,18 +553,18 @@ function closeDetailModal() {
             <div class="grid grid-cols-[160px_1fr] gap-2 items-center bg-blue-50/50 p-3 rounded-lg border border-blue-100">
                 <div class="font-bold text-[#0D1B8C] uppercase tracking-wider flex items-center gap-1.5">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    RAB (BP)
+                    Dokumen Pendukung
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="text-slate-600 font-bold text-sm">Rp.</span>
-                    <input type="number" id="syr-rab-input" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-[#2B73FE] transition bg-white" placeholder="0" />
-                    <button onclick="saveRabField()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-1.5 rounded-lg shadow-sm text-[13.5px] font-bold transition flex items-center gap-1">
+                    <span class="text-slate-500 text-sm">Silakan unggah berkas pada tabel di bawah.</span>
+                    <!--
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
                         Simpan
                     </button>
                     <span id="syr-rab-indicator" class="text-emerald-600 text-[12.5px] font-bold opacity-0 transition-opacity flex items-center gap-1 ml-1">
                         Tersimpan!
-                    </span>
+                    </span> -->
                 </div>
             </div>
 
@@ -669,7 +664,7 @@ var currentItem = null;
 var uploadedDocs = {};
 
 // ===== IndexedDB Setup =====
-var DB_NAME  = 'FastOnDocs';
+var DB_NAME  = 'FastOnDocs_v2';
 var DB_STORE = 'uploadedDocs';
 var SENT_STORE = 'sentItems';
 var _db = null;
@@ -734,7 +729,8 @@ function saveSentItem(record) {
     });
 }
 
-// On page load: load docs + mark sent rows
+// On page load: load document checklist data.
+// Visibility is controlled by the server so stale browser storage cannot hide new uploads.
 document.addEventListener('DOMContentLoaded', function() {
     loadAllDocs().then(function(docs) {
         uploadedDocs = docs;
@@ -743,19 +739,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }).catch(function(e) { console.warn('IndexedDB load error:', e); });
 
-    openDB().then(function(db) {
-        var tx    = db.transaction(SENT_STORE, 'readonly');
-        var store = tx.objectStore(SENT_STORE);
-        var req   = store.getAll();
-        req.onsuccess = function() {
-            (req.result || []).forEach(function(r) {
-                _checkedRows[r.agendaKey] = true;
-                var row  = document.getElementById('row-' + r.agendaKey);
-                if (row) { row.style.display = 'none'; }
-            });
-            reIndexTable();
-        };
-    }).catch(function() {});
+    reIndexTable();
 });
 
 function saveUploadedDocs() {} // legacy stub
@@ -779,17 +763,11 @@ function openSyaratModal(item, tipe) {
     document.getElementById('syr-transaksi').textContent  = item.transaksi || '-';
     document.getElementById('syr-status').textContent    = item.status || '-';
     document.getElementById('syr-agenda').textContent    = item.no_agenda || '-';
-    document.getElementById('syr-idpel').textContent     = item.id_pelanggan || item.no_agenda || '-';
+    document.getElementById('syr-idpel').textContent     = item.idpel || '-';
     document.getElementById('syr-nama').textContent      = item.nama || ('PELANGGAN ' + (item.no_agenda || ''));
     document.getElementById('syr-alamat').textContent    = item.alamat || '-';
     document.getElementById('syr-tarif').textContent     = item.tarif_baru || '-';
     document.getElementById('syr-daya').textContent      = item.daya_baru || '-';
-    var rabVal = item.total_biaya || 0;
-    if (uploadedDocs[agendaKey] && uploadedDocs[agendaKey].rab) {
-        rabVal = uploadedDocs[agendaKey].rab;
-    }
-    document.getElementById('syr-rab-input').value = rabVal;
-
     var ktpHead  = document.getElementById('syr-col-ktp-head');
     var ktpBody  = document.getElementById('syr-col-ktp-body');
     var ktpCount = document.getElementById('syr-col-ktp-count');
@@ -1038,6 +1016,7 @@ function closeDestModal() {
 }
 
 function confirmKirim(dest) {
+    if (dest === 'jtm' || dest === 'jtr') { openExpansionForm(dest); return; }
     var keys = Object.keys(_selectedItems);
     if (keys.length === 0) { closeDestModal(); return; }
     
@@ -1100,25 +1079,29 @@ function confirmKirim(dest) {
 }
 
 function saveRabField() {
-    if (!currentItem) return;
-    var agendaKey = currentItem.no_agenda || 'default';
-    var rabVal = document.getElementById('syr-rab-input').value;
-    if (rabVal === '') rabVal = 0;
-    
-    ensureAgendaStorage(agendaKey);
-    uploadedDocs[agendaKey].rab = rabVal;
-    
-    saveAgendaDocs(agendaKey).then(function() {
-        var indicator = document.getElementById('syr-rab-indicator');
-        if (indicator) {
-            indicator.style.opacity = '1';
-            setTimeout(function() {
-                indicator.style.opacity = '0';
-            }, 2000);
-        }
-    }).catch(function(e) {
-        alert('Gagal menyimpan RAB: ' + e);
-    });
+    saveFinancialField('rab', 'mdl-rab-value-input', 'mdl-rab-indicator');
+}
+
+function saveFinancialField(jenis, inputId, indicatorId) {
+    if (!window.currentItem) return;
+    var agendaKey = window.currentItem.no_agenda || 'default';
+    var value = Number(document.getElementById(inputId).value || 0);
+    var prefix = window.location.pathname.split('/').filter(Boolean)[0] || 'ulp';
+    var csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    fetch('/' + prefix + '/api/simpan-rab', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' },
+        body: JSON.stringify({ agendaKey: agendaKey, rab: value, jenis: jenis })
+    }).then(function(response) {
+        return response.json().then(function(payload) {
+            if (!response.ok || !payload.success) throw new Error(payload.message || 'Gagal menyimpan nilai.');
+        });
+    }).then(function() {
+        if (jenis === 'bp') window.currentItem.total_biaya = value;
+        else window.currentItem.rab = value;
+        var indicator = document.getElementById(indicatorId);
+        if (indicator) { indicator.style.opacity = '1'; setTimeout(function() { indicator.style.opacity = '0'; }, 2000); }
+    }).catch(function(error) { alert(error.message || 'Gagal menyimpan nilai.'); });
 }
 </script>
 

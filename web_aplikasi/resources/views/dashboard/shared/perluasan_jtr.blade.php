@@ -659,18 +659,7 @@ function openDetailModal_jtr(item) {
 
     // RAB
     var agendaKey = item.no_agenda || 'default';
-    var req = indexedDB.open('FastOnDocs', 2);
-    req.onsuccess = function(e) {
-        var db = e.target.result;
-        if (!db.objectStoreNames.contains('uploadedDocs')) return;
-        var tx = db.transaction('uploadedDocs', 'readonly');
-        var store = tx.objectStore('uploadedDocs');
-        var gr = store.get(agendaKey);
-        gr.onsuccess = function() {
-            var d = gr.result;
-            document.getElementById('jtr-mdl-rab-input').value = (d && d.rab) ? d.rab : (item.total_biaya || 0);
-        };
-    };
+    document.getElementById('jtr-mdl-rab-input').value = item.rab || 0;
 
     window.currentItem_jtr = item; // Penting untuk inisialisasi
     renderExpansionDetail_jtr(item);
@@ -897,22 +886,9 @@ function saveRabField_jtr() {
     var agendaKey = window.currentItem_jtr.no_agenda || 'default';
     var rabVal = document.getElementById('jtr-mdl-rab-input').value;
     if (rabVal === '') rabVal = 0;
-    var req = indexedDB.open('FastOnDocs', 2);
-    req.onsuccess = function(e) {
-        var db = e.target.result;
-        var tx = db.transaction('uploadedDocs', 'readwrite');
-        var store = tx.objectStore('uploadedDocs');
-        var gr = store.get(agendaKey);
-        gr.onsuccess = function() {
-            var d = gr.result || { ktp: [], itt: [], wo: [] };
-            d.rab = rabVal;
-            d.agendaKey = agendaKey; store.put(d);
-            tx.oncomplete = function() {
-                var ind = document.getElementById('jtr-mdl-rab-indicator');
-                if (ind) { ind.style.opacity = '1'; setTimeout(function(){ ind.style.opacity='0'; }, 2000); }
-            };
-        };
-    };
+    var prefix = window.location.pathname.split('/').filter(Boolean)[0] || 'perencanaan';
+    var csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    fetch('/' + prefix + '/api/simpan-rab', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' }, body: JSON.stringify({ agendaKey: agendaKey, rab: Number(rabVal), jenis: 'rab' }) }).then(function(r){ return r.json().then(function(p){ if (!r.ok || !p.success) throw new Error(p.message || 'Gagal menyimpan RAB.'); }); }).then(function(){ window.currentItem_jtr.rab = Number(rabVal); var ind=document.getElementById('jtr-mdl-rab-indicator'); if(ind){ind.style.opacity='1';setTimeout(function(){ind.style.opacity='0';},2000);} }).catch(function(e){alert(e.message || 'Gagal menyimpan RAB.');});
 }
 
 // ===== WO UPLOAD =====

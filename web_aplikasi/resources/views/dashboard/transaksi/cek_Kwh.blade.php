@@ -110,7 +110,7 @@
                     <thead class="sticky top-0 z-10 bg-white shadow-sm font-bold text-slate-700">
                         <tr>
                             <th class="border-b border-slate-200 px-4 py-3 text-center whitespace-nowrap" rowspan="2">NO.</th>
-                            <th class="border-b border-slate-200 px-4 py-3 text-center whitespace-nowrap" rowspan="2">DTL</th>
+                            <th class="border-b border-slate-200 px-4 py-3 text-center whitespace-nowrap" rowspan="2">Detail</th>
                             <th class="border-b border-slate-200 px-4 py-3 text-left whitespace-nowrap" rowspan="2">TRANSAKSI</th>
                             <th class="border-b border-slate-200 px-4 py-3 text-center whitespace-nowrap" rowspan="2">STATUS</th>
                             <th class="border-b border-slate-200 px-4 py-3 text-center whitespace-nowrap" rowspan="2">NO AGENDA</th>

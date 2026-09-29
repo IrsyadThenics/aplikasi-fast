@@ -75,7 +75,9 @@
                     <span class="bg-white/20 text-white text-xs px-2 py-0.5 rounded-full font-mono" id="recordCount">{{ count($data ?? []) }} data</span>
                 </div>
                 <div class="flex items-center gap-4">
-                    
+                    <a href="{{ route($exportRoute) }}" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold px-3 py-2 rounded-lg transition">
+                        Export Excel
+                    </a>
                     <button onclick="tutupTabel()" class="text-blue-200 hover:text-white text-xs transition flex items-center gap-1">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -91,7 +93,7 @@
                     <thead class="sticky top-0 z-10 font-bold">
                         <tr class="bg-[#0D1B8C] text-white">
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NO.</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">DTL</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">Detail</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">TANGGAL<br>MOHON</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NAMA<br>PELANGGAN</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">IDPEL</th>
@@ -449,11 +451,40 @@ function openDetailModal(item) {
         document.getElementById('mdl-tgl-bayar').textContent = ds;
     }
 
+    updateProcessChecklist(item);
     let m = document.getElementById('detailModal');
     if(m) {
         m.classList.remove('hidden');
         m.classList.add('flex');
     }
+}
+function updateProcessChecklist(item) {
+    const rows = [
+        { label: 'Pengiriman ULP', value: item.checklist_pengiriman_ulp, doneText: 'Sudah dikirim ULP' },
+        { label: 'Berkas WO Perencanaan', value: item.checklist_wo_perencanaan, doneText: 'Sudah diunggah' },
+        { label: 'BA Cek Konstruksi', value: item.checklist_ba_cek, doneText: 'Sudah diunggah' },
+        { label: 'BA Acara Transaksi', value: item.checklist_ba_acara, doneText: 'Sudah diunggah' },
+        { label: 'BA Operasi Jaringan', value: item.checklist_ba_operasi, doneText: 'Sudah diunggah' }
+    ];
+    const formatDate = (value) => {
+        const rawDate = value && typeof value === 'object' ? value.created_at : value;
+        if (!rawDate) return '-';
+        const date = new Date(rawDate);
+        return Number.isNaN(date.getTime()) ? '-' : date.toLocaleDateString('id-ID');
+    };
+    const body = document.getElementById('mdl-process-checklist');
+    if (!body) return;
+    body.innerHTML = rows.map((row) => {
+        const done = Boolean(row.value);
+        return '<tr class="border-b border-slate-100 last:border-b-0">' +
+            '<td class="px-3 py-2 text-slate-700">' + row.label + '</td>' +
+            '<td class="px-3 py-2 ' + (done ? 'text-emerald-600' : 'text-red-500') + '">' +
+                '<span class="mr-1 font-semibold">' + (done ? '✓' : '×') + '</span>' +
+                (done ? row.doneText : 'Belum diunggah') +
+            '</td>' +
+            '<td class="px-3 py-2 text-center text-slate-600">' + formatDate(row.value) + '</td>' +
+        '</tr>';
+    }).join('');
 }
 function closeDetailModal() {
     let m = document.getElementById('detailModal');
@@ -606,7 +637,22 @@ function closeDetailModal() {
                 </tbody>
             </table>
 
-            <!-- Close -->
+            <div class="mt-2">
+                <div class="mb-2 text-sm font-bold text-slate-700">Checklist Proses</div>
+                <div class="overflow-hidden rounded-lg border border-slate-200">
+                    <table class="w-full border-collapse text-left text-xs">
+                        <thead class="bg-slate-50 text-slate-600">
+                            <tr>
+                                <th class="border-b border-slate-200 px-3 py-2 font-semibold">Proses</th>
+                                <th class="border-b border-slate-200 px-3 py-2 font-semibold">Status</th>
+                                <th class="border-b border-slate-200 px-3 py-2 text-center font-semibold">Tanggal Lengkap</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mdl-process-checklist" class="bg-white"></tbody>
+                    </table>
+                </div>
+            </div>
+           <!-- Close -->
             <div class="mt-2 flex justify-end">
                 <button onclick="closeSyaratModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2 rounded-lg font-bold text-sm transition focus:outline-none focus:ring-2 focus:ring-slate-300">Tutup</button>
             </div>
@@ -779,6 +825,7 @@ function openSyaratModal(item, tipe) {
     renderPreviews(agendaKey);
     enforceReportReadOnly();
     updateRowChecklist(agendaKey);
+    updateProcessChecklist(item);
     var m = document.getElementById('syaratModal');
     if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
 }

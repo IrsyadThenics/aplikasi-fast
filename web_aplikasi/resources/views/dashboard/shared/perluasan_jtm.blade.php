@@ -674,7 +674,7 @@ function openDetailModal_jtm(item) {
         var gr = store.get(agendaKey);
         gr.onsuccess = function() {
             var d = gr.result;
-            document.getElementById('jtm-mdl-rab-input').value = (d && d.rab) ? d.rab : (item.total_biaya || 0);
+            document.getElementById('jtm-mdl-rab-input').value = item.rab || 0;
         };
     };
 
@@ -904,22 +904,9 @@ function saveRabField_jtm() {
     var agendaKey = window.currentItem_jtm.no_agenda || 'default';
     var rabVal = document.getElementById('jtm-mdl-rab-input').value;
     if (rabVal === '') rabVal = 0;
-    var req = indexedDB.open('FastOnDocs', 2);
-    req.onsuccess = function(e) {
-        var db = e.target.result;
-        var tx = db.transaction('uploadedDocs', 'readwrite');
-        var store = tx.objectStore('uploadedDocs');
-        var gr = store.get(agendaKey);
-        gr.onsuccess = function() {
-            var d = gr.result || { ktp: [], itt: [], wo: [] };
-            d.rab = rabVal;
-            d.agendaKey = agendaKey; store.put(d);
-            tx.oncomplete = function() {
-                var ind = document.getElementById('jtm-mdl-rab-indicator');
-                if (ind) { ind.style.opacity = '1'; setTimeout(function(){ ind.style.opacity='0'; }, 2000); }
-            };
-        };
-    };
+    var prefix = window.location.pathname.split('/').filter(Boolean)[0] || 'perencanaan';
+    var csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    fetch('/' + prefix + '/api/simpan-rab', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' }, body: JSON.stringify({ agendaKey: agendaKey, rab: Number(rabVal), jenis: 'rab' }) }).then(function(r){ return r.json().then(function(p){ if (!r.ok || !p.success) throw new Error(p.message || 'Gagal menyimpan RAB.'); }); }).then(function(){ window.currentItem_jtm.rab = Number(rabVal); var ind=document.getElementById('jtm-mdl-rab-indicator'); if(ind){ind.style.opacity='1';setTimeout(function(){ind.style.opacity='0';},2000);} }).catch(function(e){alert(e.message || 'Gagal menyimpan RAB.');});
 }
 
 // ===== WO UPLOAD =====

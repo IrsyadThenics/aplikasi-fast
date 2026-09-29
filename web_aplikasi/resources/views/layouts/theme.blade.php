@@ -40,4 +40,59 @@
 
     /* Merah dan hijau sengaja tidak diubah karena menandakan error dan berhasil. */
     .focus\:ring-blue-400:focus, .focus\:ring-blue-500:focus { --tw-ring-color: var(--fast-primary) !important; }
+
+    :root {
+        --sidebar-bg: #0D1B8C;
+        --sidebar-hover: #1727a6;
+        --sidebar-active-bg: #ffffff;
+        --sidebar-active-text: #0D1B8C;
+        --main-bg: #f0f4f8;
+    }
+    body { font-family: 'Inter', sans-serif; background-color: var(--main-bg); }
+    h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; }
+
+    .sidebar-link {
+        color: #d1d5db;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        transition: all 0.2s ease;
+    }
+    .sidebar-link:hover:not(.active-link) {
+        background-color: var(--sidebar-hover);
+        color: #ffffff;
+    }
+    .sidebar-link.active-link {
+        background-color: var(--sidebar-active-bg);
+        color: var(--sidebar-active-text);
+        border-radius: 9999px;
+        font-weight: 700;
+    }
+    .sidebar-icon { color: inherit; }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    .glass-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        border: 1px solid #e2e8f0;
+        position: relative;
+        overflow: hidden;
+    }
+    .wave-bg {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 40px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23e0e7ff' fill-opacity='0.5' d='M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,197.3C672,192,768,160,864,160C960,160,1056,192,1152,197.3C1248,203,1344,181,1392,170.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3Cpath fill='none' stroke='%233b82f6' stroke-width='3' stroke-opacity='0.4' d='M0,192L48,181.3C96,171,192,149,288,154.7C384,160,480,192,576,197.3C672,203,768,181,864,165.3C960,149,1056,139,1152,144C1248,149,1344,171,1392,181.3L1440,192'%3E%3C/path%3E%3C/svg%3E");
+        background-size: cover;
+        background-position: bottom;
+        background-repeat: no-repeat;
+        z-index: 1;
+    }
 </style>

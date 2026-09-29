@@ -72,25 +72,7 @@ Route::middleware(['auth'])->group(function () {
     // ------------------------------------------
     // RUTE DINAMIS BERDASARKAN ROLE
     // ------------------------------------------
-    $roles = [
-        'ulp'          => 'managerULP',
-        'ulp_babat'    => 'managerULP_babat',
-        'ulp_brondong' => 'managerULP_brondong',
-        'ulp_padangan' => 'managerULP_padangan',
-        'ulp_bjn'      => 'managerULP_bjn',
-        'ulp_sumberejo'=> 'managerULP_sumberejo',
-        'ulp_tuban'    => 'managerULP_tuban',
-        'ulp_jatirogo' => 'managerULP_jatirogo',
-        'up3'          => 'managerUP3',
-        'pelayanan'    => 'pelayanan',
-        'admin'        => 'administrator',
-        'konstruksi'   => 'konstruksi',
-        'jaringan'     => 'jaringan',
-        'perencanaan'  => 'perencanaan',
-        'transaksi'    => 'transaksi',
-    ];
-
-    foreach ($roles as $prefix => $roleMiddleware) {
+    foreach (config('roles.routes', []) as $prefix => $roleMiddleware) {
         Route::middleware(['role:' . $roleMiddleware])->prefix($prefix)->name($prefix . '.')->group(function () {
             Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
             Route::get('/data-pbpd', [DashboardController::class, 'dataPbpd'])->name('data_pbpd');

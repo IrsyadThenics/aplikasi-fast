@@ -85,7 +85,7 @@
                         <tr class="bg-[#0D1B8C] text-white">
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">NO.</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">ASAL ULP</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">DTL</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">Detail</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">TRANSAKSI</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">STATUS</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">NO AGENDA</th>
@@ -354,10 +354,7 @@ function openDetailModal(item) {
     
     // RAB
     var agendaKey = item.no_agenda || 'default';
-    var rabVal = item.total_biaya || 0;
-    if (typeof uploadedDocs !== 'undefined' && uploadedDocs[agendaKey] && uploadedDocs[agendaKey].rab) {
-        rabVal = uploadedDocs[agendaKey].rab;
-    }
+    var rabVal = item.rab || 0;
     document.getElementById('mdl-rab-input').value = rabVal;
     
     // Store current item globally for saveRabField
@@ -387,27 +384,21 @@ function closeDetailModal() {
 function saveRabField() {
     if (!window.currentItem) return;
     var agendaKey = window.currentItem.no_agenda || 'default';
-    var rabVal = document.getElementById('mdl-rab-input').value;
-    if (rabVal === '') rabVal = 0;
-    
-    if (typeof uploadedDocs === 'undefined') return;
-    if (!uploadedDocs[agendaKey]) uploadedDocs[agendaKey] = { ktp: [], itt: [] };
-    
-    uploadedDocs[agendaKey].rab = rabVal;
-    
-    if (typeof saveAgendaDocs === 'function') {
-        saveAgendaDocs(agendaKey).then(function() {
-            var indicator = document.getElementById('mdl-rab-indicator');
-            if (indicator) {
-                indicator.style.opacity = '1';
-                setTimeout(function() {
-                    indicator.style.opacity = '0';
-                }, 2000);
-            }
-        }).catch(function(e) {
-            alert('Gagal menyimpan RAB: ' + e);
+    var rabVal = Number(document.getElementById('mdl-rab-input').value || 0);
+    var csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    fetch('/perencanaan/api/simpan-rab', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' },
+        body: JSON.stringify({ agendaKey: agendaKey, rab: rabVal, jenis: 'rab' })
+    }).then(function(response) {
+        return response.json().then(function(payload) {
+            if (!response.ok || !payload.success) throw new Error(payload.message || 'Gagal menyimpan RAB.');
         });
-    }
+    }).then(function() {
+        window.currentItem.rab = rabVal;
+        var indicator = document.getElementById('mdl-rab-indicator');
+        if (indicator) { indicator.style.opacity = '1'; setTimeout(function() { indicator.style.opacity = '0'; }, 2000); }
+    }).catch(function(error) { alert(error.message || 'Gagal menyimpan RAB.'); });
 }
 </script>
 

@@ -85,7 +85,7 @@
                         <tr class="bg-[#0D1B8C] text-white">
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">NO.</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">ASAL ULP</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">DTL</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">Detail</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">TRANSAKSI</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">STATUS</th>
                             <th class="border border-blue-700 px-3 py-2 text-center font-semibold whitespace-nowrap" rowspan="2">NO AGENDA</th>
@@ -293,7 +293,7 @@
             <div class="grid grid-cols-[150px_1fr] gap-2 items-center bg-blue-50/50 p-3 rounded-lg border border-blue-100">
                 <div class="font-bold text-[#0D1B8C] uppercase tracking-wider flex items-center gap-1.5">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    RAB
+                    BP
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="text-slate-600 font-bold text-sm">Rp.</span>
@@ -389,25 +389,35 @@ function saveRabField() {
     var agendaKey = window.currentItem.no_agenda || 'default';
     var rabVal = document.getElementById('mdl-rab-input').value;
     if (rabVal === '') rabVal = 0;
-    
-    if (typeof uploadedDocs === 'undefined') return;
-    if (!uploadedDocs[agendaKey]) uploadedDocs[agendaKey] = { ktp: [], itt: [] };
-    
-    uploadedDocs[agendaKey].rab = rabVal;
-    
-    if (typeof saveAgendaDocs === 'function') {
-        saveAgendaDocs(agendaKey).then(function() {
-            var indicator = document.getElementById('mdl-rab-indicator');
-            if (indicator) {
-                indicator.style.opacity = '1';
-                setTimeout(function() {
-                    indicator.style.opacity = '0';
-                }, 2000);
-            }
-        }).catch(function(e) {
-            alert('Gagal menyimpan RAB: ' + e);
+    rabVal = Number(rabVal);
+    var prefix = window.location.pathname.split('/').filter(Boolean)[0] || 'ulp';
+    var csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+    fetch('/' + prefix + '/api/simpan-rab', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' },
+        body: JSON.stringify({ agendaKey: agendaKey, rab: rabVal })
+    }).then(function(response) {
+        return response.json().then(function(payload) {
+            if (!response.ok || !payload.success) throw new Error(payload.message || 'Gagal menyimpan BP.');
+            return payload;
         });
-    }
+    }).then(function() {
+        window.currentItem.total_biaya = rabVal;
+        if (typeof uploadedDocs !== 'undefined') {
+            if (!uploadedDocs[agendaKey]) uploadedDocs[agendaKey] = { ktp: [], itt: [] };
+            uploadedDocs[agendaKey].rab = rabVal;
+            if (typeof saveAgendaDocs === 'function') saveAgendaDocs(agendaKey);
+        }
+        var indicator = document.getElementById('mdl-rab-indicator');
+        if (indicator) {
+            indicator.textContent = 'Tersimpan ke server';
+            indicator.style.opacity = '1';
+            setTimeout(function() { indicator.style.opacity = '0'; }, 2000);
+        }
+    }).catch(function(error) {
+        alert(error.message || 'Gagal menyimpan BP.');
+    });
 }
 </script>
 

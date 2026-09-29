@@ -15,26 +15,12 @@ class DashboardController extends Controller
     {
         $role = Auth::user()->role;
 
-        // Map role ke nama folder jika ada perbedaan (misal: managerULP -> ulp)
-        $map = [
-            'managerULP'          => 'ulp',
-            'managerULP_babat'    => 'ulp_babat',
-            'managerULP_brondong' => 'ulp_brondong',
-            'managerULP_padangan' => 'ulp_padangan',
-            'managerULP_bjn'      => 'ulp_bjn',
-            'managerULP_sumberejo'=> 'ulp_sumberejo',
-            'managerULP_tuban'    => 'ulp_tuban',
-            'managerULP_jatirogo' => 'ulp_jatirogo',
-            'managerUP3'          => 'up3',
-            'administrator'       => 'administrator',
-            'pelayanan'           => 'pelayanan',
-            'konstruksi'          => 'konstruksi',
-            'jaringan'            => 'jaringan',
-            'perencanaan'         => 'perencanaan',
-            'transaksi'           => 'transaksi',
-        ];
+        return array_flip(config('roles.routes', []))[$role] ?? $role;
+    }
 
-        return $map[$role] ?? $role;
+    private function getUlpMap(): array
+    {
+        return config('roles.ulp_names', []);
     }
 
     /**
@@ -64,29 +50,28 @@ class DashboardController extends Controller
         $role = Auth::user()->role;
         $query = \App\Models\data::query();
 
-        $ulpMap = [
-            'managerULP'          => 'LAMONGAN',
-            'managerULP_babat'    => 'BABAT',
-            'managerULP_brondong' => 'BRONDONG',
-            'managerULP_padangan' => 'PADANGAN',
-            'managerULP_bjn'      => 'BOJONEGORO',
-            'managerULP_sumberejo'=> 'SUMBERREJO',
-            'managerULP_tuban'    => 'TUBAN',
-            'managerULP_jatirogo' => 'JATIROGO',
-        ];
+        $ulpMap = $this->getUlpMap();
+        $ulpFilter = $ulpMap[$role] ?? null;
 
-        if (array_key_exists($role, $ulpMap)) {
-            $query->whereRaw('LOWER(ulp) LIKE ?', ['%' . strtolower($ulpMap[$role]) . '%']);
+        if ($ulpFilter !== null) {
+            $query->whereRaw('LOWER(ulp) LIKE ?', ['%' . strtolower($ulpFilter) . '%']);
         }
 
         // Data yang telah dikirim oleh ULP dipindahkan ke History dan tidak lagi
         // ditampilkan pada Data PB/PD, termasuk setelah halaman dimuat ulang.
         if (str_starts_with($role, 'managerULP')) {
-            $sentItems = \App\Models\PengirimanData::query();
-            if (array_key_exists($role, $ulpMap)) {
-                $sentItems->whereRaw('LOWER(ulp) LIKE ?', ['%' . strtolower($ulpMap[$role]) . '%']);
-            }
-            $query->whereNotIn('no_agenda', $sentItems->select('no_agenda'));
+            $query->whereNotExists(function ($sent) use ($ulpFilter) {
+                $sent->selectRaw('1')
+                    ->from('pengiriman_data')
+                    ->whereNotNull('pengiriman_data.sentAt')
+                    ->whereColumn('pengiriman_data.no_agenda', 'data.no_agenda')
+                    ->whereColumn('pengiriman_data.nama', 'data.nama')
+                    ->whereColumn('pengiriman_data.alamat', 'data.alamat');
+
+                if ($ulpFilter !== null) {
+                    $sent->whereRaw('LOWER(pengiriman_data.ulp) LIKE ?', ['%' . strtolower($ulpFilter) . '%']);
+                }
+            });
         }
 
         // Tampilkan data dengan berbagai status yang relevan
@@ -95,10 +80,31 @@ class DashboardController extends Controller
               ->orWhereRaw('LOWER(status) LIKE ?', ['%pengesahan pdl%'])
               ->orWhereRaw('LOWER(status) LIKE ?', ['%pdl awal%'])
               ->orWhereRaw('LOWER(status) LIKE ?', ['%mohon%'])
-              ->orWhereRaw('LOWER(status) LIKE ?', ['%bayar%']);
+              ->orWhereRaw('LOWER(status) LIKE ?', ['%bayar%'])
+              ->orWhereRaw('LOWER(status) LIKE ?', ['%peremajaan%'])
+              ->orWhereRaw('LOWER(status) LIKE ?', ['%perluasan%']);
         });
 
-        return $query->get();
+        $data = $query->get();
+
+        if (str_starts_with($role, 'managerULP') || $role === 'perencanaan') {
+            $rabByAgenda = \App\Models\PengirimanData::query()
+                ->whereIn('no_agenda', $data->pluck('no_agenda')->filter()->unique())
+                ->get(['no_agenda', 'total_biaya', 'rab'])
+                ->keyBy('no_agenda');
+
+            foreach ($data as $item) {
+                $pengiriman = $rabByAgenda->get($item->no_agenda);
+                if ($pengiriman && $pengiriman->total_biaya !== null) {
+                    $item->setAttribute('total_biaya', $pengiriman->total_biaya);
+                }
+                if ($pengiriman && $pengiriman->rab !== null) {
+                    $item->setAttribute('rab', $pengiriman->rab);
+                }
+            }
+        }
+
+        return $data;
     }
 
     public function dataPbpd()
@@ -135,29 +141,29 @@ class DashboardController extends Controller
 
     public function tanpaPerluasan()
     {
-        $data = $this->getFilteredData();
-        $agendas = \App\Models\PengirimanData::where('dest', 'tanpa_perluasan')->pluck('no_agenda');
-        $vendorReports = $this->getVendorReportsForCurrentRole($agendas);
-        $vendorKonstruksiUsers = \App\Models\User::where('role', 'vendor_konstruksi')->orderBy('name')->get(['id', 'name', 'user_id']);
-        return view('dashboard.shared.tanpa_perluasan', compact('data', 'vendorReports', 'vendorKonstruksiUsers'));
+        return $this->renderExpansionPage('tanpa_perluasan', 'tanpa_perluasan');
     }
 
     public function perluasanJtm()
     {
-        $data = $this->getFilteredData();
-        $agendas = \App\Models\PengirimanData::where('dest', 'jtm')->pluck('no_agenda');
-        $vendorReports = $this->getVendorReportsForCurrentRole($agendas);
-        $vendorKonstruksiUsers = \App\Models\User::where('role', 'vendor_konstruksi')->orderBy('name')->get(['id', 'name', 'user_id']);
-        return view('dashboard.shared.perluasan_jtm', compact('data', 'vendorReports', 'vendorKonstruksiUsers'));
+        return $this->renderExpansionPage('jtm', 'perluasan_jtm');
     }
 
     public function perluasanJtr()
     {
+        return $this->renderExpansionPage('jtr', 'perluasan_jtr');
+    }
+
+    private function renderExpansionPage(string $destination, string $viewName)
+    {
         $data = $this->getFilteredData();
-        $agendas = \App\Models\PengirimanData::where('dest', 'jtr')->pluck('no_agenda');
+        $agendas = \App\Models\PengirimanData::where('dest', $destination)->pluck('no_agenda');
         $vendorReports = $this->getVendorReportsForCurrentRole($agendas);
-        $vendorKonstruksiUsers = \App\Models\User::where('role', 'vendor_konstruksi')->orderBy('name')->get(['id', 'name', 'user_id']);
-        return view('dashboard.shared.perluasan_jtr', compact('data', 'vendorReports', 'vendorKonstruksiUsers'));
+        $vendorKonstruksiUsers = \App\Models\User::where('role', 'vendor_konstruksi')
+            ->orderBy('name')
+            ->get(['id', 'name', 'user_id']);
+
+        return view("dashboard.shared.{$viewName}", compact('data', 'vendorReports', 'vendorKonstruksiUsers'));
     }
 
     public function pengoperasian()
@@ -188,38 +194,28 @@ class DashboardController extends Controller
     {
         $query = \App\Models\data::query();
 
-        $ulpMap = [
-            'managerULP'          => 'LAMONGAN',
-            'managerULP_babat'    => 'BABAT',
-            'managerULP_brondong' => 'BRONDONG',
-            'managerULP_padangan' => 'PADANGAN',
-            'managerULP_bjn'      => 'BOJONEGORO',
-            'managerULP_sumberejo'=> 'SUMBERREJO',
-            'managerULP_tuban'    => 'TUBAN',
-            'managerULP_jatirogo' => 'JATIROGO',
-        ];
+        $ulpMap = $this->getUlpMap();
+        $ulpFilter = $ulpMap[$role] ?? null;
 
-        if (array_key_exists($role, $ulpMap)) {
-            $query->whereRaw('LOWER(ulp) LIKE ?', ['%' . strtolower($ulpMap[$role]) . '%']);
+        if ($ulpFilter !== null) {
+            $query->whereRaw('LOWER(ulp) LIKE ?', ['%' . strtolower($ulpFilter) . '%']);
         }
 
         // Laporan hanya berisi data yang sudah dikirim/diproses oleh ULP.
         // Role ULP tetap dibatasi ke ULP-nya sendiri, sedangkan role UP3
         // tidak diberi filter ULP sehingga dapat melihat seluruh ULP.
-        $query->whereExists(function ($processed) {
+        $query->whereExists(function ($processed) use ($ulpFilter) {
             $processed->selectRaw('1')
                 ->from('pengiriman_data')
                 ->whereNotNull('pengiriman_data.sentAt')
                 ->whereColumn('pengiriman_data.no_agenda', 'data.no_agenda')
-                ->where(function ($hasFiles) {
-                    $hasFiles->where('pengiriman_data.ktpCount', '>', 0)
-                        ->orWhere('pengiriman_data.ittCount', '>', 0)
-                        ->orWhereExists(function ($uploadedFile) {
-                            $uploadedFile->selectRaw('1')
-                                ->from('berkas_dokumen')
-                                ->whereColumn('berkas_dokumen.pengiriman_id', 'pengiriman_data.id');
-                        });
-                });
+                ->whereColumn('pengiriman_data.nama', 'data.nama')
+                ->whereColumn('pengiriman_data.alamat', 'data.alamat')
+                ->whereColumn('pengiriman_data.ulp', 'data.ulp');
+
+            if ($ulpFilter !== null) {
+                $processed->whereRaw('LOWER(pengiriman_data.ulp) LIKE ?', ['%' . strtolower($ulpFilter) . '%']);
+            }
         });
 
         $query->where(function ($statusQuery) {
@@ -232,23 +228,44 @@ class DashboardController extends Controller
 
         $data = $query->get();
 
-        $pengirimanByAgenda = \App\Models\PengirimanData::query()
+        $pengirimanQuery = \App\Models\PengirimanData::query()
             ->whereIn('no_agenda', $data->pluck('no_agenda')->filter()->unique())
             ->whereNotNull('sentAt')
             ->orderByDesc('sentAt')
             ->orderByDesc('id')
-            ->get(['id', 'no_agenda', 'detail_perluasan'])
-            ->unique('no_agenda')
-            ->keyBy('no_agenda');
+            ->with('berkas:id,pengiriman_id,jenis_berkas,created_at');
+
+        if ($ulpFilter !== null) {
+            $pengirimanQuery->whereRaw('LOWER(ulp) LIKE ?', ['%' . strtolower($ulpFilter) . '%']);
+        }
+
+        $pengirimanByAgenda = $pengirimanQuery
+            ->get(['id', 'no_agenda', 'ulp', 'sentAt', 'total_biaya', 'rab', 'detail_perluasan'])
+            ->unique(fn ($item) => $item->no_agenda . '|' . $item->ulp)
+            ->keyBy(fn ($item) => $item->no_agenda . '|' . $item->ulp);
 
         foreach ($data as $item) {
-            $details = $pengirimanByAgenda->get($item->no_agenda)?->detail_perluasan ?? [];
+            $pengirimanKey = $item->no_agenda . '|' . $item->ulp;
+            $details = $pengirimanByAgenda->get($pengirimanKey)?->detail_perluasan ?? [];
             $item->setAttribute('combo_tiang', $details['combo_tiang'] ?? null);
             $item->setAttribute('jumlah_tiang', $details['jumlah_tiang'] ?? null);
             $item->setAttribute('jumlah_konduktor', $details['jumlah_konduktor'] ?? null);
             $item->setAttribute('combo_trafo', $details['combo_trafo'] ?? null);
             $item->setAttribute('jumlah_trafo', $details['jumlah_trafo'] ?? null);
             $item->setAttribute('jumlah_kwh', $details['jumlah_kwh'] ?? null);
+            $pengiriman = $pengirimanByAgenda->get($pengirimanKey);
+            $berkas = $pengiriman?->berkas ?? collect();
+            $item->setAttribute('checklist_pengiriman_ulp', $pengiriman?->sentAt);
+            if ($pengiriman && $pengiriman->total_biaya !== null) {
+                $item->setAttribute('total_biaya', $pengiriman->total_biaya);
+            }
+            if ($pengiriman && $pengiriman->rab !== null) {
+                $item->setAttribute('rab', $pengiriman->rab);
+            }
+            $item->setAttribute('checklist_wo_perencanaan', $berkas->firstWhere('jenis_berkas', 'wo_perencanaan'));
+            $item->setAttribute('checklist_ba_cek', $berkas->firstWhere('jenis_berkas', 'ba_cek'));
+            $item->setAttribute('checklist_ba_acara', $berkas->firstWhere('jenis_berkas', 'dokumen'));
+            $item->setAttribute('checklist_ba_operasi', $berkas->firstWhere('jenis_berkas', 'ba_operasi'));
             // Data lama menyimpan nilai IDPEL di kolom alamat.
             $item->setAttribute('idpel_laporan', $item->idpel ?: $item->alamat);
             $item->setAttribute('ulp_asal', $item->ulp);
@@ -262,6 +279,13 @@ class DashboardController extends Controller
         $role = Auth::user()->role;
         $data = $this->getLaporanData($role);
         $laporanView = 'dashboard.' . $this->getViewFolder() . '.laporan';
+
+        // Role operasional menggunakan satu template laporan yang sama.
+        // Template khusus ULP, UP3, dan transaksi tetap dipertahankan.
+        if (in_array($role, ['administrator', 'jaringan', 'konstruksi', 'pelayanan', 'perencanaan'], true)) {
+            $laporanView = 'dashboard.administrator.laporan';
+        }
+
         // Folder ULP per wilayah hanya menyimpan data_pbpd saat ini.
         // Gunakan template laporan ULP utama agar semua ULP memiliki menu laporan.
         if (!view()->exists($laporanView)) {
@@ -276,13 +300,13 @@ class DashboardController extends Controller
     public function exportLaporan()
     {
         $role = Auth::user()->role;
-        abort_unless($role === 'managerUP3' || str_starts_with($role, 'managerULP'), 403);
+        abort_unless(in_array($role, array_values(config('roles.routes', [])), true), 403);
 
         $data = $this->getLaporanData($role);
         $headers = [
             'No.', 'Tanggal Mohon', 'Nama Pelanggan', 'IDPEL', 'ULP Asal', 'Jenis Transaksi', 'Status',
             'Tarif Lama', 'Daya Lama', 'Tarif Baru', 'Daya Baru', 'Jumlah Tiang - Combo', 'Jumlah Tiang - Buah', 'Jumlah Konduktor',
-            'Jumlah Trafo - Combo', 'Jumlah Trafo - Buah', 'Jumlah kWh Meter', 'Total Biaya', 'Tanggal Bayar', 'Durasi Hari Kerja',
+            'Jumlah Trafo - Combo', 'Jumlah Trafo - Buah', 'Jumlah kWh Meter', 'Total Biaya (BP)', 'RAB', 'Tanggal Bayar', 'Durasi Hari Kerja',
         ];
 
         $rows = [$headers];
@@ -306,6 +330,7 @@ class DashboardController extends Controller
                 $item->jumlah_trafo,
                 $item->jumlah_kwh,
                 $item->total_biaya,
+                $item->rab,
                 $item->tanggal_bayar,
                 $item->durasi_hari_kerja,
             ];
@@ -407,18 +432,9 @@ class DashboardController extends Controller
     public function storeHistoryPengiriman(Request $request)
     {
         $role = Auth::user()->role;
-        abort_unless(str_starts_with($role, 'managerULP') || $role === 'perencanaan', 403);
+        abort_unless(str_starts_with($role, 'managerULP'), 403);
 
-        $ulpMap = [
-            'managerULP'          => 'LAMONGAN',
-            'managerULP_babat'    => 'BABAT',
-            'managerULP_brondong' => 'BRONDONG',
-            'managerULP_padangan' => 'PADANGAN',
-            'managerULP_bjn'      => 'BOJONEGORO',
-            'managerULP_sumberejo'=> 'SUMBERREJO',
-            'managerULP_tuban'    => 'TUBAN',
-            'managerULP_jatirogo' => 'JATIROGO',
-        ];
+        $ulpMap = $this->getUlpMap();
 
         $validated = $request->validate([
             'no_agenda'   => ['required', 'string', 'max:255'],
@@ -486,16 +502,7 @@ class DashboardController extends Controller
     {
         $role = Auth::user()->role;
         abort_unless(str_starts_with($role, 'managerULP') || $role === 'perencanaan', 403);
-        $ulpMap = [
-            'managerULP'          => 'LAMONGAN',
-            'managerULP_babat'    => 'BABAT',
-            'managerULP_brondong' => 'BRONDONG',
-            'managerULP_padangan' => 'PADANGAN',
-            'managerULP_bjn'      => 'BOJONEGORO',
-            'managerULP_sumberejo'=> 'SUMBERREJO',
-            'managerULP_tuban'    => 'TUBAN',
-            'managerULP_jatirogo' => 'JATIROGO',
-        ];
+        $ulpMap = $this->getUlpMap();
         $query = \App\Models\PengirimanData::query();
         if (isset($ulpMap[$role])) {
             $query->whereRaw('LOWER(ulp) LIKE ?', ['%' . strtolower($ulpMap[$role]) . '%']);
@@ -754,6 +761,20 @@ class DashboardController extends Controller
             'detail_perluasan.jumlah_kwh' => 'nullable|string|max:255',
         ]);
 
+        // Akun ULP hanya boleh mengirim data dari ULP-nya sendiri.
+        // Validasi ini tetap diperlukan karena payload API berasal dari browser.
+        $role = Auth::user()->role;
+        $ulpMap = $this->getUlpMap();
+        if (array_key_exists($role, $ulpMap)) {
+            $source = \App\Models\data::query()
+                ->where('no_agenda', $validated['no_agenda'])
+                ->whereRaw('LOWER(ulp) LIKE ?', ['%' . strtolower($ulpMap[$role]) . '%'])
+                ->first();
+
+            abort_unless($source, 403, 'Data bukan milik ULP Anda.');
+            $validated['ulp'] = $source->ulp;
+        }
+
         $validated['sentAt'] = now();
 
         $pengiriman = \App\Models\PengirimanData::updateOrCreate(
@@ -774,16 +795,7 @@ class DashboardController extends Controller
         }
 
         $role = Auth::user()->role;
-        $ulpMap = [
-            'managerULP'          => 'LAMONGAN',
-            'managerULP_babat'    => 'BABAT',
-            'managerULP_brondong' => 'BRONDONG',
-            'managerULP_padangan' => 'PADANGAN',
-            'managerULP_bjn'      => 'BOJONEGORO',
-            'managerULP_sumberejo'=> 'SUMBERREJO',
-            'managerULP_tuban'    => 'TUBAN',
-            'managerULP_jatirogo' => 'JATIROGO',
-        ];
+        $ulpMap = $this->getUlpMap();
 
         if (array_key_exists($role, $ulpMap)) {
             $query->whereRaw('LOWER(ulp) LIKE ?', ['%' . strtolower($ulpMap[$role]) . '%']);
@@ -807,21 +819,45 @@ class DashboardController extends Controller
 
     public function apiSimpanRab(Request $request)
     {
-        $role = Auth::user()->role;
-        abort_unless(str_starts_with($role, 'managerULP') || $role === 'perencanaan', 403);
+          $role = Auth::user()->role;
+          $request->validate([
+              'agendaKey' => 'required|string',
+              'rab' => 'required|numeric',
+              'jenis' => 'nullable|in:bp,rab',
+          ]);
+          $jenis = $request->input('jenis', 'rab');
+          abort_unless(
+              str_starts_with($role, 'managerULP') ||
+              ($role === 'perencanaan' && $jenis === 'rab'),
+              403
+          );
 
-        $request->validate([
-            'agendaKey' => 'required|string',
-            'rab' => 'required|numeric',
-        ]);
-
-        $query = \App\Models\PengirimanData::where('agendaKey', $request->agendaKey);
-        if (str_starts_with($role, 'managerULP')) {
-            $query = $this->getUlpPengirimanQuery()->where('agendaKey', $request->agendaKey);
-        }
+          $query = str_starts_with($role, 'managerULP')
+              ? $this->getUlpPengirimanQuery()->where('agendaKey', $request->agendaKey)
+              : \App\Models\PengirimanData::where('agendaKey', $request->agendaKey);
         $pengiriman = $query->first();
-        if ($pengiriman) {
-            $pengiriman->update(['total_biaya' => $request->rab]);
+        if (!$pengiriman) {
+            $source = \App\Models\data::where('no_agenda', $request->agendaKey)->first();
+            if ($source) {
+                $pengiriman = \App\Models\PengirimanData::create([
+                    'agendaKey' => $request->agendaKey,
+                    'dest' => 'tanpa_perluasan',
+                    'no_agenda' => $source->no_agenda,
+                    'nama' => $source->nama,
+                    'alamat' => $source->alamat,
+                    'transaksi' => $source->transaksi,
+                    'status' => $source->status,
+                    'tarif_lama' => $source->tarif_lama,
+                    'daya_lama' => $source->daya_lama ?? 0,
+                    'tarif_baru' => $source->tarif_baru,
+                    'daya_baru' => $source->daya_baru ?? 0,
+                    'ulp' => $source->ulp,
+                ]);
+            }
+          }
+          if ($pengiriman) {
+              $column = $jenis === 'bp' ? 'total_biaya' : 'rab';
+            $pengiriman->update([$column => $request->rab]);
             return response()->json(['success' => true]);
         }
 

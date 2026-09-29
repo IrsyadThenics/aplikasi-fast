@@ -56,10 +56,10 @@
             {{-- Date Row --}}
             <div class="flex items-center gap-3 flex-wrap">
                 <span class="text-sm font-medium text-slate-600">Tanggal Bayar : Dari</span>
-                <input type="date" value="2026-08-07"
+                <input type="date" value=""
                     class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-slate-50 text-slate-700 transition" />
                 <span class="text-sm text-slate-500 font-medium">s/d</span>
-                <input type="date" value="2026-08-07"
+                <input type="date" value=""
                     class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-slate-50 text-slate-700 transition" />
                 <button onclick="tampilkanTabel()"
                     class="ml-2 bg-[#0D1B8C] hover:bg-[#FACC15] text-white text-sm font-semibold px-6 py-2 rounded-lg shadow-sm transition-all active:scale-95 flex items-center gap-2">
@@ -101,7 +101,7 @@
                     <thead class="sticky top-0 z-10 font-bold">
                         <tr class="bg-[#0D1B8C] text-white">
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NO.</th>
-                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">DTL</th>
+                            <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">Detail</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">TANGGAL<br>MOHON</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">NAMA<br>PELANGGAN</th>
                             <th class="border border-blue-700 px-3 py-2 text-center" rowspan="2">IDPEL</th>
@@ -301,12 +301,6 @@
         var rows = tableBody.querySelectorAll('tr:not(#emptyRow)');
         
         rows.forEach(function(row) {
-            var agendaKey = row.id.replace('row-', '');
-            if (_checkedRows[agendaKey]) {
-                row.style.display = 'none';
-                return;
-            }
-
             var rowText = row.innerText.toLowerCase();
             var matchesAll = true;
             
@@ -392,7 +386,7 @@
             <hr class="border-slate-200">
             
             <div class="grid grid-cols-[150px_1fr] gap-2 items-center">
-                <div class="font-bold text-slate-700 uppercase tracking-wider">RAB (BP)</div>
+                <div class="font-bold text-slate-700 uppercase tracking-wider">RAB</div>
                 <div class="font-bold text-black flex items-center gap-2">
                     : Rp. <span id="mdl-rab-text">0</span>,-
                 </div>
@@ -444,10 +438,7 @@ function openDetailModal(item) {
     
     var agendaKey = item.no_agenda || 'default';
     var fmt = new Intl.NumberFormat('id-ID');
-    var rabVal = item.total_biaya || 0;
-    if (typeof uploadedDocs !== 'undefined' && uploadedDocs[agendaKey] && uploadedDocs[agendaKey].rab) {
-        rabVal = uploadedDocs[agendaKey].rab;
-    }
+    var rabVal = item.rab || 0;
     document.getElementById('mdl-rab-text').textContent = fmt.format(rabVal);
     
     if(item.created_at) {
@@ -457,11 +448,40 @@ function openDetailModal(item) {
         document.getElementById('mdl-tgl-bayar').textContent = ds;
     }
 
+    updateProcessChecklist(item);
     let m = document.getElementById('detailModal');
     if(m) {
         m.classList.remove('hidden');
         m.classList.add('flex');
     }
+}
+function updateProcessChecklist(item) {
+    const rows = [
+        { label: 'Pengiriman ULP', value: item.checklist_pengiriman_ulp, doneText: 'Sudah dikirim ULP' },
+        { label: 'Berkas WO Perencanaan', value: item.checklist_wo_perencanaan, doneText: 'Sudah diunggah' },
+        { label: 'BA Cek Konstruksi', value: item.checklist_ba_cek, doneText: 'Sudah diunggah' },
+        { label: 'BA Acara Transaksi', value: item.checklist_ba_acara, doneText: 'Sudah diunggah' },
+        { label: 'BA Operasi Jaringan', value: item.checklist_ba_operasi, doneText: 'Sudah diunggah' }
+    ];
+    const formatDate = (value) => {
+        const rawDate = value && typeof value === 'object' ? value.created_at : value;
+        if (!rawDate) return '-';
+        const date = new Date(rawDate);
+        return Number.isNaN(date.getTime()) ? '-' : date.toLocaleDateString('id-ID');
+    };
+    const body = document.getElementById('mdl-process-checklist');
+    if (!body) return;
+    body.innerHTML = rows.map((row) => {
+        const done = Boolean(row.value);
+        return '<tr class="border-b border-slate-100 last:border-b-0">' +
+            '<td class="px-3 py-2 text-slate-700">' + row.label + '</td>' +
+            '<td class="px-3 py-2 ' + (done ? 'text-emerald-600' : 'text-red-500') + '">' +
+                '<span class="mr-1 font-semibold">' + (done ? '✓' : '×') + '</span>' +
+                (done ? row.doneText : 'Belum diunggah') +
+            '</td>' +
+            '<td class="px-3 py-2 text-center text-slate-600">' + formatDate(row.value) + '</td>' +
+        '</tr>';
+    }).join('');
 }
 function closeDetailModal() {
     let m = document.getElementById('detailModal');
@@ -530,7 +550,7 @@ function closeDetailModal() {
             <div class="grid grid-cols-[160px_1fr] gap-2 items-center bg-blue-50/50 p-3 rounded-lg border border-blue-100">
                 <div class="font-bold text-[#0D1B8C] uppercase tracking-wider flex items-center gap-1.5">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    RAB (BP)
+                    RAB
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="text-slate-600 font-bold text-sm">Rp.</span>
@@ -614,7 +634,22 @@ function closeDetailModal() {
                 </tbody>
             </table>
 
-            <!-- Close -->
+            <div class="mt-2">
+                <div class="mb-2 text-sm font-bold text-slate-700">Checklist Proses</div>
+                <div class="overflow-hidden rounded-lg border border-slate-200">
+                    <table class="w-full border-collapse text-left text-xs">
+                        <thead class="bg-slate-50 text-slate-600">
+                            <tr>
+                                <th class="border-b border-slate-200 px-3 py-2 font-semibold">Proses</th>
+                                <th class="border-b border-slate-200 px-3 py-2 font-semibold">Status</th>
+                                <th class="border-b border-slate-200 px-3 py-2 text-center font-semibold">Tanggal Lengkap</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mdl-process-checklist" class="bg-white"></tbody>
+                    </table>
+                </div>
+            </div>
+           <!-- Close -->
             <div class="mt-2 flex justify-end">
                 <button onclick="closeSyaratModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2 rounded-lg font-bold text-sm transition focus:outline-none focus:ring-2 focus:ring-slate-300">Tutup</button>
             </div>
@@ -722,8 +757,7 @@ document.addEventListener('DOMContentLoaded', function() {
         req.onsuccess = function() {
             (req.result || []).forEach(function(r) {
                 _checkedRows[r.agendaKey] = true;
-                var row  = document.getElementById('row-' + r.agendaKey);
-                if (row) { row.style.display = 'none'; }
+                // Laporan harus tetap menampilkan semua data yang sudah tersimpan di server.
             });
             reIndexTable();
         };
@@ -756,10 +790,7 @@ function openSyaratModal(item, tipe) {
     document.getElementById('syr-alamat').textContent    = item.alamat || '-';
     document.getElementById('syr-tarif').textContent     = item.tarif_baru || '-';
     document.getElementById('syr-daya').textContent      = item.daya_baru || '-';
-    var rabVal = item.total_biaya || 0;
-    if (uploadedDocs[agendaKey] && uploadedDocs[agendaKey].rab) {
-        rabVal = uploadedDocs[agendaKey].rab;
-    }
+    var rabVal = item.rab || 0;
     document.getElementById('syr-rab-input').value = rabVal;
 
     var ktpHead  = document.getElementById('syr-col-ktp-head');
@@ -787,6 +818,7 @@ function openSyaratModal(item, tipe) {
     renderPreviews(agendaKey);
     enforceReportReadOnly();
     updateRowChecklist(agendaKey);
+    updateProcessChecklist(item);
     var m = document.getElementById('syaratModal');
     if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
 }
